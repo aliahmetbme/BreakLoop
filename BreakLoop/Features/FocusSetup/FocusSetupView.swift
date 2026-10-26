@@ -10,43 +10,90 @@ import FamilyControls
 
 struct FocusSetupView: View {
 
-    @StateObject private var viewModel = FocusSetupViewModel()
+    @StateObject private var viewModel = FocusSetupViewModel.makeDefault()
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack(spacing: 24) {
-
-            Text("Choose Apps")
-                .font(.largeTitle.bold())
-
-            Text(
-                "Select the apps or categories you want BreakLoop to manage."
-            )
-            .multilineTextAlignment(.center)
-            .foregroundStyle(.secondary)
-
-            Button("Select Apps & Categories") {
-                viewModel.isPickerPresented = true
-            }
-            .buttonStyle(.borderedProminent)
-
-            if viewModel.hasSelection {
+        ScrollView {
+            VStack(spacing: 24) {
                 VStack(spacing: 8) {
-                    Text("Selection saved")
-                        .fontWeight(.semibold)
+                    Image(systemName: "apps.iphone")
+                        .font(.system(size: 48))
+                        .foregroundStyle(BreakLoopTheme.primary)
 
-                    Text(
-                        "\(viewModel.selection.applicationTokens.count) apps"
-                    )
+                    Text("Choose Apps")
+                        .font(.title2.bold())
 
-                    Text(
-                        "\(viewModel.selection.categoryTokens.count) categories"
-                    )
+                    Text("Select the apps or categories to be monitored under your shared BreakLoop budget.")
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
                 }
-            }
+                .padding(.top, 16)
 
-            Spacer()
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack {
+                        Text("Current Selection")
+                            .font(.headline)
+                        Spacer()
+                        if viewModel.hasSelection {
+                            Text("Saved")
+                                .font(.caption.bold())
+                                .foregroundStyle(.green)
+                        }
+                    }
+
+                    if viewModel.hasSelection {
+                        VStack(spacing: 8) {
+                            HStack {
+                                Label("Applications", systemImage: "app.badge")
+                                Spacer()
+                                Text("\(viewModel.selection.applicationTokens.count) selected")
+                                    .foregroundStyle(.secondary)
+                            }
+                            Divider()
+                            HStack {
+                                Label("Categories", systemImage: "folder")
+                                Spacer()
+                                Text("\(viewModel.selection.categoryTokens.count) selected")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .font(.subheadline)
+                    } else {
+                        Text("No apps or categories selected yet.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .breakLoopCard()
+
+                Button {
+                    viewModel.isPickerPresented = true
+                } label: {
+                    Label(viewModel.hasSelection ? "Change Selection" : "Select Apps & Categories", systemImage: "plus.circle.fill")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(BreakLoopTheme.primaryGradient)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+
+                Spacer()
+            }
+            .padding(16)
         }
-        .padding(24)
+        .background(BreakLoopTheme.background.ignoresSafeArea())
+        .navigationTitle("Manage Apps")
+        .navigationBarTitleDisplayMode(.inline)
         .familyActivityPicker(
             isPresented: $viewModel.isPickerPresented,
             selection: $viewModel.selection

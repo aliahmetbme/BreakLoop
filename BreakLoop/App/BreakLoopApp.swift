@@ -14,7 +14,7 @@ struct BreakLoopApp: App {
 
     var body: some Scene {
         WindowGroup {
-            FocusSetupView()
+            AppRootView()
         }
     }
 }

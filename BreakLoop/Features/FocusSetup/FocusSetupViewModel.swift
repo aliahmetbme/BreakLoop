@@ -10,45 +10,102 @@ import FamilyControls
 import Combine
 
 @MainActor
-final class FocusSetupViewModel: ObservableObject {   
+final class FocusSetupViewModel: ObservableObject {
 
     @Published var selection = FamilyActivitySelection()
     @Published var isPickerPresented = false
     @Published var errorMessage: String?
-    
+
     private let storage: AppGroupStorage
+    private let managedSettingsService: ManagedSettingsServiceProtocol
+    private let deviceActivityService: DeviceActivityServiceProtocol
 
     init(
-        storage: AppGroupStorage = AppGroupStorage()
+        storage: AppGroupStorage,
+        managedSettingsService: ManagedSettingsServiceProtocol,
+        deviceActivityService: DeviceActivityServiceProtocol
     ) {
         self.storage = storage
+        self.managedSettingsService = managedSettingsService
+        self.deviceActivityService = deviceActivityService
+
         loadSelection()
     }
-    
+
+    @MainActor
+    static func makeDefault() -> FocusSetupViewModel {
+        FocusSetupViewModel(
+            storage: AppGroupStorage(),
+            managedSettingsService: ManagedSettingsService(),
+            deviceActivityService: DeviceActivityService()
+        )
+    }
+
     var hasSelection: Bool {
         !selection.applicationTokens.isEmpty ||
         !selection.categoryTokens.isEmpty ||
         !selection.webDomainTokens.isEmpty
     }
-    
+
     func saveSelection() {
-            do {
-                try storage.saveActivitySelection(selection)
-            } catch {
-                errorMessage = error.localizedDescription
-            }
+        do {
+            try storage.saveActivitySelection(selection)
+        } catch {
+            errorMessage = error.localizedDescription
         }
-
-    private func loadSelection() {
-            do {
-                if let savedSelection =
-                    try storage.loadActivitySelection() {
-
-                    selection = savedSelection
-                }
-            } catch {
-                errorMessage = error.localizedDescription
-            }
     }
 
+    func blockSelection() {
+        guard hasSelection else {
+            return
+        }
+
+        managedSettingsService.block(selection)
+    }
+
+    func unblockSelection() {
+        managedSettingsService.unblock()
+    }
+
+    func startMonitoring() {
+        guard hasSelection else {
+            return
+        }
+
+        saveSelection()
+        storage.clearUsageCheckpointState()
+
+        let configuration = storage.loadCycleConfiguration()
+        let snapshot = AppGroupStorage.CycleSnapshot(configuration: configuration)
+        try? storage.saveActiveCycleSnapshot(snapshot)
+        storage.setBreakLoopActive(true)
+
+        do {
+            try deviceActivityService.startMonitoring(
+                selection: selection,
+                snapshot: snapshot
+            )
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func stopMonitoring() {
+        deviceActivityService.stopMonitoring()
+        managedSettingsService.unblock()
+        storage.clearUsageCheckpointState()
+        storage.clearCooldownEndDate()
+        storage.clearActiveCycleSnapshot()
+        storage.setBreakLoopActive(false)
+    }
+
+    private func loadSelection() {
+        do {
+            if let savedSelection = try storage.loadActivitySelection() {
+                selection = savedSelection
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
 }

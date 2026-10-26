@@ -1,0 +1,39 @@
+//
+//  Untitled.swift
+//  BreakLoop
+//
+//  Created by Ali ahmet Erdoğdu on 6.10.2026.
+//
+
+import Foundation
+import FamilyControls
+import ManagedSettings
+
+protocol ManagedSettingsServiceProtocol {
+    func block(_ selection: FamilyActivitySelection)
+    func unblock()
+}
+
+final class ManagedSettingsService: ManagedSettingsServiceProtocol {
+
+    private let store = ManagedSettingsStore()
+
+    func block(_ selection: FamilyActivitySelection) {
+
+        // Tek tek seçilmiş uygulamalar
+        store.shield.applications =
+            selection.applicationTokens.isEmpty
+            ? nil
+            : selection.applicationTokens
+
+        // Seçilmiş kategoriler
+        store.shield.applicationCategories =
+            selection.categoryTokens.isEmpty
+            ? nil
+            : .specific(selection.categoryTokens)
+    }
+
+    func unblock() {
+        store.clearAllSettings()
+    }
+}

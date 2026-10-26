@@ -91,13 +91,21 @@
 		FE3DE77E30744D680038A0B4 /* Exceptions for "BreakLoop" folder in "DeviceActivityMonitorExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Core/Infrastructure/Logging/AppLogger.swift,
+				Core/Infrastructure/Logging/LogCatagory.swift,
+				Core/Infrastructure/Logging/PersistentLogStore.swift,
 				Core/Infrastructure/Persistence/AppGroupStorage.swift,
+				Core/Infrastructure/ScreenTime/DeviceActivityService.swift,
+				Core/Shared/DeviceActivityConstants.swift,
 			);
 			target = FE3DE73E30744B460038A0B4 /* DeviceActivityMonitorExtension */;
 		};
 		FE3DE77F30744D680038A0B4 /* Exceptions for "BreakLoop" folder in "ShieldConfigurationExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Core/Infrastructure/Logging/AppLogger.swift,
+				Core/Infrastructure/Logging/LogCatagory.swift,
+				Core/Infrastructure/Logging/PersistentLogStore.swift,
 				Core/Infrastructure/Persistence/AppGroupStorage.swift,
 			);
 			target = FE3DE75330744B6E0038A0B4 /* ShieldConfigurationExtension */;
@@ -105,6 +113,9 @@
 		FE3DE78030744D680038A0B4 /* Exceptions for "BreakLoop" folder in "ShieldActionExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Core/Infrastructure/Logging/AppLogger.swift,
+				Core/Infrastructure/Logging/LogCatagory.swift,
+				Core/Infrastructure/Logging/PersistentLogStore.swift,
 				Core/Infrastructure/Persistence/AppGroupStorage.swift,
 			);
 			target = FE3DE76830744BA20038A0B4 /* ShieldActionExtension */;
