@@ -66,15 +66,11 @@ struct DashboardView: View {
     private var dashboardHeader: some View {
         HStack(alignment: .center) {
             HStack(spacing: BLSpacing.xs) {
-                ZStack {
-                    Circle()
-                        .fill(BLColor.brandInteractive.opacity(0.12))
-                        .frame(width: 32, height: 32)
-
-                    Image(systemName: "infinity")
-                        .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(BLColor.brandInteractive)
-                }
+                Image("AppLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
                 Text("BreakLoop")
                     .font(BLTypography.title2)

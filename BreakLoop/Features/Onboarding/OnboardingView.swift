@@ -37,15 +37,12 @@ struct OnboardingView: View {
 
                 // Hero Branding
                 VStack(spacing: BLSpacing.md) {
-                    ZStack {
-                        Circle()
-                            .fill(BLColor.brandSoft.opacity(0.35))
-                            .frame(width: 88, height: 88)
-
-                        Image(systemName: "infinity")
-                            .font(.system(size: 44, weight: .bold))
-                            .foregroundStyle(BLColor.brandInteractive)
-                    }
+                    Image("AppLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 88, height: 88)
+                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                        .shadow(color: BLColor.brandInteractive.opacity(0.25), radius: 12, y: 4)
 
                     VStack(spacing: BLSpacing.xxs) {
                         Text("BreakLoop")
