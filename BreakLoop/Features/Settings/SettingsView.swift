@@ -42,7 +42,7 @@ struct SettingsView: View {
                                 get: { viewModel.usageLimitMinutes },
                                 set: { viewModel.updateUsageLimit($0) }
                             ),
-                            in: AppGroupStorage.CycleConfiguration.minUsageMinutes...AppGroupStorage.CycleConfiguration.maxUsageMinutes,
+                            in: CycleConfiguration.minUsageMinutes...CycleConfiguration.maxUsageMinutes,
                             step: 5
                         )
                         .labelsHidden()
@@ -76,7 +76,7 @@ struct SettingsView: View {
                                 get: { viewModel.restDurationMinutes },
                                 set: { viewModel.updateRestDuration($0) }
                             ),
-                            in: AppGroupStorage.CycleConfiguration.minRestMinutes...AppGroupStorage.CycleConfiguration.maxRestMinutes,
+                            in: CycleConfiguration.minRestMinutes...CycleConfiguration.maxRestMinutes,
                             step: 5
                         )
                         .labelsHidden()

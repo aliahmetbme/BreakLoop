@@ -56,7 +56,7 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
 
             if storage.isBreakLoopActive() {
                 let config = storage.loadCycleConfiguration()
-                let snapshot = AppGroupStorage.CycleSnapshot(configuration: config)
+                let snapshot = CycleSnapshot(configuration: config)
                 try? storage.saveActiveCycleSnapshot(snapshot)
                 storage.clearUsageCheckpointState()
                 startFreshCycle(snapshot: snapshot)
@@ -104,7 +104,7 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         )
 
         let config = storage.loadCycleConfiguration()
-        let newSnapshot = AppGroupStorage.CycleSnapshot(configuration: config)
+        let newSnapshot = CycleSnapshot(configuration: config)
         try? storage.saveActiveCycleSnapshot(newSnapshot)
         startFreshCycle(snapshot: newSnapshot)
     }
@@ -324,7 +324,7 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     }
     
     private func startFreshCycle(
-        snapshot: AppGroupStorage.CycleSnapshot
+        snapshot: CycleSnapshot
     ) {
         guard let selection = try? storage.loadActivitySelection() else {
             AppLogger.shared.error(
@@ -422,7 +422,7 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         )
 
         let snapshot = storage.loadActiveCycleSnapshot()
-            ?? AppGroupStorage.CycleSnapshot(configuration: storage.loadCycleConfiguration())
+            ?? CycleSnapshot(configuration: storage.loadCycleConfiguration())
 
         if evaluateNaturalRest(
             currentUsageMinute: usageMinute,
@@ -432,7 +432,7 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
 
             // Yeni döngü için en güncel ayarlardan taze snapshot oluştur
             let latestConfig = storage.loadCycleConfiguration()
-            let newSnapshot = AppGroupStorage.CycleSnapshot(configuration: latestConfig)
+            let newSnapshot = CycleSnapshot(configuration: latestConfig)
             try? storage.saveActiveCycleSnapshot(newSnapshot)
 
             startFreshCycle(snapshot: newSnapshot)
@@ -447,7 +447,7 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         )
 
         let snapshot = storage.loadActiveCycleSnapshot()
-            ?? AppGroupStorage.CycleSnapshot(configuration: storage.loadCycleConfiguration())
+            ?? CycleSnapshot(configuration: storage.loadCycleConfiguration())
 
         if evaluateNaturalRest(
             currentUsageMinute: snapshot.usageLimitMinutes,
@@ -457,7 +457,7 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
 
             // Doğal mola ile yeni döngüye geçiş
             let latestConfig = storage.loadCycleConfiguration()
-            let newSnapshot = AppGroupStorage.CycleSnapshot(configuration: latestConfig)
+            let newSnapshot = CycleSnapshot(configuration: latestConfig)
             try? storage.saveActiveCycleSnapshot(newSnapshot)
 
             startFreshCycle(snapshot: newSnapshot)
@@ -556,7 +556,7 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         timestamp: Date = Date()
     ) {
         try? storage.saveUsageCheckpointState(
-            AppGroupStorage.UsageCheckpointState(
+            UsageCheckpointState(
                 usageMinute: minute,
                 timestamp: timestamp
             )

@@ -51,7 +51,7 @@ final class FocusSetupViewModel: ObservableObject {
 
     func saveConfiguration() {
         saveSelection()
-        let config = AppGroupStorage.CycleConfiguration(
+        let config = CycleConfiguration(
             usageLimitMinutes: usageLimitMinutes,
             restDurationMinutes: restDurationMinutes
         )
@@ -91,7 +91,7 @@ final class FocusSetupViewModel: ObservableObject {
         storage.clearUsageCheckpointState()
 
         let configuration = storage.loadCycleConfiguration()
-        let snapshot = AppGroupStorage.CycleSnapshot(configuration: configuration)
+        let snapshot = CycleSnapshot(configuration: configuration)
         try? storage.saveActiveCycleSnapshot(snapshot)
         storage.setBreakLoopActive(true)
 

@@ -13,10 +13,10 @@ import FamilyControls
 final class DashboardViewModel: ObservableObject {
 
     @Published var isBreakLoopActive: Bool = false
-    @Published var deepFocusSession: AppGroupStorage.DeepFocusSession?
+    @Published var deepFocusSession: DeepFocusSession?
     @Published var cooldownEndDate: Date?
-    @Published var configuration: AppGroupStorage.CycleConfiguration = .default
-    @Published var activeSnapshot: AppGroupStorage.CycleSnapshot?
+    @Published var configuration: CycleConfiguration = .default
+    @Published var activeSnapshot: CycleSnapshot?
     @Published var selection = FamilyActivitySelection()
     @Published var isDeepFocusSheetPresented: Bool = false
     @Published var errorMessage: String?
@@ -91,7 +91,7 @@ final class DashboardViewModel: ObservableObject {
         }
 
         errorMessage = nil
-        let snapshot = AppGroupStorage.CycleSnapshot(configuration: configuration)
+        let snapshot = CycleSnapshot(configuration: configuration)
         try? storage.saveActiveCycleSnapshot(snapshot)
         storage.clearUsageCheckpointState()
         storage.setBreakLoopActive(true)
@@ -127,7 +127,7 @@ final class DashboardViewModel: ObservableObject {
         }
 
         errorMessage = nil
-        let session = AppGroupStorage.DeepFocusSession(
+        let session = DeepFocusSession(
             durationMinutes: durationMinutes
         )
 

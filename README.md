@@ -7,12 +7,11 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Platform-iOS%2016.0%2B-blue?style=flat-square&logo=apple" alt="Platform iOS 16.0+">
-  <img src="https://img.shields.io/badge/Swift-5.9%2B-F05138?style=flat-square&logo=swift" alt="Swift 5.9+">
+  <img src="https://img.shields.io/badge/Platform-iOS%2026.2-blue?style=flat-square&logo=apple" alt="Platform iOS 26.2">
+  <img src="https://img.shields.io/badge/Swift-5.0-F05138?style=flat-square&logo=swift" alt="Swift 5.0">
   <img src="https://img.shields.io/badge/UI-SwiftUI-0071e3?style=flat-square&logo=swift" alt="SwiftUI">
   <img src="https://img.shields.io/badge/Frameworks-Screen%20Time%20%7C%20FamilyControls-purple?style=flat-square" alt="Screen Time Frameworks">
-  <img src="https://img.shields.io/badge/Tests-47%20Passed-success?style=flat-square" alt="Tests">
-  <img src="https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/Logic%20Verification-47%20Passed-success?style=flat-square" alt="Tests">
 </p>
 
 ---
@@ -35,7 +34,7 @@ Total:    20 min  →  Budget Exhausted  →  Automatic Cooldown Pause
 
 When the combined usage reaches the threshold, BreakLoop shields the entire monitored group via Apple Screen Time APIs for an intentional recovery window (e.g., 15 minutes). Once the cooldown ends, the apps unshield automatically, initiating a fresh cycle.
 
-BreakLoop is engineered strictly against Apple's official Screen Time APIs (**FamilyControls**, **DeviceActivity**, **ManagedSettings**, **ManagedSettingsUI**), running via system extensions in background processes without battery-draining workarounds, private APIs, or invasive content tracking.
+BreakLoop is engineered strictly against Apple's official Screen Time APIs (**FamilyControls**, **DeviceActivity**, **ManagedSettings**, **ManagedSettingsUI**), running via system extensions in background processes without continuous polling by the main application, private APIs, or invasive content tracking.
 
 ---
 
@@ -48,7 +47,7 @@ BreakLoop is engineered strictly against Apple's official Screen Time APIs (**Fa
 - **Automatic Cooldown & Self-Unlock**: System-level shielding engages when the budget is reached and disengages automatically when the cooldown elapses.
 - **Natural Rest Detection**: Recognizes when the user took a natural, intentional break between usage checkpoints and resets the cycle early without punishing the user with a forced shield.
 - **Cycle Snapshot Isolation**: Active cycles run against immutable snapshots (`CycleSnapshot`). In-flight configuration edits apply cleanly to subsequent cycles without corrupting active timers.
-- **Deep Focus Mode**: Immediate, continuous shielding for deep work sessions without cyclical pauses (`30m`, `1h`, `2h`, `3h`, `4h`, `5h`).
+- **Deep Focus Mode**: Immediate, fixed-session shielding for focused work without cyclical pauses (`30m`, `1h`, `2h`, `3h`, `4h`, `5h`). Selected apps are shielded immediately for the configured fixed session duration until the session ends and the shield is removed.
 - **Screen Time Revocation Resilience**: Gracefully handles permission changes when authorization is altered in iOS Settings, disarming active shields and preserving user configuration.
 - **Adaptive Native Design System**: Custom semantic tokens supporting responsive layouts across Compact, Standard, and Large viewports, Dynamic Type, and instant reactive Light/Dark/System theme switching.
 
@@ -74,8 +73,8 @@ stateDiagram-v2
     Cooldown --> Monitoring: Cooldown Interval Ends (Shield Removed)
     
     Monitoring --> DeepFocus: User Activates Deep Focus
-    DeepFocus --> DeepFocus: Continuous Shielding (No Intervals)
-    DeepFocus --> Monitoring: Session Ends (Resume BreakLoop)
+    DeepFocus --> DeepFocus: Shielded for Fixed Session Duration
+    DeepFocus --> Monitoring: Session Ends (Shield Removed)
     
     FreshCycle --> Monitoring: Start Fresh CycleSnapshot
 ```
@@ -170,7 +169,7 @@ Shared state persisted via `AppGroupStorage`:
 
 ## Architecture
 
-BreakLoop follows a **Feature-first MVVM** pattern backed by modular domain abstractions and isolated services:
+BreakLoop follows a **Feature-first MVVM with a shared Design System, a small Domain layer, and isolated Screen Time infrastructure**:
 
 ```text
 BreakLoop/
@@ -179,7 +178,12 @@ BreakLoop/
 │   ├── AppRootView.swift        # Root view routing (Onboarding vs Dashboard vs Revoked)
 │   └── AppRootViewModel.swift   # Lifecycle and Screen Time permission state machine
 │
-├── Core/                        # Cross-cutting foundational infrastructure
+├── Core/                        # Cross-cutting foundational modules
+│   ├── Domain/                  # Pure business models and usage-cycle calculations independent from Apple frameworks
+│   │   ├── Models/
+│   │   │   └── BreakLoopDomainModels.swift # CycleConfiguration, CycleSnapshot, DeepFocusSession, UsageCheckpointState
+│   │   └── Services/
+│   │       └── UsageCycleCalculators.swift # CheckpointCalculator, NaturalRestCalculator
 │   ├── DesignSystem/            # Design tokens, typography, colors, reusable components
 │   │   ├── AppearanceController.swift # Observable root theme source-of-truth
 │   │   ├── BreakLoopColors.swift      # Semantic light/dark color definitions
@@ -202,7 +206,7 @@ BreakLoop/
 ├── DeviceActivityMonitorExtension/ # Out-of-process threshold & cooldown callbacks
 ├── ShieldConfigurationExtension/   # Custom Screen Time shield UI
 ├── ShieldActionExtension/          # Custom shield button delegate
-└── Tests/                          # Domain logic and regression verification suite
+└── Tests/                          # Lightweight standalone logic verification suite
 ```
 
 ---
@@ -271,19 +275,19 @@ BreakLoop features a custom semantic design system designed to feel like a first
 BreakLoop is engineered to uphold Apple's strict Screen Time privacy principles:
 - **No Content Inspection**: BreakLoop never reads screen pixels, keypresses, messages, or notifications.
 - **Opaque Tokens**: App choices are represented exclusively as opaque `FamilyActivitySelection` tokens. BreakLoop cannot extract application bundle identifiers, names, or icon graphics.
-- **Zero Third-Party Telemetry**: There are no external tracking SDKs, analytics beacons, or remote servers. All data stays local to the device and the sandboxed App Group container.
+- **No Third-Party Telemetry**: No third-party analytics SDK or remote backend is currently used. All data stays local to the device and the sandboxed App Group container.
 
 ---
 
 ## Testing
 
-The repository includes a comprehensive, standalone domain and logic verification suite in [Tests/LogicTests.swift](file:///Users/aliahmeterdogdu/Projects/BreakLoop/Tests/LogicTests.swift):
+The repository includes a lightweight standalone logic verification suite in [Tests/LogicTests.swift](Tests/LogicTests.swift):
 
 ```bash
 swift Tests/LogicTests.swift
 ```
 
-### Verified Test Suites (47 Passing Tests)
+### Standalone Logic Verification (47/47 Passing)
 1. **Checkpoint Generation**: Validates step calculation across 5m, 20m, and 60m limits.
 2. **Natural Rest Calculation**: Asserts mathematical behavior across brief pauses (<15m) and natural pauses ($\ge 15\text{m}$).
 3. **CycleSnapshot Isolation**: Verifies that active cycles remain locked to their originating parameters even after configuration updates.
@@ -296,9 +300,9 @@ swift Tests/LogicTests.swift
 
 ## Requirements
 
-- **iOS 16.0+** (Required for Screen Time API suite)
-- **Xcode 16.0+**
-- **Swift 5.9+**
+- **iOS Deployment Target**: `26.2` (as configured in the Xcode project)
+- **Swift Version**: `5.0` (as configured in the Xcode project)
+- **Xcode**: A recent Xcode version capable of building the configured deployment target
 - **Apple Developer Account** (Required to sign with the `Family Controls (Development)` entitlement for on-device testing)
 
 ---
@@ -334,15 +338,6 @@ swift Tests/LogicTests.swift
 - **Simulator Limitations**: Apple does not provide full DeviceActivity and FamilyActivityPicker behavior in the Simulator. Functional verification requires a physical device with a configured Apple ID.
 - **Coarse Resolution**: DeviceActivity callbacks are invoked by the system daemon with minor battery-optimizing delays. Threshold triggers are near real-time but not millisecond-exact.
 - **Family Controls Entitlement**: Distribution via TestFlight or the App Store requires requesting the Family Controls capability from Apple.
-
----
-
-## Future Improvements
-
-- [ ] Daily/Weekly break rhythm analytics based on historical cycle logs.
-- [ ] Emergency override passes with friction prompts (e.g., breath-work or reflection delay).
-- [ ] Schedule-based profiles (e.g., Work vs. Evening vs. Weekend limits).
-- [ ] Interactive widget displaying active cycle countdown and current status ring.
 
 ---
 

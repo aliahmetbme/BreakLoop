@@ -14,7 +14,7 @@ final class SettingsViewModel: ObservableObject {
 
     @Published var usageLimitMinutes: Int = 20
     @Published var restDurationMinutes: Int = 15
-    @Published var activeSnapshot: AppGroupStorage.CycleSnapshot?
+    @Published var activeSnapshot: CycleSnapshot?
     @Published var authorizationStatus: AuthorizationStatus
 
     private let storage: AppGroupStorage
@@ -53,8 +53,8 @@ final class SettingsViewModel: ObservableObject {
 
     func updateUsageLimit(_ minutes: Int) {
         let clamped = max(
-            AppGroupStorage.CycleConfiguration.minUsageMinutes,
-            min(AppGroupStorage.CycleConfiguration.maxUsageMinutes, minutes)
+            CycleConfiguration.minUsageMinutes,
+            min(CycleConfiguration.maxUsageMinutes, minutes)
         )
         usageLimitMinutes = clamped
         saveConfiguration()
@@ -62,22 +62,22 @@ final class SettingsViewModel: ObservableObject {
 
     func updateRestDuration(_ minutes: Int) {
         let clamped = max(
-            AppGroupStorage.CycleConfiguration.minRestMinutes,
-            min(AppGroupStorage.CycleConfiguration.maxRestMinutes, minutes)
+            CycleConfiguration.minRestMinutes,
+            min(CycleConfiguration.maxRestMinutes, minutes)
         )
         restDurationMinutes = clamped
         saveConfiguration()
     }
 
     func resetToDefaults() {
-        let defaultConfig = AppGroupStorage.CycleConfiguration.default
+        let defaultConfig = CycleConfiguration.default
         usageLimitMinutes = defaultConfig.usageLimitMinutes
         restDurationMinutes = defaultConfig.restDurationMinutes
         saveConfiguration()
     }
 
     private func saveConfiguration() {
-        let config = AppGroupStorage.CycleConfiguration(
+        let config = CycleConfiguration(
             usageLimitMinutes: usageLimitMinutes,
             restDurationMinutes: restDurationMinutes
         )
