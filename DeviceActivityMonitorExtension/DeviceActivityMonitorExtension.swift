@@ -11,7 +11,7 @@ import ManagedSettings
 
 final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
 
-    private let store = ManagedSettingsStore()
+    private let store = BreakLoopManagedSettings.makeStore()
     private let center = DeviceActivityCenter()
     private let storage = AppGroupStorage()
 

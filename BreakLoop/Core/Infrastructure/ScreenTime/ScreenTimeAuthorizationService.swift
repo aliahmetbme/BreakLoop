@@ -10,11 +10,38 @@ import Foundation
 import FamilyControls
 
 
+enum AuthorizationUIState: Equatable {
+    case authorized
+    case firstTimeOnboarding
+    case permissionRevoked(isDeniedInSettings: Bool)
+}
+
+struct AuthorizationStateEvaluator {
+    static func evaluate(
+        status: AuthorizationStatus,
+        hasPreviouslyConfigured: Bool
+    ) -> AuthorizationUIState {
+        switch status {
+        case .approved:
+            return .authorized
+        case .denied:
+            return .permissionRevoked(isDeniedInSettings: true)
+        case .notDetermined:
+            if hasPreviouslyConfigured {
+                return .permissionRevoked(isDeniedInSettings: false)
+            } else {
+                return .firstTimeOnboarding
+            }
+        @unknown default:
+            return .permissionRevoked(isDeniedInSettings: true)
+        }
+    }
+}
+
 protocol ScreenTimeAuthorizationServiceProtocol {
     var authorizationStatus: AuthorizationStatus { get }
     
     func requestAuthorization() async throws
-
 }
 
 

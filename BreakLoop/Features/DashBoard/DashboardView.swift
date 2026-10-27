@@ -11,298 +11,560 @@ import FamilyControls
 struct DashboardView: View {
 
     @StateObject private var viewModel = DashboardViewModel()
+    @EnvironmentObject private var appearanceController: AppearanceController
+    @State private var isRuleSheetPresented = false
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // Status Header Card
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
-                                BreakLoopStatusBadge(status: .deepFocus)
-                            } else if viewModel.isBreakLoopActive {
-                                BreakLoopStatusBadge(status: .active)
-                            } else {
-                                BreakLoopStatusBadge(status: .idle)
-                            }
+            BLAdaptiveContainer { metrics in
+                VStack(spacing: BLSpacing.md) {
+                    // Header Bar
+                    dashboardHeader
 
-                            Spacer()
+                    // 1. Primary Status Surface Container
+                    primaryStatusSurface
 
-                            NavigationLink {
-                                SettingsView()
-                            } label: {
-                                Image(systemName: "gearshape.fill")
-                                    .font(.body)
-                                    .foregroundStyle(.secondary)
-                                    .padding(8)
-                                    .background(Color(uiColor: .tertiarySystemFill))
-                                    .clipShape(Circle())
-                            }
-                        }
+                    // 2. Rule & Target Summary Container
+                    ruleSummaryCard
 
-                        if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Deep Focus Active")
-                                    .font(.title2.bold())
-                                Text("Apps strictly shielded until \(deepFocus.endsAt.formatted(date: .omitted, time: .shortened))")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-
-                            Button {
-                                viewModel.stopDeepFocus()
-                            } label: {
-                                Label("End Deep Focus Early", systemImage: "xmark.circle.fill")
-                                    .font(.subheadline.bold())
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 10)
-                                    .background(Color.orange.opacity(0.15))
-                                    .foregroundStyle(.orange)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                            }
-                            .padding(.top, 4)
-
-                        } else {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(viewModel.isBreakLoopActive ? "Monitoring Usage" : "Ready to Focus")
-                                    .font(.title2.bold())
-                                Text(viewModel.isBreakLoopActive ? "Selected apps will lock once you reach your limit." : "Start BreakLoop to enforce healthy pause cycles.")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-
-                            HStack(spacing: 12) {
-                                if viewModel.isBreakLoopActive {
-                                    Button {
-                                        viewModel.stopBreakLoop()
-                                    } label: {
-                                        Label("Pause BreakLoop", systemImage: "pause.fill")
-                                            .font(.subheadline.bold())
-                                            .frame(maxWidth: .infinity)
-                                            .padding(.vertical, 12)
-                                            .background(Color(uiColor: .tertiarySystemFill))
-                                            .foregroundStyle(.primary)
-                                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                                    }
-                                } else {
-                                    Button {
-                                        viewModel.startBreakLoop()
-                                    } label: {
-                                        Label("Start BreakLoop", systemImage: "play.fill")
-                                            .font(.subheadline.bold())
-                                            .frame(maxWidth: .infinity)
-                                            .padding(.vertical, 12)
-                                            .background(BreakLoopTheme.primaryGradient)
-                                            .foregroundStyle(.white)
-                                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                                    }
-                                }
-                            }
-                            .padding(.top, 6)
-                        }
+                    // 3. Secondary Deep Focus Entry (visible when not in Deep Focus and not in forced cooldown)
+                    if viewModel.deepFocusSession?.isActive != true && !viewModel.isCooldownActive {
+                        deepFocusEntryCard
                     }
-                    .breakLoopCard()
-
-                    // Quick Stats & Settings Card
-                    VStack(alignment: .leading, spacing: 14) {
-                        Text("Session Settings")
-                            .font(.headline)
-
-                        HStack(spacing: 12) {
-                            // Usage Budget Box
-                            VStack(alignment: .leading, spacing: 4) {
-                                Label("Budget", systemImage: "timer")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text("\(viewModel.effectiveLimitMinutes) min")
-                                    .font(.title3.bold())
-                                    .foregroundStyle(BreakLoopTheme.primary)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(12)
-                            .background(Color(uiColor: .tertiarySystemFill))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-
-                            // Rest Box
-                            VStack(alignment: .leading, spacing: 4) {
-                                Label("Cooldown", systemImage: "hourglass")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text("\(viewModel.effectiveRestMinutes) min")
-                                    .font(.title3.bold())
-                                    .foregroundStyle(BreakLoopTheme.primary)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(12)
-                            .background(Color(uiColor: .tertiarySystemFill))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                        }
-
-                        if viewModel.activeSnapshot != nil && viewModel.isBreakLoopActive {
-                            HStack(spacing: 6) {
-                                Image(systemName: "lock.shield")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text("Active cycle isolated from mid-session edits.")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .breakLoopCard()
-
-                    // Selected Apps Card
-                    VStack(alignment: .leading, spacing: 14) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Managed Targets")
-                                    .font(.headline)
-                                Text("\(viewModel.selectedAppsCount) apps, \(viewModel.selectedCategoriesCount) categories")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            NavigationLink {
-                                FocusSetupView()
-                            } label: {
-                                Text("Edit")
-                                    .font(.subheadline.bold())
-                                    .foregroundStyle(BreakLoopTheme.primary)
-                            }
-                        }
-
-                        if !viewModel.hasSelection {
-                            HStack {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .foregroundStyle(.orange)
-                                Text("No apps selected. Tap Edit to choose.")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(.vertical, 4)
-                        }
-                    }
-                    .breakLoopCard()
-
-                    // Deep Focus Mode Banner
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Deep Focus Mode")
-                                    .font(.headline)
-                                Text("Zero usage tolerance. Completely shield apps for a strict period.")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "flame.fill")
-                                .font(.title2)
-                                .foregroundStyle(BreakLoopTheme.deepFocus)
-                        }
-
-                        Button {
-                            viewModel.isDeepFocusSheetPresented = true
-                        } label: {
-                            Label("Launch Deep Focus", systemImage: "flame.fill")
-                                .font(.subheadline.bold())
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                                .background(BreakLoopTheme.deepFocusGradient)
-                                .foregroundStyle(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                        }
-                        .disabled(viewModel.deepFocusSession?.isActive == true)
-                    }
-                    .breakLoopCard()
 
                     if let errorMessage = viewModel.errorMessage {
                         Text(errorMessage)
-                            .font(.caption)
-                            .foregroundStyle(.red)
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.destructive)
                             .multilineTextAlignment(.center)
+                            .padding(.horizontal, BLSpacing.md)
                     }
+
+                    Spacer(minLength: BLSpacing.lg)
                 }
-                .padding(16)
+                .padding(.top, BLSpacing.xs)
             }
-            .background(BreakLoopTheme.background.ignoresSafeArea())
-            .navigationTitle("BreakLoop")
+            .background(BLColor.background.ignoresSafeArea())
+            .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $viewModel.isDeepFocusSheetPresented) {
                 DeepFocusSheet(onStart: { minutes in
                     viewModel.startDeepFocus(durationMinutes: minutes)
                 })
+            }
+            .sheet(isPresented: $isRuleSheetPresented, onDismiss: {
+                viewModel.refresh()
+            }) {
+                FocusSetupView(isModal: true)
             }
             .onAppear {
                 viewModel.refresh()
             }
         }
     }
+
+    // MARK: - Header Bar
+    private var dashboardHeader: some View {
+        HStack(alignment: .center) {
+            HStack(spacing: BLSpacing.xs) {
+                ZStack {
+                    Circle()
+                        .fill(BLColor.brandInteractive.opacity(0.12))
+                        .frame(width: 32, height: 32)
+
+                    Image(systemName: "infinity")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(BLColor.brandInteractive)
+                }
+
+                Text("BreakLoop")
+                    .font(BLTypography.title2)
+                    .foregroundStyle(BLColor.textPrimary)
+            }
+
+            Spacer()
+
+            HStack(spacing: BLSpacing.xs) {
+                // Quick Mode Toggle
+                Button {
+                    cycleAppearance()
+                } label: {
+                    HStack(spacing: 4) {
+                        Text("Mode")
+                            .font(.system(size: 11, weight: .medium))
+                        Image(systemName: appearanceIcon)
+                            .font(.system(size: 12))
+                    }
+                    .foregroundStyle(BLColor.textSecondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(BLColor.surfaceSubtle)
+                    .clipShape(Capsule())
+                }
+                .accessibilityLabel("Toggle Appearance Mode")
+
+                // Settings Navigation Button
+                NavigationLink {
+                    SettingsView()
+                } label: {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.body.weight(.medium))
+                        .foregroundStyle(BLColor.textSecondary)
+                        .frame(width: 36, height: 36)
+                        .background(BLColor.surfaceSubtle)
+                        .clipShape(Circle())
+                }
+                .accessibilityLabel("Settings")
+            }
+        }
+        .padding(.vertical, BLSpacing.xxs)
+    }
+
+    private var appearanceIcon: String {
+        switch appearanceController.appearance {
+        case .system: return "circle.lefthalf.filled"
+        case .light: return "sun.max.fill"
+        case .dark: return "moon.fill"
+        }
+    }
+
+    private func cycleAppearance() {
+        switch appearanceController.appearance {
+        case .system: appearanceController.setAppearance(.light)
+        case .light: appearanceController.setAppearance(.dark)
+        case .dark: appearanceController.setAppearance(.system)
+        }
+    }
+
+    // MARK: - 1. Primary Status Surface Container
+    private var primaryStatusSurface: some View {
+        BLCard(padding: BLSpacing.lg) {
+            VStack(spacing: BLSpacing.md) {
+                // Forced Break state shows badge at top
+                if viewModel.isCooldownActive {
+                    HStack {
+                        Spacer()
+                        BLStatusBadge(state: .breakActive)
+                        Spacer()
+                    }
+                } else if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+                    HStack {
+                        Spacer()
+                        BLStatusBadge(state: .deepFocus)
+                        Spacer()
+                    }
+                }
+
+                // Central Status Ring
+                statusRingView
+                    .padding(.vertical, 2)
+
+                // Active state badge appears below the ring according to the approved design
+                if viewModel.isBreakLoopActive && !viewModel.isCooldownActive && viewModel.deepFocusSession?.isActive != true {
+                    BLStatusBadge(state: .active)
+                }
+
+                // Title & Subtitles
+                VStack(spacing: 4) {
+                    Text(statusTitle)
+                        .font(BLTypography.title2)
+                        .foregroundStyle(BLColor.textPrimary)
+                        .multilineTextAlignment(.center)
+
+                    if viewModel.isCooldownActive, let cooldownEnd = viewModel.cooldownEndDate {
+                        Text("Apps available again at \(cooldownEnd.formatted(date: .omitted, time: .shortened))")
+                            .font(BLTypography.secondarySemibold)
+                            .foregroundStyle(BLColor.brandPrimary)
+                            .multilineTextAlignment(.center)
+
+                        Text("Take a short pause. Your next cycle starts automatically.")
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.top, 2)
+                    } else {
+                        Text(statusSubtitle)
+                            .font(BLTypography.secondary)
+                            .foregroundStyle(BLColor.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, BLSpacing.sm)
+                    }
+                }
+
+                // Action Controls
+                actionButtons
+                    .padding(.top, BLSpacing.xs)
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    @ViewBuilder
+    private var statusRingView: some View {
+        if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+            BLStatusRing(
+                icon: "flame.fill",
+                statusColor: BLColor.statusDeepFocus,
+                badgeText: "LOCKED"
+            )
+        } else if viewModel.isCooldownActive {
+            BLStatusRing(
+                icon: "leaf.fill",
+                statusColor: BLColor.statusBreak,
+                progress: 0.65
+            )
+        } else if viewModel.isBreakLoopActive {
+            BLStatusRing(
+                icon: "infinity",
+                statusColor: BLColor.brandInteractive,
+                badgeText: "ACTIVE"
+            )
+        } else {
+            BLStatusRing(
+                icon: "infinity",
+                isOffState: true
+            )
+        }
+    }
+
+    private var statusTitle: String {
+        if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+            return "Deep Focus Active"
+        } else if viewModel.isCooldownActive {
+            return "Time for a break"
+        } else if viewModel.isBreakLoopActive {
+            return "BreakLoop Active"
+        } else {
+            return "BreakLoop Off"
+        }
+    }
+
+    private var statusSubtitle: String {
+        if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+            return "Apps strictly shielded until \(deepFocus.endsAt.formatted(date: .omitted, time: .shortened))"
+        } else if viewModel.isBreakLoopActive {
+            return "Monitoring your selected apps truthful to Apple Screen Time API. Next break engages automatically at limit."
+        } else {
+            return "Ready when you are"
+        }
+    }
+
+    @ViewBuilder
+    private var actionButtons: some View {
+        if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+            BLSecondaryButton(title: "End Deep Focus Early", icon: "xmark.circle.fill") {
+                viewModel.stopDeepFocus()
+            }
+        } else if viewModel.isCooldownActive {
+            EmptyView()
+        } else if viewModel.isBreakLoopActive {
+            BLSecondaryButton(title: "Stop BreakLoop", icon: "stop.circle") {
+                viewModel.stopBreakLoop()
+            }
+        } else {
+            VStack(spacing: BLSpacing.sm) {
+                BLPrimaryButton(title: "Start BreakLoop", icon: "play.fill") {
+                    viewModel.startBreakLoop()
+                }
+
+                BLSecondaryButton(title: "Start Deep Focus", icon: "scope") {
+                    viewModel.isDeepFocusSheetPresented = true
+                }
+            }
+        }
+    }
+
+    // MARK: - 2. Rule & Target Summary Container
+    private var ruleSummaryCard: some View {
+        BLCard {
+            if viewModel.isCooldownActive {
+                // Forced Break Recovery Card (matching design Screen 4)
+                VStack(alignment: .leading, spacing: BLSpacing.sm) {
+                    HStack(alignment: .top, spacing: BLSpacing.sm) {
+                        ZStack {
+                            Circle()
+                                .fill(BLColor.statusBreak.opacity(0.12))
+                                .frame(width: 38, height: 38)
+
+                            Image(systemName: "lock.shield.fill")
+                                .font(.subheadline)
+                                .foregroundStyle(BLColor.statusBreak)
+                        }
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("\(viewModel.selectedAppsCount) apps paused · \(viewModel.effectiveRestMinutes) min recovery break")
+                                .font(BLTypography.headline)
+                                .foregroundStyle(BLColor.textPrimary)
+
+                            Text("Screen Time shield is active across selected apps. Step away and let your attention recover naturally.")
+                                .font(BLTypography.caption)
+                                .foregroundStyle(BLColor.textSecondary)
+                        }
+                    }
+
+                    Divider()
+                        .background(BLColor.divider)
+                        .padding(.vertical, 2)
+
+                    Button {
+                        viewModel.extendCooldown(by: 15)
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Label("Need more time? Extend by 15 min", systemImage: "arrow.clockwise")
+                                .font(BLTypography.secondaryMedium)
+                                .foregroundStyle(BLColor.brandPrimary)
+                            Spacer()
+                        }
+                        .frame(minHeight: 44)
+                    }
+                    .buttonStyle(.plain)
+                }
+            } else if viewModel.isBreakLoopActive {
+                // Active Rule Card (matching design Screen 2)
+                VStack(alignment: .leading, spacing: BLSpacing.sm) {
+                    HStack {
+                        Label("Active Rule", systemImage: "clock.arrow.circlepath")
+                            .font(BLTypography.headline)
+                            .foregroundStyle(BLColor.textPrimary)
+
+                        Spacer()
+
+                        Text("Looping")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(BLColor.brandPrimary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(BLColor.brandPrimary.opacity(0.10))
+                            .clipShape(Capsule())
+                    }
+
+                    Text("\(viewModel.effectiveLimitMinutes) min usage · \(viewModel.effectiveRestMinutes) min break")
+                        .font(BLTypography.title3)
+                        .foregroundStyle(BLColor.textPrimary)
+
+                    Divider()
+                        .background(BLColor.divider)
+
+                    HStack {
+                        Image(systemName: "square.grid.2x2")
+                            .font(.caption)
+                            .foregroundStyle(BLColor.textSecondary)
+
+                        Text("\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories")
+                            .font(BLTypography.secondary)
+                            .foregroundStyle(BLColor.textSecondary)
+
+                        Spacer()
+
+                        Button {
+                            isRuleSheetPresented = true
+                        } label: {
+                            HStack(spacing: 2) {
+                                Text("Edit")
+                                Image(systemName: "chevron.right")
+                                    .font(.caption2.bold())
+                            }
+                            .font(BLTypography.secondarySemibold)
+                            .foregroundStyle(BLColor.brandPrimary)
+                            .frame(minHeight: 44)
+                        }
+                    }
+                }
+            } else {
+                // Off State Rule Card (matching design Screen 3)
+                VStack(alignment: .leading, spacing: BLSpacing.sm) {
+                    HStack {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(BLColor.brandInteractive)
+                                .frame(width: 7, height: 7)
+
+                            Text("Your BreakLoop")
+                                .font(BLTypography.headline)
+                                .foregroundStyle(BLColor.textPrimary)
+                        }
+
+                        Spacer()
+
+                        Button {
+                            isRuleSheetPresented = true
+                        } label: {
+                            Text("Edit")
+                                .font(BLTypography.secondarySemibold)
+                                .foregroundStyle(BLColor.brandPrimary)
+                                .frame(minHeight: 44)
+                        }
+                    }
+
+                    // Inner Interval Box
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("\(viewModel.effectiveLimitMinutes) min usage   \(viewModel.effectiveRestMinutes) min break")
+                            .font(BLTypography.headlineBold)
+                            .foregroundStyle(BLColor.textPrimary)
+
+                        Text("Default rhythm interval")
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.textSecondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(BLSpacing.sm)
+                    .background(BLColor.surfaceSubtle)
+                    .clipShape(RoundedRectangle(cornerRadius: BLRadius.small, style: .continuous))
+
+                    HStack(spacing: BLSpacing.xs) {
+                        Image(systemName: "app.badge.checkmark")
+                            .font(.caption)
+                            .foregroundStyle(BLColor.textSecondary)
+
+                        Text("\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories selected")
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.textSecondary)
+
+                        Spacer()
+                    }
+
+                    HStack(alignment: .top, spacing: 6) {
+                        Image(systemName: "info.circle")
+                            .font(.caption)
+                            .foregroundStyle(BLColor.textTertiary)
+
+                        Text("Timer accumulates combined usage across selected apps.")
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.textTertiary)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - 3. Secondary Deep Focus Entry
+    private var deepFocusEntryCard: some View {
+        Button {
+            viewModel.isDeepFocusSheetPresented = true
+        } label: {
+            BLCard(padding: BLSpacing.sm) {
+                HStack(spacing: BLSpacing.sm) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: BLRadius.small, style: .continuous)
+                            .fill(BLColor.surfaceSubtle)
+                            .frame(width: 38, height: 38)
+
+                        Image(systemName: "flame.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(BLColor.brandDeep)
+                    }
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Deep Focus")
+                            .font(BLTypography.bodyMedium)
+                            .foregroundStyle(BLColor.textPrimary)
+
+                        Text("Block selected apps completely for a set period")
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.textSecondary)
+                    }
+
+                    Spacer()
+
+                    Text("Configure")
+                        .font(BLTypography.captionBold)
+                        .foregroundStyle(BLColor.brandPrimary)
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.bold())
+                        .foregroundStyle(BLColor.textTertiary)
+                }
+            }
+        }
+        .buttonStyle(BLPressableScaleStyle())
+        .accessibilityLabel("Configure Deep Focus")
+    }
 }
 
+// MARK: - Deep Focus Duration Sheet
 struct DeepFocusSheet: View {
     @Environment(\.dismiss) private var dismiss
     let onStart: (Int) -> Void
 
-    let durations = [
-        ("30 minutes", 30),
-        ("1 hour", 60),
-        ("2 hours", 120),
-        ("3 hours", 180),
-        ("4 hours", 240)
-    ]
+    @State private var selectedDuration = 60
 
-    @State private var selectedDuration: Int = 60
+    let presetOptions: [BLPresetOption<Int>] = [
+        BLPresetOption(label: "30m", value: 30),
+        BLPresetOption(label: "1h", value: 60),
+        BLPresetOption(label: "2h", value: 120),
+        BLPresetOption(label: "3h", value: 180),
+        BLPresetOption(label: "4h", value: 240),
+        BLPresetOption(label: "5h", value: 300)
+    ]
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                VStack(spacing: 8) {
-                    Image(systemName: "flame.circle.fill")
-                        .font(.system(size: 60))
-                        .foregroundStyle(BreakLoopTheme.deepFocus)
+            ScrollView {
+                VStack(spacing: BLSpacing.lg) {
+                    VStack(spacing: BLSpacing.xs) {
+                        ZStack {
+                            Circle()
+                                .fill(BLColor.surfaceSubtle)
+                                .frame(width: 60, height: 60)
 
-                    Text("Deep Focus")
-                        .font(.title2.bold())
+                            Image(systemName: "flame.fill")
+                                .font(.title2)
+                                .foregroundStyle(BLColor.brandDeep)
+                        }
 
-                    Text("Selected apps will be locked immediately for the chosen duration without pause cycles.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                }
-                .padding(.top, 16)
+                        Text("Deep Focus")
+                            .font(BLTypography.title2)
+                            .foregroundStyle(BLColor.textPrimary)
 
-                Picker("Duration", selection: $selectedDuration) {
-                    ForEach(durations, id: \.1) { name, minutes in
-                        Text(name).tag(minutes)
+                        Text("Completely lock all selected apps for the chosen duration without pause intervals.")
+                            .font(BLTypography.secondary)
+                            .foregroundStyle(BLColor.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, BLSpacing.md)
                     }
-                }
-                .pickerStyle(.wheel)
+                    .padding(.top, BLSpacing.sm)
 
-                Spacer()
+                    BLCard {
+                        VStack(alignment: .leading, spacing: BLSpacing.sm) {
+                            Text("Select Duration")
+                                .font(BLTypography.headline)
+                                .foregroundStyle(BLColor.textPrimary)
 
-                Button {
-                    onStart(selectedDuration)
-                } label: {
-                    Text("Start Deep Focus")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(BreakLoopTheme.deepFocusGradient)
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                            BLPresetGrid(
+                                options: presetOptions,
+                                selected: $selectedDuration,
+                                minItemWidth: 84
+                            )
+                        }
+                    }
+
+                    BLPrimaryButton(
+                        title: "Launch Deep Focus (\(selectedDuration >= 60 ? "\(selectedDuration / 60)h" : "\(selectedDuration)m"))",
+                        icon: "flame.fill"
+                    ) {
+                        onStart(selectedDuration)
+                        dismiss()
+                    }
+
+                    Spacer()
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 16)
+                .padding(BLSpacing.md)
             }
-            .navigationTitle("Select Duration")
+            .background(BLColor.background.ignoresSafeArea())
+            .navigationTitle("Deep Focus Setup")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
             }
         }
-        .presentationDetents([.medium])
     }
+}
+
+#Preview("Dashboard") {
+    DashboardView()
+        .environmentObject(AppearanceController.shared)
 }

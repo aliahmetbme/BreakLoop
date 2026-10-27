@@ -19,22 +19,21 @@ final class SettingsViewModel: ObservableObject {
 
     private let storage: AppGroupStorage
     private let authorizationService: ScreenTimeAuthorizationServiceProtocol
+    private let appearanceController: AppearanceController
 
-    init() {
-        self.storage = AppGroupStorage()
-        let authService = ScreenTimeAuthorizationService()
-        self.authorizationService = authService
-        self.authorizationStatus = authService.authorizationStatus
-
-        loadSettings()
+    var appearance: AppAppearance {
+        get { appearanceController.appearance }
+        set { appearanceController.setAppearance(newValue) }
     }
 
     init(
-        storage: AppGroupStorage,
-        authorizationService: ScreenTimeAuthorizationServiceProtocol
+        storage: AppGroupStorage = AppGroupStorage(),
+        authorizationService: ScreenTimeAuthorizationServiceProtocol = ScreenTimeAuthorizationService(),
+        appearanceController: AppearanceController = AppearanceController.shared
     ) {
         self.storage = storage
         self.authorizationService = authorizationService
+        self.appearanceController = appearanceController
         self.authorizationStatus = authorizationService.authorizationStatus
 
         loadSettings()
@@ -46,6 +45,10 @@ final class SettingsViewModel: ObservableObject {
         self.restDurationMinutes = config.restDurationMinutes
         self.activeSnapshot = storage.loadActiveCycleSnapshot()
         self.authorizationStatus = authorizationService.authorizationStatus
+    }
+
+    func updateAppearance(_ newAppearance: AppAppearance) {
+        appearanceController.setAppearance(newAppearance)
     }
 
     func updateUsageLimit(_ minutes: Int) {

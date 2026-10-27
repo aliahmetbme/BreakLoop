@@ -14,6 +14,7 @@ final class DashboardViewModel: ObservableObject {
 
     @Published var isBreakLoopActive: Bool = false
     @Published var deepFocusSession: AppGroupStorage.DeepFocusSession?
+    @Published var cooldownEndDate: Date?
     @Published var configuration: AppGroupStorage.CycleConfiguration = .default
     @Published var activeSnapshot: AppGroupStorage.CycleSnapshot?
     @Published var selection = FamilyActivitySelection()
@@ -49,10 +50,16 @@ final class DashboardViewModel: ObservableObject {
         self.activeSnapshot = storage.loadActiveCycleSnapshot()
         self.isBreakLoopActive = storage.isBreakLoopActive()
         self.deepFocusSession = storage.loadDeepFocusSession()
+        self.cooldownEndDate = try? storage.loadCooldownEndDate()
 
         if let savedSelection = try? storage.loadActivitySelection() {
             self.selection = savedSelection
         }
+    }
+
+    var isCooldownActive: Bool {
+        guard let cooldownEndDate = cooldownEndDate else { return false }
+        return Date() < cooldownEndDate
     }
 
     var hasSelection: Bool {
@@ -147,5 +154,12 @@ final class DashboardViewModel: ObservableObject {
         } else {
             managedSettingsService.unblock()
         }
+    }
+
+    func extendCooldown(by minutes: Int = 15) {
+        guard let currentEnd = cooldownEndDate, isCooldownActive else { return }
+        let newEnd = currentEnd.addingTimeInterval(TimeInterval(minutes * 60))
+        try? storage.saveCooldownEndDate(newEnd)
+        self.cooldownEndDate = newEnd
     }
 }

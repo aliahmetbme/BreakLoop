@@ -7,14 +7,14 @@
 
 import Foundation
 
-enum LogLevel: String, Codable {
+enum LogLevel: String, Codable, CaseIterable {
     case debug
     case info
     case warning
     case error
 }
 
-enum LogCategory: String, Codable {
+enum LogCategory: String, Codable, CaseIterable {
     case authorization
     case selection
     case monitoring
@@ -26,7 +26,7 @@ enum LogCategory: String, Codable {
     case lifecycle
 }
 
-struct LogEntry: Codable, Identifiable {
+struct LogEntry: Codable, Identifiable, Equatable {
     let id: UUID
     let timestamp: Date
     let level: LogLevel

@@ -20,6 +20,7 @@ final class AppGroupStorage {
         static let activeCycleSnapshot = "activeCycleSnapshot"
         static let deepFocusSession = "deepFocusSession"
         static let isBreakLoopActive = "isBreakLoopActive"
+        static let appAppearance = "appAppearance"
     }
     
     struct CycleConfiguration: Codable, Equatable {
@@ -245,4 +246,39 @@ final class AppGroupStorage {
     func isBreakLoopActive() -> Bool {
         defaults.bool(forKey: Keys.isBreakLoopActive)
     }
+
+    func clearTransientRuntimeState() {
+        clearActiveCycleSnapshot()
+        setBreakLoopActive(false)
+        clearDeepFocusSession()
+        clearCooldownEndDate()
+        clearUsageCheckpointState()
+    }
+
+    func hasConfiguredSelection() -> Bool {
+        guard let selection = try? loadActivitySelection() else {
+            return false
+        }
+        return !selection.applicationTokens.isEmpty ||
+               !selection.categoryTokens.isEmpty ||
+               !selection.webDomainTokens.isEmpty
+    }
+
+    func saveAppearance(_ appearance: AppAppearance) {
+        try? save(appearance.rawValue, forKey: Keys.appAppearance)
+    }
+
+    func loadAppearance() -> AppAppearance {
+        guard let raw = try? load(String.self, forKey: Keys.appAppearance),
+              let appearance = AppAppearance(rawValue: raw) else {
+            return .system
+        }
+        return appearance
+    }
+}
+
+enum AppAppearance: String, Codable, CaseIterable {
+    case system
+    case light
+    case dark
 }

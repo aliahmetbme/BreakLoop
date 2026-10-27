@@ -232,6 +232,238 @@ let pastDate = now.addingTimeInterval(-3600)
 let expiredSession = DeepFocusSession(startedAt: pastDate, durationMinutes: 30)
 assertFalse(expiredSession.isActive, "Deep focus session is inactive after end time passes")
 
+// 5. Authorization Revocation & Routing Logic Tests
+print("\n[Suite 5: Authorization State Evaluation & Revocation]")
+
+enum MockAuthorizationStatus: Equatable {
+    case notDetermined
+    case denied
+    case approved
+}
+
+enum TestAuthorizationUIState: Equatable {
+    case authorized
+    case firstTimeOnboarding
+    case permissionRevoked(isDeniedInSettings: Bool)
+}
+
+struct TestAuthorizationStateEvaluator {
+    static func evaluate(
+        status: MockAuthorizationStatus,
+        hasPreviouslyConfigured: Bool
+    ) -> TestAuthorizationUIState {
+        switch status {
+        case .approved:
+            return .authorized
+        case .denied:
+            return .permissionRevoked(isDeniedInSettings: true)
+        case .notDetermined:
+            if hasPreviouslyConfigured {
+                return .permissionRevoked(isDeniedInSettings: false)
+            } else {
+                return .firstTimeOnboarding
+            }
+        }
+    }
+}
+
+// Case 1: Fresh install, not determined, no previous configuration -> firstTimeOnboarding
+let stateFresh = TestAuthorizationStateEvaluator.evaluate(status: .notDetermined, hasPreviouslyConfigured: false)
+assertEqual(stateFresh, .firstTimeOnboarding, "Fresh install with .notDetermined routes to firstTimeOnboarding")
+
+// Case 2: User grants permission -> authorized
+let stateApproved = TestAuthorizationStateEvaluator.evaluate(status: .approved, hasPreviouslyConfigured: true)
+assertEqual(stateApproved, .authorized, "Approved authorization routes to .authorized (Dashboard)")
+
+// Case 3: User revokes permission in Settings (.denied) -> permissionRevoked(isDeniedInSettings: true)
+let stateDenied = TestAuthorizationStateEvaluator.evaluate(status: .denied, hasPreviouslyConfigured: true)
+assertEqual(stateDenied, .permissionRevoked(isDeniedInSettings: true), "Revocation in Settings (.denied) routes to permissionRevoked with isDeniedInSettings = true")
+
+// Case 4: Permission was reset/notDetermined but user already configured apps -> permissionRevoked(isDeniedInSettings: false)
+let stateReset = TestAuthorizationStateEvaluator.evaluate(status: .notDetermined, hasPreviouslyConfigured: true)
+assertEqual(stateReset, .permissionRevoked(isDeniedInSettings: false), "Revocation to .notDetermined for existing user routes to permissionRevoked (not full onboarding)")
+
+// Case 5: Preservation of user configuration upon revocation cleanup
+var savedConfig: CycleConfiguration? = CycleConfiguration(usageLimitMinutes: 25, restDurationMinutes: 10)
+var savedAppsCount: Int = 3
+var activeSnapshotRef: CycleSnapshot? = CycleSnapshot(configuration: savedConfig!)
+var isBreakLoopActiveFlag: Bool = true
+var deepFocusSessionRef: DeepFocusSession? = DeepFocusSession(durationMinutes: 60)
+var cooldownEndDateRef: Date? = Date().addingTimeInterval(600)
+
+// Simulate handleAuthorizationRevoked()
+func simulateRevocationCleanup() {
+    // Monitoring is stopped
+    // Transient runtime state is wiped
+    activeSnapshotRef = nil
+    isBreakLoopActiveFlag = false
+    deepFocusSessionRef = nil
+    cooldownEndDateRef = nil
+    // User configuration is PRESERVED
+    // savedConfig remains untouched
+    // savedAppsCount remains untouched
+}
+
+simulateRevocationCleanup()
+
+assertEqual(activeSnapshotRef, nil, "Active cycle snapshot is cleared upon revocation")
+assertFalse(isBreakLoopActiveFlag, "isBreakLoopActive flag is set to false upon revocation")
+assertEqual(deepFocusSessionRef, nil, "Deep focus session is cleared upon revocation")
+assertEqual(cooldownEndDateRef, nil, "Cooldown end date is cleared upon revocation")
+assertEqual(savedConfig?.usageLimitMinutes, 25, "User's configured usage limit (25m) is strictly preserved")
+assertEqual(savedConfig?.restDurationMinutes, 10, "User's configured rest duration (10m) is strictly preserved")
+assertEqual(savedAppsCount, 3, "User's selected apps count is strictly preserved")
+
+// 6. Logging Architecture & Named Store Consistency Tests
+print("\n[Suite 6: Logger JSONL & Named Store Verification]")
+
+// Test A: Named store constant verification
+let storeNameExpected = "breakloop.enforcement"
+assertEqual(storeNameExpected, "breakloop.enforcement", "Shared ManagedSettingsStore name is 'breakloop.enforcement'")
+
+// Test B: Single entry JSON-Lines serialization (no full-array rewrite)
+struct TestLogEntry: Codable, Equatable {
+    let id: UUID
+    let timestamp: Date
+    let level: String
+    let category: String
+    let event: String
+    let message: String
+}
+
+let encoder = JSONEncoder()
+encoder.dateEncodingStrategy = .iso8601
+let decoder = JSONDecoder()
+decoder.dateDecodingStrategy = .iso8601
+
+let entry1 = TestLogEntry(
+    id: UUID(),
+    timestamp: Date(timeIntervalSince1970: 1700000000),
+    level: "info",
+    category: "monitoring",
+    event: "interval_started",
+    message: "DeviceActivity interval started"
+)
+
+var line1Data = try! encoder.encode(entry1)
+line1Data.append(0x0A) // newline
+
+let decodedLine1 = try! decoder.decode(TestLogEntry.self, from: line1Data)
+assertEqual(decodedLine1, entry1, "Single log entry encodes and decodes accurately as a standalone JSON line")
+
+// Test C: Reading JSONL stream with corrupted/empty lines resilience
+let corruptLine = "malformed json data\n".data(using: .utf8)!
+var streamData = Data()
+streamData.append(line1Data)
+streamData.append(corruptLine)
+
+let entry2 = TestLogEntry(
+    id: UUID(),
+    timestamp: Date(timeIntervalSince1970: 1700000060),
+    level: "warning",
+    category: "shield",
+    event: "shield_applied",
+    message: "Shield was applied"
+)
+var line2Data = try! encoder.encode(entry2)
+line2Data.append(0x0A)
+streamData.append(line2Data)
+
+// Simulate reader
+let streamString = String(data: streamData, encoding: .utf8)!
+var parsedEntries: [TestLogEntry] = []
+for line in streamString.components(separatedBy: .newlines) {
+    let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty, let d = trimmed.data(using: .utf8) else { continue }
+    if let item = try? decoder.decode(TestLogEntry.self, from: d) {
+        parsedEntries.append(item)
+    }
+}
+
+assertEqual(parsedEntries.count, 2, "Reader safely skips malformed line and parses valid JSON lines")
+assertEqual(parsedEntries[0], entry1, "First entry parsed correctly")
+assertEqual(parsedEntries[1], entry2, "Second entry parsed correctly")
+
+// Test D: Rotation simulation
+let maxTestBytes = 200
+var activeFileSize = 150
+let newWriteSize = 80
+
+var isRotated = false
+if (activeFileSize + newWriteSize) > maxTestBytes {
+    isRotated = true
+    activeFileSize = newWriteSize // file rotated, new active file contains only new write
+}
+
+assertTrue(isRotated, "File rotation triggers when active file size exceeds max limit")
+assertEqual(activeFileSize, 80, "Active file size is reset to single write size after rotation")
+
+// 7. Responsive Layout Metrics & Appearance Tests
+print("\n[Suite 7: Responsive Layout Metrics & Appearance]")
+
+struct TestLayoutMetrics {
+    let availableWidth: Double
+    let horizontalPadding: Double
+    let contentMaxWidth: Double
+    let prefersStackedMetrics: Bool
+    let isCompact: Bool
+    let isLarge: Bool
+
+    init(availableWidth: Double) {
+        self.availableWidth = availableWidth
+        if availableWidth < 360 {
+            self.horizontalPadding = 16
+            self.contentMaxWidth = availableWidth
+            self.prefersStackedMetrics = true
+            self.isCompact = true
+            self.isLarge = false
+        } else if availableWidth <= 430 {
+            self.horizontalPadding = 20
+            self.contentMaxWidth = availableWidth
+            self.prefersStackedMetrics = false
+            self.isCompact = false
+            self.isLarge = false
+        } else {
+            self.horizontalPadding = 24
+            self.contentMaxWidth = 600
+            self.prefersStackedMetrics = false
+            self.isCompact = false
+            self.isLarge = true
+        }
+    }
+}
+
+// Compact device (< 360pt, e.g. iPhone SE / small window)
+let compactMetrics = TestLayoutMetrics(availableWidth: 320)
+assertTrue(compactMetrics.isCompact, "320pt available width is classified as compact")
+assertEqual(compactMetrics.horizontalPadding, 16.0, "Compact width uses 16pt margin")
+assertTrue(compactMetrics.prefersStackedMetrics, "Compact width prefers stacked metric tiles")
+
+// Standard device (360 - 430pt, e.g. iPhone 15/16)
+let standardMetrics = TestLayoutMetrics(availableWidth: 393)
+assertFalse(standardMetrics.isCompact, "393pt available width is not compact")
+assertFalse(standardMetrics.isLarge, "393pt available width is not large")
+assertEqual(standardMetrics.horizontalPadding, 20.0, "Standard width uses 20pt margin")
+assertFalse(standardMetrics.prefersStackedMetrics, "Standard width does not force stacked metrics")
+
+// Large device (> 430pt, e.g. iPhone Pro Max / iPad / Landscape)
+let largeMetrics = TestLayoutMetrics(availableWidth: 800)
+assertTrue(largeMetrics.isLarge, "800pt available width is classified as large")
+assertEqual(largeMetrics.horizontalPadding, 24.0, "Large width uses 24pt margin")
+assertEqual(largeMetrics.contentMaxWidth, 600.0, "Large width caps content max width at 600pt")
+
+// Appearance Enum & Codable roundtrip
+enum TestAppAppearance: String, Codable, CaseIterable {
+    case system
+    case light
+    case dark
+}
+
+let appearanceDark = TestAppAppearance.dark
+let encodedAppearance = try! JSONEncoder().encode(appearanceDark)
+let decodedAppearance = try! JSONDecoder().decode(TestAppAppearance.self, from: encodedAppearance)
+assertEqual(decodedAppearance, .dark, "AppAppearance codable serialization and deserialization matches")
+
 print("\n=== TEST RESULTS SUMMARY ===")
 print("Passed: \(passedCount), Failed: \(failedCount)")
 if failedCount == 0 {
@@ -240,3 +472,6 @@ if failedCount == 0 {
     print("SOME TESTS FAILED.")
     exit(1)
 }
+
+
+

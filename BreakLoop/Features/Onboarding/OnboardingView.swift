@@ -31,94 +31,94 @@ struct OnboardingView: View {
     }
 
     var body: some View {
-        VStack(spacing: 32) {
-            Spacer()
+        BLAdaptiveContainer { metrics in
+            VStack(spacing: BLSpacing.xl) {
+                Spacer(minLength: BLSpacing.lg)
 
-            VStack(spacing: 16) {
-                Image(systemName: "hourglass.circle.fill")
-                    .font(.system(size: 80))
-                    .foregroundStyle(BreakLoopTheme.primaryGradient)
+                // Hero Branding
+                VStack(spacing: BLSpacing.md) {
+                    ZStack {
+                        Circle()
+                            .fill(BLColor.brandSoft.opacity(0.35))
+                            .frame(width: 88, height: 88)
 
-                Text("BreakLoop")
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
-
-                Text("Set your limits. Take a break. Break the loop.")
-                    .font(.subheadline)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 24)
-            }
-
-            VStack(alignment: .leading, spacing: 20) {
-                FeatureRow(
-                    icon: "timer",
-                    title: "Shared Usage Budget",
-                    subtitle: "Track multiple distracting apps under one combined limit."
-                )
-                FeatureRow(
-                    icon: "pause.circle.fill",
-                    title: "Natural Rest & Cooldown",
-                    subtitle: "Healthy 15-minute breaks automatically reset your cycle without shields."
-                )
-                FeatureRow(
-                    icon: "flame.fill",
-                    title: "Deep Focus Mode",
-                    subtitle: "Zero-tolerance complete shielding for hours of distraction-free work."
-                )
-            }
-            .padding(.horizontal, 8)
-
-            Spacer()
-
-            VStack(spacing: 12) {
-                if viewModel.isAuthorized {
-                    Button {
-                        onAuthorized?()
-                    } label: {
-                        Text("Continue to Dashboard")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(BreakLoopTheme.primaryGradient)
-                            .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                        Image(systemName: "infinity")
+                            .font(.system(size: 44, weight: .bold))
+                            .foregroundStyle(BLColor.brandInteractive)
                     }
-                } else {
-                    Button {
-                        Task {
-                            await viewModel.requestAuthorization()
-                            if viewModel.isAuthorized {
-                                onAuthorized?()
+
+                    VStack(spacing: BLSpacing.xxs) {
+                        Text("BreakLoop")
+                            .font(BLTypography.largeTitle)
+                            .foregroundStyle(BLColor.textPrimary)
+
+                        Text("Set your limits. Take a break. Break the loop.")
+                            .font(BLTypography.secondary)
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(BLColor.textSecondary)
+                            .padding(.horizontal, BLSpacing.md)
+                    }
+                }
+
+                // Features Container
+                BLCard {
+                    VStack(alignment: .leading, spacing: BLSpacing.md) {
+                        FeatureRow(
+                            icon: "timer",
+                            title: "Shared Usage Budget",
+                            subtitle: "Track multiple distracting apps under one combined limit."
+                        )
+                        Divider()
+                            .background(BLColor.divider)
+                        FeatureRow(
+                            icon: "leaf.fill",
+                            title: "Natural Rest & Cooldown",
+                            subtitle: "Healthy 15-minute breaks automatically reset your cycle without shields."
+                        )
+                        Divider()
+                            .background(BLColor.divider)
+                        FeatureRow(
+                            icon: "flame.fill",
+                            title: "Deep Focus Mode",
+                            subtitle: "Zero-tolerance complete shielding for hours of distraction-free work."
+                        )
+                    }
+                }
+
+                Spacer(minLength: BLSpacing.lg)
+
+                // Action CTAs
+                VStack(spacing: BLSpacing.sm) {
+                    if viewModel.isAuthorized {
+                        BLPrimaryButton(title: "Continue to Dashboard") {
+                            onAuthorized?()
+                        }
+                    } else {
+                        BLPrimaryButton(
+                            title: "Enable Screen Time Access",
+                            isLoading: viewModel.isRequestingAuthorization
+                        ) {
+                            Task {
+                                await viewModel.requestAuthorization()
+                                if viewModel.isAuthorized {
+                                    onAuthorized?()
+                                }
                             }
                         }
-                    } label: {
-                        if viewModel.isRequestingAuthorization {
-                            ProgressView()
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 14)
-                        } else {
-                            Text("Enable Screen Time Access")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 14)
-                                .background(BreakLoopTheme.primaryGradient)
-                                .foregroundStyle(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
-                        }
                     }
-                    .disabled(viewModel.isRequestingAuthorization)
+
+                    if let errorMessage = viewModel.errorMessage {
+                        Text(errorMessage)
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.destructive)
+                            .multilineTextAlignment(.center)
+                    }
                 }
 
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .font(.footnote)
-                        .foregroundStyle(.red)
-                        .multilineTextAlignment(.center)
-                }
+                Spacer(minLength: BLSpacing.sm)
             }
         }
-        .padding(24)
-        .background(BreakLoopTheme.background.ignoresSafeArea())
+        .background(BLColor.background.ignoresSafeArea())
     }
 }
 
@@ -128,19 +128,30 @@ private struct FeatureRow: View {
     let subtitle: String
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(BreakLoopTheme.primary)
-                .frame(width: 28)
+        HStack(alignment: .top, spacing: BLSpacing.md) {
+            ZStack {
+                RoundedRectangle(cornerRadius: BLRadius.small, style: .continuous)
+                    .fill(BLColor.surfaceSubtle)
+                    .frame(width: 36, height: 36)
+
+                Image(systemName: icon)
+                    .font(.body)
+                    .foregroundStyle(BLColor.brandPrimary)
+            }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.subheadline.bold())
+                    .font(BLTypography.bodyMedium)
+                    .foregroundStyle(BLColor.textPrimary)
+
                 Text(subtitle)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(BLTypography.caption)
+                    .foregroundStyle(BLColor.textSecondary)
             }
         }
     }
+}
+
+#Preview {
+    OnboardingView()
 }

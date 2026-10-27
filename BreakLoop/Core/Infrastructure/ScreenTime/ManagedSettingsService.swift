@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  ManagedSettingsService.swift
 //  BreakLoop
 //
 //  Created by Ali ahmet Erdoğdu on 6.10.2026.
@@ -16,10 +16,17 @@ protocol ManagedSettingsServiceProtocol {
 
 final class ManagedSettingsService: ManagedSettingsServiceProtocol {
 
-    private let store = ManagedSettingsStore()
+    private let store: ManagedSettingsStore
+
+    convenience init() {
+        self.init(store: BreakLoopManagedSettings.makeStore())
+    }
+
+    init(store: ManagedSettingsStore) {
+        self.store = store
+    }
 
     func block(_ selection: FamilyActivitySelection) {
-
         // Tek tek seçilmiş uygulamalar
         store.shield.applications =
             selection.applicationTokens.isEmpty

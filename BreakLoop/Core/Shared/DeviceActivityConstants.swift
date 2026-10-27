@@ -7,6 +7,7 @@
 
 import Foundation
 import DeviceActivity
+import ManagedSettings
 
 enum DeviceActivityConstants {
     static let focusActivity =
@@ -46,5 +47,14 @@ enum DeviceActivityConstants {
             )
 
         return Int(value)
+    }
+}
+
+enum BreakLoopManagedSettings {
+    static let storeName =
+        ManagedSettingsStore.Name("breakloop.enforcement")
+
+    static func makeStore() -> ManagedSettingsStore {
+        ManagedSettingsStore(named: storeName)
     }
 }

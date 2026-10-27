@@ -12,13 +12,18 @@ final class AppLogger {
 
     static let shared = AppLogger()
 
-    private let subsystem =
-        "com.aliahmeterdogdu.BreakLoop"
+    private let subsystem = "com.aliahmeterdogdu.BreakLoop"
+    private let persistentStore: PersistentLogStore
+    private let loggers: [LogCategory: Logger]
 
-    private let persistentStore =
-        PersistentLogStore()
-
-    private init() {}
+    init(persistentStore: PersistentLogStore = PersistentLogStore.shared) {
+        self.persistentStore = persistentStore
+        var map: [LogCategory: Logger] = [:]
+        for category in LogCategory.allCases {
+            map[category] = Logger(subsystem: subsystem, category: category.rawValue)
+        }
+        self.loggers = map
+    }
 
     func debug(
         _ event: String,
@@ -87,37 +92,22 @@ final class AppLogger {
         category: LogCategory,
         metadata: [String: String]
     ) {
-
-        let logger = Logger(
-            subsystem: subsystem,
-            category: category.rawValue
-        )
-
-        let formattedMessage =
-            "[BL] [\(event)] \(message)"
+        // Fast unified OSLog output preserving [BL][category][event]
+        let logger = loggers[category] ?? Logger(subsystem: subsystem, category: category.rawValue)
+        let formattedMessage = "[BL][\(category.rawValue)][\(event)] \(message)"
 
         switch level {
         case .debug:
-            logger.debug(
-                "\(formattedMessage, privacy: .public)"
-            )
-
+            logger.debug("\(formattedMessage, privacy: .public)")
         case .info:
-            logger.info(
-                "\(formattedMessage, privacy: .public)"
-            )
-
+            logger.info("\(formattedMessage, privacy: .public)")
         case .warning:
-            logger.warning(
-                "\(formattedMessage, privacy: .public)"
-            )
-
+            logger.warning("\(formattedMessage, privacy: .public)")
         case .error:
-            logger.error(
-                "\(formattedMessage, privacy: .public)"
-            )
+            logger.error("\(formattedMessage, privacy: .public)")
         }
 
+        // Lightweight persistent entry append (one JSON line, no full-file decoding)
         let entry = LogEntry(
             id: UUID(),
             timestamp: Date(),

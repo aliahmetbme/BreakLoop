@@ -13,6 +13,8 @@ import Combine
 final class FocusSetupViewModel: ObservableObject {
 
     @Published var selection = FamilyActivitySelection()
+    @Published var usageLimitMinutes: Int = 20
+    @Published var restDurationMinutes: Int = 15
     @Published var isPickerPresented = false
     @Published var errorMessage: String?
 
@@ -45,6 +47,19 @@ final class FocusSetupViewModel: ObservableObject {
         !selection.applicationTokens.isEmpty ||
         !selection.categoryTokens.isEmpty ||
         !selection.webDomainTokens.isEmpty
+    }
+
+    func saveConfiguration() {
+        saveSelection()
+        let config = AppGroupStorage.CycleConfiguration(
+            usageLimitMinutes: usageLimitMinutes,
+            restDurationMinutes: restDurationMinutes
+        )
+        do {
+            try storage.saveCycleConfiguration(config)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 
     func saveSelection() {
@@ -100,6 +115,10 @@ final class FocusSetupViewModel: ObservableObject {
     }
 
     private func loadSelection() {
+        let config = storage.loadCycleConfiguration()
+        usageLimitMinutes = config.usageLimitMinutes
+        restDurationMinutes = config.restDurationMinutes
+
         do {
             if let savedSelection = try storage.loadActivitySelection() {
                 selection = savedSelection
