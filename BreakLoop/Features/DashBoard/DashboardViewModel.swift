@@ -95,7 +95,10 @@ final class DashboardViewModel: ObservableObject {
     private func refreshConfiguration() {
         configuration = storage.loadCycleConfiguration()
         do {
-            if let savedSelection = try storage.loadActivitySelection() { selection = savedSelection }
+            if let savedSelection = try storage.loadActivitySelection() {
+                selection = savedSelection
+                savedSelection.logBreakLoopCounts(stage: "dashboard_read")
+            }
         } catch {
             errorMessage = error.localizedDescription
             AppLogger.shared.error("dashboard_selection_read_failed", message: error.localizedDescription, category: .monitoring)
@@ -105,10 +108,20 @@ final class DashboardViewModel: ObservableObject {
     var isCooldownActive: Bool { state.mode == .cooldown }
     var displayedError: String? { state.errorMessage ?? errorMessage }
 
-    var hasSelection: Bool {
-        !selection.applicationTokens.isEmpty ||
-        !selection.categoryTokens.isEmpty ||
-        !selection.webDomainTokens.isEmpty
+    var hasSelection: Bool { selection.breakLoopTokenCounts.isSupported }
+    var selectionIssue: String? { selection.breakLoopTokenCounts.validationMessage }
+    var selectedWebsitesCount: Int { selection.webDomainTokens.count }
+
+    func recoverSynchronization() {
+        refreshConfiguration()
+        synchronizer.recover()
+    }
+
+    private func loadSupportedSelection() throws {
+        guard let current = try storage.loadActivitySelection() else { throw SelectionFailure.missing }
+        selection = current
+        current.logBreakLoopCounts(stage: "dashboard_start")
+        guard current.breakLoopTokenCounts.isSupported else { throw SelectionFailure.unsupported }
     }
 
     var selectedAppsCount: Int {
@@ -128,14 +141,12 @@ final class DashboardViewModel: ObservableObject {
     }
 
     func startBreakLoop() {
-        guard hasSelection else {
-            errorMessage = "Please select apps to monitor first."
-            return
+        guard state.mode != .failure || state.canRetryBreakLoop else {
+            errorMessage = state.recoveryDescription; return
         }
-
         errorMessage = nil
         perform {
-            try storage.saveActivitySelection(selection)
+            try loadSupportedSelection()
             try lifecycle.start()
         }
         refresh()
@@ -147,14 +158,12 @@ final class DashboardViewModel: ObservableObject {
     }
 
     func startDeepFocus(durationMinutes: Int) {
-        guard hasSelection else {
-            errorMessage = "Please select apps to block first."
-            return
+        guard state.canConfigureDeepFocus else {
+            errorMessage = "Refresh monitoring status before starting Deep Focus."; return
         }
-
         errorMessage = nil
         perform {
-            try storage.saveActivitySelection(selection)
+            try loadSupportedSelection()
             try lifecycle.startDeepFocus(minutes: durationMinutes)
             isDeepFocusSheetPresented = false
         }

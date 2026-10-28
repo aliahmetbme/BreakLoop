@@ -33,10 +33,16 @@ struct DashboardView: View {
                     ruleSummaryCard
 
                     // 3. Secondary Deep Focus Entry (visible when not in Deep Focus and not in forced cooldown)
-                    if !viewModel.isDeepFocusActive && !viewModel.isCooldownActive {
+                    if viewModel.state.canConfigureDeepFocus {
                         deepFocusEntryCard
                     }
 
+                    if let issue = viewModel.selectionIssue {
+                        Text(issue)
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.destructive)
+                            .multilineTextAlignment(.center)
+                    }
                     if let errorMessage = viewModel.displayedError {
                         Text(errorMessage)
                             .font(BLTypography.caption)
@@ -275,15 +281,41 @@ struct DashboardView: View {
             BLSecondaryButton(title: "Stop BreakLoop", icon: "stop.circle") {
                 viewModel.stopBreakLoop()
             }
-        } else if viewModel.state.mode != .loading {
+        } else if viewModel.state.mode == .failure {
+            VStack(spacing: BLSpacing.sm) {
+                Text(viewModel.state.recoveryDescription)
+                    .font(BLTypography.caption)
+                    .foregroundStyle(BLColor.textSecondary)
+                    .multilineTextAlignment(.center)
+                BLSecondaryButton(title: "Review Selected Apps", icon: "square.grid.2x2") {
+                    isRuleSheetPresented = true
+                }
+                BLSecondaryButton(title: "Refresh Status", icon: "arrow.clockwise") {
+                    viewModel.recoverSynchronization()
+                }
+                if viewModel.state.canStopRecordedBreakLoop {
+                    BLSecondaryButton(title: "Stop Recorded BreakLoop", icon: "stop.circle") {
+                        viewModel.stopBreakLoop()
+                    }
+                }
+                if viewModel.state.canRetryBreakLoop {
+                    BLPrimaryButton(title: "Retry BreakLoop", icon: "arrow.clockwise.circle") {
+                        viewModel.startBreakLoop()
+                    }
+                    .disabled(!viewModel.hasSelection)
+                }
+            }
+        } else if viewModel.state.canOfferInactiveStarts {
             VStack(spacing: BLSpacing.sm) {
                 BLPrimaryButton(title: "Start BreakLoop", icon: "play.fill") {
                     viewModel.startBreakLoop()
                 }
+                .disabled(!viewModel.hasSelection)
 
                 BLSecondaryButton(title: "Start Deep Focus", icon: "scope") {
                     viewModel.isDeepFocusSheetPresented = true
                 }
+                .disabled(!viewModel.hasSelection)
             }
         }
     }
@@ -365,7 +397,7 @@ struct DashboardView: View {
                             .font(.caption)
                             .foregroundStyle(BLColor.textSecondary)
 
-                        Text("\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories")
+                        Text("\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories · \(viewModel.selectedWebsitesCount) websites")
                             .font(BLTypography.secondary)
                             .foregroundStyle(BLColor.textSecondary)
 
@@ -431,7 +463,7 @@ struct DashboardView: View {
                             .font(.caption)
                             .foregroundStyle(BLColor.textSecondary)
 
-                        Text("\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories selected")
+                        Text("\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories · \(viewModel.selectedWebsitesCount) websites selected")
                             .font(BLTypography.caption)
                             .foregroundStyle(BLColor.textSecondary)
 
@@ -493,6 +525,7 @@ struct DashboardView: View {
         }
         .buttonStyle(BLPressableScaleStyle())
         .accessibilityLabel("Configure Deep Focus")
+        .disabled(!viewModel.hasSelection)
     }
 }
 

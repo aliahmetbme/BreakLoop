@@ -70,6 +70,7 @@ final class MonitoringLifecycle {
     // Preparation and scheduling can fail before publication. ManagedSettings writes after
     // publication use the already validated/captured selection and have no throwing API.
     private func commit(_ proposed: MonitoringRuntime, replacing old: MonitoringRuntime,
+                        clearsSelectionAttentionOnStart: Bool = false,
                         start: () throws -> Void = {}) throws {
         var next = proposed
         let apply: () -> Void
@@ -85,6 +86,11 @@ final class MonitoringLifecycle {
         let added = next.activityNames.filter { !old.activityNames.contains($0) }
         do {
             try start()
+            // A validated, successfully scheduled fresh focus cycle supersedes an old selection
+            // failure even when no shield is owned (the normal post-cooldown state).
+            if clearsSelectionAttentionOnStart, next.attention?.code.isSelectionFailure == true {
+                next.attention = nil
+            }
             try storage.writeRuntime(next)
         } catch {
             driver.stop(added)
@@ -239,7 +245,11 @@ final class MonitoringLifecycle {
         }
         next.legacyFocus = nil
         do {
-            try commit(next, replacing: old) {
+            report("focus_restart_evaluated", "Evaluating foreground/expiry focus restart.", metadata: [
+                "cooldownExpired": "\(cooldownExpired)", "willStartFocus": "\(snapshotToStart != nil)",
+                "priorAttentionCode": old.attention?.code.rawValue ?? "none",
+                "priorAttentionAt": old.attention.map { "\($0.occurredAt.timeIntervalSince1970)" } ?? "none"])
+            try commit(next, replacing: old, clearsSelectionAttentionOnStart: snapshotToStart != nil) {
                 if let snapshotToStart { try driver.startFocus(snapshotToStart) }
             }
         } catch {
@@ -282,7 +292,7 @@ final class MonitoringLifecycle {
             if naturalRest {
                 let fresh = CycleSnapshot(configuration: configuration(), startedAt: now())
                 next.snapshot = fresh; next.checkpoint = nil
-                try commit(next, replacing: old) { try driver.startFocus(fresh) }
+                try commit(next, replacing: old, clearsSelectionAttentionOnStart: true) { try driver.startFocus(fresh) }
             } else if minute == nil {
                 let deadline = RestrictionDeadline(endsAt: Date(timeIntervalSince1970: ceil(now().timeIntervalSince1970 + Double(snapshot.restDurationMinutes) * 60)))
                 next.cooldown = deadline; next.legacyCooldown = nil; next.checkpoint = nil
@@ -386,6 +396,7 @@ struct ShieldSelectionLoader<Selection> {
     let load: () throws -> Selection?
     let supported: (Selection) -> Bool
     let apply: (Selection) -> Void
+    var inspected: (Selection, Bool) -> Void = { _, _ in }
 
     func selection() throws -> Selection {
         let value: Selection?
@@ -394,7 +405,9 @@ struct ShieldSelectionLoader<Selection> {
         catch let error as SelectionFailure { throw error }
         catch { throw SelectionFailure.persistence(error) }
         guard let value else { throw SelectionFailure.missing }
-        guard supported(value) else { throw SelectionFailure.unsupported }
+        let accepted = supported(value)
+        inspected(value, accepted)
+        guard accepted else { throw SelectionFailure.unsupported }
         return value
     }
     func prepare() throws -> () -> Void {
@@ -429,5 +442,33 @@ enum SelectionFailure: LocalizedError {
 enum ShieldSelectionSupport {
     static func isSupported(applications: Int, categories: Int, webDomains: Int) -> Bool {
         (applications > 0 || categories > 0) && applications <= 50 && categories <= 50 && webDomains == 0
+    }
+}
+
+
+struct SelectionTokenCounts: Equatable {
+    let applicationTokens: Int
+    let categoryTokens: Int
+    let webDomainTokens: Int
+    var isSupported: Bool {
+        ShieldSelectionSupport.isSupported(applications: applicationTokens, categories: categoryTokens, webDomains: webDomainTokens)
+    }
+    var hasAny: Bool { applicationTokens > 0 || categoryTokens > 0 || webDomainTokens > 0 }
+    var validationMessage: String? {
+        if webDomainTokens > 0 {
+            return "This selection includes \(webDomainTokens) websites. BreakLoop v1.0 supports apps and categories only. Remove websites in the picker before saving or starting."
+        }
+        if applicationTokens > 50 || categoryTokens > 50 { return "Select at most 50 apps and 50 categories before saving or starting." }
+        if !hasAny { return "Select at least one app or category before saving or starting." }
+        return nil
+    }
+    var diagnosticCounts: [String: String] {
+        ["applicationTokens": "\(applicationTokens)", "categoryTokens": "\(categoryTokens)", "webDomainTokens": "\(webDomainTokens)"]
+    }
+    // Testable save gate used by the real App Group adapter. A rejected selection is never altered
+    // or partially saved, and callers must not persist configuration after rejection.
+    func saveIfSupported(_ save: () throws -> Void) throws {
+        guard isSupported else { throw SelectionFailure.unsupported }
+        try save()
     }
 }

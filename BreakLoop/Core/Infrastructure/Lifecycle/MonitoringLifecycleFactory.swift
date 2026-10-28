@@ -5,21 +5,19 @@ extension MonitoringLifecycle {
     static func make(storage: AppGroupStorage,
                      activity: DeviceActivityServiceProtocol = DeviceActivityService(),
                      settings: ManagedSettingsServiceProtocol = ManagedSettingsService()) -> MonitoringLifecycle {
-        let selectionLoader = ShieldSelectionLoader(
-            load: { try storage.loadActivitySelection() },
-            supported: {
-                ShieldSelectionSupport.isSupported(applications: $0.applicationTokens.count,
-                    categories: $0.categoryTokens.count, webDomains: $0.webDomainTokens.count)
-            },
-            apply: { settings.block($0) })
+        func selectionLoader(stage: String) -> ShieldSelectionLoader<FamilyActivitySelection> {
+            ShieldSelectionLoader(load: { try storage.loadActivitySelection() },
+                supported: { $0.breakLoopTokenCounts.isSupported }, apply: { settings.block($0) },
+                inspected: { selection, _ in selection.logBreakLoopCounts(stage: stage) })
+        }
         return MonitoringLifecycle(storage: storage, driver: MonitoringDriver(
             startFocus: { snapshot in
-                let selection = try selectionLoader.selection()
+                let selection = try selectionLoader(stage: "start_focus").selection()
                 try activity.startMonitoring(selection: selection, snapshot: snapshot)
             },
             startDeadline: { try activity.startDeadline(name: $0, end: $1) },
             stop: { activity.stopActivities($0) },
-            prepareShield: { try selectionLoader.prepare() },
+            prepareShield: { try selectionLoader(stage: "prepare_shield").prepare() },
             clearShield: { settings.unblock() },
             activities: { activity.activityNames }),
             configuration: { storage.loadCycleConfiguration() },

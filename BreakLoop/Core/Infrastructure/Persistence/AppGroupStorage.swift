@@ -82,10 +82,10 @@ final class AppGroupStorage {
     func saveActivitySelection(
         _ selection: FamilyActivitySelection
     ) throws {
-        try save (
-            selection,
-            forKey: Keys.activitySelection
-        )
+        selection.logBreakLoopCounts(stage: "save_selection")
+        try selection.breakLoopTokenCounts.saveIfSupported {
+            try save(selection, forKey: Keys.activitySelection)
+        }
     }
     
     func loadActivitySelection() throws -> FamilyActivitySelection? {
@@ -198,4 +198,21 @@ extension AppGroupStorage: MonitoringRuntimeStore {
             legacyCooldown: true, legacyDeepFocus: true, legacyFocus: true)
     }
 
+}
+
+
+extension FamilyActivitySelection {
+    var breakLoopTokenCounts: SelectionTokenCounts {
+        SelectionTokenCounts(applicationTokens: applicationTokens.count, categoryTokens: categoryTokens.count,
+                             webDomainTokens: webDomainTokens.count)
+    }
+    func logBreakLoopCounts(stage: String) {
+        let counts = breakLoopTokenCounts
+        let result = counts.isSupported ? "accepted" : "rejected"
+        AppLogger.shared.info("selection_validated",
+            message: "\(stage): applicationTokens=\(counts.applicationTokens), categoryTokens=\(counts.categoryTokens), webDomainTokens=\(counts.webDomainTokens), result=\(result).",
+            category: .monitoring,
+            metadata: counts.diagnosticCounts.merging(["stage": stage, "result": result,
+                "validatedAtEpoch": "\(Date().timeIntervalSince1970)"]) { existing, _ in existing })
+    }
 }

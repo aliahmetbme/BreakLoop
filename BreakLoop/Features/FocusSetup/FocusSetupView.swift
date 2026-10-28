@@ -47,17 +47,22 @@ struct FocusSetupView: View {
 
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Save") {
-                                viewModel.saveConfiguration()
-                                dismiss()
+                                if viewModel.saveConfiguration() { dismiss() }
                             }
                             .fontWeight(.semibold)
+                            .disabled(!viewModel.hasSelection)
                         }
                     }
             }
             .familyActivityPicker(
+                headerText: "Choose apps or categories",
+                footerText: "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving.",
                 isPresented: $viewModel.isPickerPresented,
                 selection: $viewModel.selection
             )
+            .onChange(of: viewModel.selection.breakLoopTokenCounts) { _, _ in
+                viewModel.selection.logBreakLoopCounts(stage: "picker_change")
+            }
         } else {
             configurationContent
                 .navigationTitle("Manage Apps")
@@ -67,9 +72,14 @@ struct FocusSetupView: View {
                     viewModel.saveConfiguration()
                 }
                 .familyActivityPicker(
+                    headerText: "Choose apps or categories",
+                    footerText: "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving.",
                     isPresented: $viewModel.isPickerPresented,
                     selection: $viewModel.selection
                 )
+                .onChange(of: viewModel.selection.breakLoopTokenCounts) { _, _ in
+                    viewModel.selection.logBreakLoopCounts(stage: "picker_change")
+                }
         }
     }
 
@@ -89,7 +99,11 @@ struct FocusSetupView: View {
                 // 3. Managed Apps Scope Card
                 managedAppsCard
 
-                if let errorMessage = viewModel.errorMessage {
+                Text("Selections that include websites cannot be saved or started. Remove websites explicitly in the picker.")
+                    .font(BLTypography.caption)
+                    .foregroundStyle(BLColor.textSecondary)
+
+                if let errorMessage = viewModel.selectionIssue ?? viewModel.errorMessage {
                     Text(errorMessage)
                         .font(BLTypography.caption)
                         .foregroundStyle(BLColor.destructive)
@@ -97,7 +111,7 @@ struct FocusSetupView: View {
                 }
 
                 // Disclaimer caption (one primary Save action in toolbar)
-                Text("Guaranteed gentle enforcement via Apple Screen Time API")
+                Text("Enforcement uses Apple Screen Time and requires authorization.")
                     .font(BLTypography.caption)
                     .foregroundStyle(BLColor.textTertiary)
                     .multilineTextAlignment(.center)
@@ -220,8 +234,8 @@ struct FocusSetupView: View {
                             .font(BLTypography.bodyMedium)
                             .foregroundStyle(BLColor.textPrimary)
 
-                        if viewModel.hasSelection {
-                            Text("\(viewModel.selection.applicationTokens.count) apps, \(viewModel.selection.categoryTokens.count) categories")
+                        if viewModel.selection.breakLoopTokenCounts.hasAny {
+                            Text("\(viewModel.selection.applicationTokens.count) apps, \(viewModel.selection.categoryTokens.count) categories, \(viewModel.selection.webDomainTokens.count) websites")
                                 .font(BLTypography.caption)
                                 .foregroundStyle(BLColor.textSecondary)
                         } else {

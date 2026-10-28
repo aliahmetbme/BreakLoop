@@ -43,38 +43,36 @@ final class FocusSetupViewModel: ObservableObject {
         )
     }
 
-    var hasSelection: Bool {
-        !selection.applicationTokens.isEmpty ||
-        !selection.categoryTokens.isEmpty ||
-        !selection.webDomainTokens.isEmpty
-    }
+    var selectionIssue: String? { selection.breakLoopTokenCounts.validationMessage }
+    var hasSelection: Bool { selection.breakLoopTokenCounts.isSupported }
 
-    func saveConfiguration() {
-        saveSelection()
-        let config = CycleConfiguration(
-            usageLimitMinutes: usageLimitMinutes,
-            restDurationMinutes: restDurationMinutes
-        )
-        do {
-            try storage.saveCycleConfiguration(config)
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
-
-    func saveSelection() {
+    @discardableResult
+    func saveConfiguration() -> Bool {
+        guard hasSelection else { errorMessage = selectionIssue; return false }
         do {
             try storage.saveActivitySelection(selection)
+            try storage.saveCycleConfiguration(CycleConfiguration(
+                usageLimitMinutes: usageLimitMinutes, restDurationMinutes: restDurationMinutes))
+            errorMessage = nil
+            return true
         } catch {
             errorMessage = error.localizedDescription
+            return false
         }
+    }
+
+    @discardableResult
+    func saveSelection() -> Bool {
+        guard hasSelection else { errorMessage = selectionIssue; return false }
+        do {
+            try storage.saveActivitySelection(selection)
+            errorMessage = nil
+            return true
+        } catch { errorMessage = error.localizedDescription; return false }
     }
 
     func blockSelection() {
-        guard hasSelection else {
-            return
-        }
-
+        guard hasSelection else { errorMessage = selectionIssue; return }
         managedSettingsService.block(selection)
     }
 
@@ -83,10 +81,7 @@ final class FocusSetupViewModel: ObservableObject {
     }
 
     func startMonitoring() {
-        guard hasSelection else {
-            return
-        }
-
+        guard hasSelection else { errorMessage = selectionIssue; return }
         errorMessage = nil
         do {
             try storage.saveActivitySelection(selection)

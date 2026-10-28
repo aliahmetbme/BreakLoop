@@ -6,12 +6,37 @@ struct DashboardState: Equatable {
     let runtime: MonitoringRuntime?
     let mode: Mode
     let errorMessage: String?
+    let synchronizationError: String?
     static let loading = DashboardState(runtime: nil, mode: .loading, errorMessage: nil)
     var canStopBreakLoop: Bool { mode == .monitoring }
+    var canOfferInactiveStarts: Bool { mode == .inactive }
+    var canConfigureDeepFocus: Bool { mode == .inactive || mode == .monitoring }
+    var canStopRecordedBreakLoop: Bool {
+        mode == .failure && synchronizationError == nil && runtime?.snapshot != nil
+            && runtime?.cooldown == nil && runtime?.deepFocus == nil
+    }
+    var canRetryBreakLoop: Bool {
+        mode == .failure && synchronizationError == nil && runtime != nil
+            && runtime?.snapshot == nil && runtime?.cooldown == nil && runtime?.deepFocus == nil
+    }
+    var recoveryDescription: String {
+        guard synchronizationError == nil, let runtime else {
+            return "Current monitoring state could not be verified. Refresh status before starting another session."
+        }
+        if runtime.deepFocus != nil || runtime.cooldown != nil {
+            return "A restriction is still recorded. Refresh status; recovery will preserve existing ownership."
+        }
+        if runtime.snapshot != nil { return "Monitoring is still recorded. Review apps and refresh status, or stop the recorded session before retrying." }
+        return "Monitoring is interrupted. Review the saved apps, refresh status, then retry BreakLoop."
+    }
 
     init(runtime: MonitoringRuntime?, synchronizationError: String? = nil) {
         self.runtime = runtime
-        errorMessage = synchronizationError ?? runtime?.attention?.displayMessage
+        self.synchronizationError = synchronizationError
+        if let synchronizationError { errorMessage = synchronizationError }
+        else if let attention = runtime?.attention, attention.resolvedAt == nil, attention.code.isSelectionFailure {
+            errorMessage = "Previous selection issue (\(attention.occurredAt.formatted(date: .omitted, time: .standard))): \(attention.message) Review the current saved selection before retrying."
+        } else { errorMessage = runtime?.attention?.displayMessage }
         if synchronizationError != nil || runtime == nil { mode = .failure }
         // Keep an elapsed owner visible until lifecycle reconciliation actually removes it.
         else if runtime?.deepFocus != nil { mode = .deepFocus }
@@ -21,7 +46,7 @@ struct DashboardState: Equatable {
         else { mode = .inactive }
     }
     private init(runtime: MonitoringRuntime?, mode: Mode, errorMessage: String?) {
-        self.runtime = runtime; self.mode = mode; self.errorMessage = errorMessage
+        self.runtime = runtime; self.mode = mode; self.errorMessage = errorMessage; synchronizationError = nil
     }
 }
 
@@ -107,6 +132,8 @@ final class DashboardStateSynchronizer {
         }
     }
 
+    func recover() { reconcileAndRefresh(reason: "user_recovery") }
+
     func actionCompleted() {
         reconciliationError = nil
         refresh(reason: "action_completed")
@@ -125,6 +152,9 @@ final class DashboardStateSynchronizer {
                         "snapshotId": next.runtime?.snapshot?.id.uuidString ?? "none",
                         "cooldownId": next.runtime?.cooldown?.id.uuidString ?? "none",
                         "cooldownEnd": next.runtime?.cooldown?.endsAt.ISO8601Format() ?? "none"]
+        metadata["attentionCode"] = next.runtime?.attention?.code.rawValue ?? "none"
+        metadata["attentionOccurredAt"] = next.runtime?.attention.map { "\($0.occurredAt.timeIntervalSince1970)" } ?? "none"
+        metadata["failureSource"] = next.synchronizationError != nil ? "current_synchronization" : (next.runtime?.attention != nil ? "persisted_attention" : "none")
         metadata["synchronized"] = next.mode == .failure ? "false" : "true"
         log("dashboard_runtime_observed", metadata)
         guard next != state else { return }

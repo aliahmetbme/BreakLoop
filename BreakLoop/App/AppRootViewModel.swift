@@ -45,10 +45,12 @@ final class AppRootViewModel: ObservableObject {
 
         let initialStatus = authorizationService.authorizationStatus
         self.lastKnownStatus = initialStatus
-        self.uiState = AuthorizationStateEvaluator.evaluate(
-            status: initialStatus,
-            hasPreviouslyConfigured: storage.hasConfiguredSelection()
-        )
+        let configured = storage.hasConfiguredSelection()
+        self.uiState = AuthorizationStateEvaluator.evaluate(status: initialStatus, hasPreviouslyConfigured: configured)
+        AppLogger.shared.info("authorization_route_observed", message: "Initial authorization route sampled.",
+            category: .authorization, metadata: ["phase": "initial", "sampledStatus": "\(initialStatus)",
+                "hasConfiguredSelection": "\(configured)", "route": "\(uiState)",
+                "observedAtEpoch": "\(Date().timeIntervalSince1970)"])
     }
 
     // Root and visible Dashboard share one synchronizer. Activation is idempotent, so
@@ -63,6 +65,11 @@ final class AppRootViewModel: ObservableObject {
 
     func handleSceneActive() {
         let currentStatus = authorizationService.authorizationStatus
+        AppLogger.shared.info("authorization_route_observed", message: "Foreground authorization status sampled.",
+            category: .authorization, metadata: ["phase": "foreground", "sampledStatus": "\(currentStatus)",
+                "previousStatus": lastKnownStatus.map { "\($0)" } ?? "none", "previousRoute": "\(uiState)",
+                "hasConfiguredSelection": "\(storage.hasConfiguredSelection())",
+                "observedAtEpoch": "\(Date().timeIntervalSince1970)"])
 
         AppLogger.shared.info(
             "status_checked",
@@ -76,7 +83,7 @@ final class AppRootViewModel: ObservableObject {
             if lastKnownStatus != .approved && lastKnownStatus != nil {
                 AppLogger.shared.info(
                     "restored",
-                    message: "Screen Time authorization restored by user.",
+                    message: "Screen Time authorization status changed to approved.",
                     category: .authorization
                 )
             }

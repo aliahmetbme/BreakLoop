@@ -44,6 +44,7 @@ final class Harness {
     var shieldWrites = 0
     var clears = 0
     var selectionReads = 0
+    var selectionCountReports: [[String: String]] = []
     var selectionLoader: ShieldSelectionLoader<TestSelection> {
         ShieldSelectionLoader(load: { [unowned self] in
             selectionReads += 1
@@ -51,7 +52,12 @@ final class Harness {
             return try selectionData.map { try JSONDecoder().decode(TestSelection.self, from: $0) }
         }, supported: {
             ShieldSelectionSupport.isSupported(applications: $0.applications, categories: $0.categories, webDomains: $0.webDomains)
-        }, apply: { [unowned self] _ in shielded = true; shieldWrites += 1 })
+        }, apply: { [unowned self] _ in shielded = true; shieldWrites += 1 },
+        inspected: { [unowned self] selection, accepted in
+            selectionCountReports.append(SelectionTokenCounts(applicationTokens: selection.applications,
+                categoryTokens: selection.categories, webDomainTokens: selection.webDomains).diagnosticCounts
+                .merging(["result": accepted ? "accepted" : "rejected"]) { existing, _ in existing })
+        })
     }
     lazy var sut = MonitoringLifecycle(storage: store, driver: MonitoringDriver(
         startFocus: { [unowned self] snapshot in
@@ -293,6 +299,9 @@ func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure
         let beforeDashboardTests = count
         try runDashboardSynchronizationTests()
         print("Dashboard synchronization: \(count - beforeDashboardTests) checks passed")
+        let beforeSelectionTests = count
+        try runCooldownSelectionRegressionTests()
+        print("Cooldown/selection regressions: \(count - beforeSelectionTests) checks passed")
     }
 }
 
