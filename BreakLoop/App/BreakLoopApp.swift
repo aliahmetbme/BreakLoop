@@ -10,6 +10,8 @@ import SwiftUI
 @main
 struct BreakLoopApp: App {
 
+    init() { AppLogger.shared.record("app_launched", category: .lifecycle) }
+
     var body: some Scene {
         WindowGroup {
             AppRootView()

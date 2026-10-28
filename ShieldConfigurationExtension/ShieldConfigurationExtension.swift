@@ -17,6 +17,8 @@ class ShieldConfigurationExtension: ShieldConfigurationDataSource {
     private let storage = AppGroupStorage()
 
     private func makeShieldConfiguration() -> ShieldConfiguration {
+        defer { _ = PersistentLogStore.shared.flush(timeout: 0.03) }
+        AppLogger.shared.record("shield_presented", category: .shield, outcome: "observed")
         let formatter = DateFormatter()
         formatter.timeStyle = .short
 

@@ -9,6 +9,10 @@ swiftc -module-cache-path "$build_dir/module-cache" \
   BreakLoop/Core/Infrastructure/Lifecycle/RuntimeFileStore.swift \
   BreakLoop/Core/Infrastructure/Persistence/RuntimeChangeSignal.swift \
   BreakLoop/Features/DashBoard/DashboardStateSynchronization.swift \
+  BreakLoop/Core/Infrastructure/Logging/LogCatagory.swift \
+  BreakLoop/Core/Infrastructure/Logging/PersistentLogStore.swift \
+  BreakLoop/Core/Infrastructure/Logging/AppLogger.swift \
+  Tests/DiagnosticArchiveTests.swift \
   Tests/DashboardSynchronizationTests.swift \
   Tests/CooldownSelectionTests.swift \
   Tests/LifecycleTests.swift -o "$build_dir/lifecycle-tests"

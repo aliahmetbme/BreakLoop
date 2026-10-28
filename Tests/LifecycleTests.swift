@@ -93,6 +93,10 @@ func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure
 
 @main struct LifecycleTests {
     @MainActor static func main() throws {
+        if CommandLine.arguments.count == 4, CommandLine.arguments[1] == "--diagnostic-writer" {
+            try diagnosticWorker(directory: CommandLine.arguments[2], index: Int(CommandLine.arguments[3])!)
+            return
+        }
         if CommandLine.arguments.count == 2, CommandLine.arguments[1] == "--post-runtime-change" {
             guard RuntimeChangeSignal.post() == 0 else { exit(1) }
             return
@@ -302,6 +306,9 @@ func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure
         let beforeSelectionTests = count
         try runCooldownSelectionRegressionTests()
         print("Cooldown/selection regressions: \(count - beforeSelectionTests) checks passed")
+        let beforeDiagnostics = count
+        try runDiagnosticArchiveTests()
+        print("Diagnostic archive regressions: \(count - beforeDiagnostics) checks passed")
     }
 }
 

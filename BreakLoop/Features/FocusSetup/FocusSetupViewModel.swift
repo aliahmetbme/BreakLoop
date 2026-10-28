@@ -89,7 +89,7 @@ final class FocusSetupViewModel: ObservableObject {
                                          settings: managedSettingsService).start()
         } catch {
             errorMessage = error.localizedDescription
-            AppLogger.shared.error("setup_start_failed", message: error.localizedDescription, category: .monitoring)
+            AppLogger.shared.failure("setup_start_failed", error: error, category: .monitoring)
         }
     }
 
@@ -99,7 +99,7 @@ final class FocusSetupViewModel: ObservableObject {
                                          settings: managedSettingsService).stop()
         } catch {
             errorMessage = error.localizedDescription
-            AppLogger.shared.error("setup_stop_failed", message: error.localizedDescription, category: .monitoring)
+            AppLogger.shared.failure("setup_stop_failed", error: error, category: .monitoring)
         }
     }
 

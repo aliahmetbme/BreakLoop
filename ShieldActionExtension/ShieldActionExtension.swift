@@ -12,7 +12,8 @@ import ManagedSettings
 // Make sure that your class name matches the NSExtensionPrincipalClass in your Info.plist.
 class ShieldActionExtension: ShieldActionDelegate {
     override func handle(action: ShieldAction, for application: ApplicationToken, completionHandler: @escaping (ShieldActionResponse) -> Void) {
-        // Handle the action as needed.
+        AppLogger.shared.record("shield_action_received", category: .shield, outcome: "observed")
+        _ = PersistentLogStore.shared.flush(timeout: 0.03)
         switch action {
         case .primaryButtonPressed:
             completionHandler(.close)
@@ -24,12 +25,14 @@ class ShieldActionExtension: ShieldActionDelegate {
     }
     
     override func handle(action: ShieldAction, for webDomain: WebDomainToken, completionHandler: @escaping (ShieldActionResponse) -> Void) {
-        // Handle the action as needed.
+        AppLogger.shared.record("shield_action_received", category: .shield, outcome: "observed")
+        _ = PersistentLogStore.shared.flush(timeout: 0.03)
         completionHandler(.close)
     }
     
     override func handle(action: ShieldAction, for category: ActivityCategoryToken, completionHandler: @escaping (ShieldActionResponse) -> Void) {
-        // Handle the action as needed.
+        AppLogger.shared.record("shield_action_received", category: .shield, outcome: "observed")
+        _ = PersistentLogStore.shared.flush(timeout: 0.03)
         completionHandler(.close)
     }
 }

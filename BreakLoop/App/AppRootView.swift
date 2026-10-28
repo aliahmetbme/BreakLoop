@@ -69,7 +69,7 @@ struct AppRootView: View {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 viewModel.handleSceneActive()
-            } else { viewModel.handleSceneInactive() }
+            } else { viewModel.handleSceneInactive(isBackground: newPhase == .background) }
         }
         .onDisappear { viewModel.handleSceneInactive() }
     }

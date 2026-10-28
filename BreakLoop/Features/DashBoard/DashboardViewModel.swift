@@ -77,12 +77,12 @@ final class DashboardViewModel: ObservableObject {
 
     private func perform(_ action: () throws -> Void) {
         do {
-            try action()
+            try AppLogger.shared.withOperation("dashboard_action", action)
             errorMessage = nil
             synchronizer.actionCompleted()
         } catch {
             errorMessage = error.localizedDescription
-            AppLogger.shared.error("dashboard_transition_failed", message: error.localizedDescription, category: .monitoring)
+            AppLogger.shared.failure("dashboard_transition_failed", error: error, category: .monitoring)
         }
     }
 
@@ -101,7 +101,7 @@ final class DashboardViewModel: ObservableObject {
             }
         } catch {
             errorMessage = error.localizedDescription
-            AppLogger.shared.error("dashboard_selection_read_failed", message: error.localizedDescription, category: .monitoring)
+            AppLogger.shared.failure("dashboard_selection_read_failed", error: error, category: .monitoring)
         }
     }
 

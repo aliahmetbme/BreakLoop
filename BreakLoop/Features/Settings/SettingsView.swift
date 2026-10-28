@@ -181,6 +181,10 @@ struct SettingsView: View {
                 .padding(.vertical, 2)
             }
 
+            Section("Diagnostics") {
+                NavigationLink("Event History & Export") { DiagnosticsView() }
+            }
+
             // Section 5: About
             Section("About") {
                 HStack {

@@ -156,8 +156,8 @@ final class DashboardStateSynchronizer {
         metadata["attentionOccurredAt"] = next.runtime?.attention.map { "\($0.occurredAt.timeIntervalSince1970)" } ?? "none"
         metadata["failureSource"] = next.synchronizationError != nil ? "current_synchronization" : (next.runtime?.attention != nil ? "persisted_attention" : "none")
         metadata["synchronized"] = next.mode == .failure ? "false" : "true"
-        log("dashboard_runtime_observed", metadata)
         guard next != state else { return }
+        log("dashboard_runtime_observed", metadata)
         state = next; publish(next)
     }
 

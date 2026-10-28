@@ -53,14 +53,20 @@ final class MonitoringLifecycle {
     private let driver: MonitoringDriver
     private let now: () -> Date
     private let configuration: () -> CycleConfiguration
+    private let operation: (String, () throws -> Void) throws -> Void
     private let logger: (String, String, [String: String]) -> Void
 
     init(storage: any MonitoringRuntimeStore, driver: MonitoringDriver,
          now: @escaping () -> Date = Date.init,
          configuration: @escaping () -> CycleConfiguration,
-         log: @escaping (String, String, [String: String]) -> Void = { _, _, _ in }) {
+         log: @escaping (String, String, [String: String]) -> Void = { _, _, _ in },
+         operation: @escaping (String, () throws -> Void) throws -> Void = { _, work in try work() }) {
         self.storage = storage; self.driver = driver; self.now = now
-        self.configuration = configuration; self.logger = log
+        self.configuration = configuration; self.logger = log; self.operation = operation
+    }
+
+    private func withOperationLock(_ action: String, _ work: () throws -> Void) throws {
+        try operation(action) { try storage.withRuntimeLock(work) }
     }
 
     private func report(_ event: String, _ detail: String, metadata: [String: String] = [:]) {
@@ -146,7 +152,7 @@ final class MonitoringLifecycle {
     }
 
     func start() throws {
-        try storage.withRuntimeLock {
+        try withOperationLock("start_breakloop") {
             let old = try storage.readRuntime()
             if let snapshot = old.snapshot,
                old.legacyFocus == true || driver.activities().contains(MonitoringRuntime.focusName(snapshot.id)) {
@@ -160,7 +166,7 @@ final class MonitoringLifecycle {
     }
 
     func stop(all: Bool = false) throws {
-        try storage.withRuntimeLock {
+        try withOperationLock("stop_breakloop") {
             let old = try storage.readRuntime()
             var next = old
             next.snapshot = nil; next.checkpoint = nil; next.cooldown = nil
@@ -170,7 +176,7 @@ final class MonitoringLifecycle {
     }
 
     func startDeepFocus(minutes: Int) throws {
-        try storage.withRuntimeLock {
+        try withOperationLock("start_deep_focus") {
             let old = try storage.readRuntime()
             guard minutes >= 15, minutes <= 24 * 60 else { throw LifecycleError.invalidDuration }
             var next = old
@@ -183,7 +189,7 @@ final class MonitoringLifecycle {
     }
 
     func stopDeepFocus() throws {
-        try storage.withRuntimeLock {
+        try withOperationLock("stop_deep_focus") {
             let old = try storage.readRuntime()
             var next = old; next.deepFocus = nil
             try commit(next, replacing: old)
@@ -191,7 +197,7 @@ final class MonitoringLifecycle {
     }
 
     func extendCooldown(minutes: Int) throws {
-        try storage.withRuntimeLock {
+        try withOperationLock("extend_cooldown") {
             let old = try storage.readRuntime()
             guard minutes > 0, let end = old.cooldown?.endsAt, end > now() else { return }
             var next = old
@@ -204,7 +210,7 @@ final class MonitoringLifecycle {
     }
 
     func intervalEnded(name: String) throws {
-        try storage.withRuntimeLock {
+        try withOperationLock("interval_end_callback") {
             let state = try storage.readRuntime()
             let valid = state.cooldown.map { state.cooldownName == name && $0.endsAt <= now() } == true
                 || state.deepFocus.map { state.deepFocusName == name && $0.endsAt <= now() } == true
@@ -214,7 +220,7 @@ final class MonitoringLifecycle {
     }
 
     func intervalStarted(name: String) throws {
-        try storage.withRuntimeLock {
+        try withOperationLock("interval_start_callback") {
             let state = try storage.readRuntime()
             guard state.activityNames.contains(name) else { report("stale_start_rejected", name); return }
             try reconcileLocked(state)
@@ -222,14 +228,20 @@ final class MonitoringLifecycle {
     }
 
     func reconcile() throws {
-        try storage.withRuntimeLock { try reconcileLocked(storage.readRuntime()) }
+        try withOperationLock("reconcile") { try reconcileLocked(storage.readRuntime()) }
     }
 
     private func reconcileLocked(_ old: MonitoringRuntime) throws {
         var next = old
         let cooldownExpired = next.cooldown.map { $0.endsAt <= now() } ?? false
-        if cooldownExpired { next.cooldown = nil; next.checkpoint = nil }
-        if next.deepFocus.map({ $0.endsAt <= now() }) == true { next.deepFocus = nil }
+        if cooldownExpired {
+            report("cooldown_expired", "Cooldown deadline elapsed.", metadata: ["activity": old.cooldownName ?? "none"])
+            next.cooldown = nil; next.checkpoint = nil
+        }
+        if next.deepFocus.map({ $0.endsAt <= now() }) == true {
+            report("deep_focus_expired", "Deep Focus deadline elapsed.", metadata: ["activity": old.deepFocusName ?? "none"])
+            next.deepFocus = nil
+        }
         if cooldownExpired, next.snapshot != nil {
             next.snapshot = CycleSnapshot(configuration: configuration(), startedAt: now())
         }
@@ -274,11 +286,13 @@ final class MonitoringLifecycle {
     }
 
     func threshold(name: String, minute: Int?) throws {
-        try storage.withRuntimeLock {
+        try withOperationLock("threshold_callback") {
             let old = try storage.readRuntime()
             guard let snapshot = old.snapshot, name == MonitoringRuntime.focusName(snapshot.id),
                   old.cooldown == nil, driver.activities().contains(name) else { report("stale_threshold_rejected", name); return }
             let usage = minute ?? snapshot.usageLimitMinutes
+            report(minute == nil ? "usage_threshold_reached" : "usage_checkpoint_reached", "Usage callback observed.",
+                   metadata: ["usageMinute": "\(usage)", "activity": name])
             guard usage > 0, usage <= snapshot.usageLimitMinutes,
                   old.checkpoint.map({ usage > $0.usageMinute }) ?? true else {
                 report("stale_checkpoint_rejected", name); return
@@ -289,6 +303,7 @@ final class MonitoringLifecycle {
                     previousUsageMinute: $0.usageMinute, previousTimestamp: $0.timestamp,
                     requiredRestMinutes: snapshot.restDurationMinutes).isNaturalRest
             } ?? false
+            report("natural_rest_decided", "Natural rest evaluated.", metadata: ["naturalRest": "\(naturalRest)", "usageMinute": "\(usage)"])
             if naturalRest {
                 let fresh = CycleSnapshot(configuration: configuration(), startedAt: now())
                 next.snapshot = fresh; next.checkpoint = nil
@@ -303,6 +318,7 @@ final class MonitoringLifecycle {
                         try driver.startDeadline(MonitoringRuntime.cooldownName(deadline.id), deadline.endsAt)
                         phase = .runtimePersistence
                     }
+                    report("cooldown_started", "Cooldown publication completed.", metadata: ["activity": MonitoringRuntime.cooldownName(deadline.id), "endsAt": deadline.endsAt.ISO8601Format()])
                 } catch {
                     let original = (error as? MonitoringRecoveryError)?.original ?? error
                     let code = phase == .selectionUnavailable ? SelectionFailure.classify(original) : phase

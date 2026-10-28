@@ -50,9 +50,17 @@ final class ScreenTimeAuthorizationService: ScreenTimeAuthorizationServiceProtoc
     private let authorizationCenter: AuthorizationCenter
 
     func requestAuthorization() async throws {
-        try await authorizationCenter.requestAuthorization(
-            for: .individual
-        )
+        let operationID = UUID().uuidString
+        AppLogger.shared.record("authorization_request_attempted", category: .authorization, outcome: "attempted", metadata: ["operationId": operationID])
+        do {
+            try await authorizationCenter.requestAuthorization(for: .individual)
+            AppLogger.shared.record("authorization_request_completed", category: .authorization, outcome: "succeeded",
+                metadata: ["operationId": operationID, "status": "\(authorizationCenter.authorizationStatus)"])
+        } catch {
+            AppLogger.shared.failure("authorization_request_failed", error: error, category: .authorization,
+                metadata: ["operationId": operationID, "status": "\(authorizationCenter.authorizationStatus)"])
+            throw error
+        }
     }
     
     init (

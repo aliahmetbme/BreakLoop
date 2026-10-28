@@ -6,8 +6,11 @@ final class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     private var lifecycle: MonitoringLifecycle { .make(storage: storage) }
 
     private func perform(_ action: () throws -> Void) {
+        // The runtime operation releases its lock before this bounded drain. Never wait
+        // indefinitely for logging when iOS may end the extension process after its callback.
+        defer { _ = PersistentLogStore.shared.flush(timeout: 0.05) }
         do { try action() } catch {
-            AppLogger.shared.error("monitor_callback_failed", message: error.localizedDescription, category: .monitoring)
+            AppLogger.shared.failure("monitor_callback_failed", error: error, category: .monitoring)
         }
     }
 

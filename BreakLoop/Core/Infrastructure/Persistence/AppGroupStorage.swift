@@ -42,13 +42,11 @@ final class AppGroupStorage {
                     AppLogger.shared.info("runtime_change_signaled", message: "Runtime transaction completed and lock released.",
                         category: .monitoring, metadata: ["signalStatus": "\(status)", "signaledAt": Date().ISO8601Format()])
                 },
-                didCommit: { runtime, date in
-                    AppLogger.shared.info("runtime_published",
-                        message: "Runtime committed: cooldown=\(runtime.cooldown?.id.uuidString ?? "none"), committedAt=\(date.timeIntervalSince1970).",
-                        category: .monitoring, metadata: ["committedAtEpoch": "\(date.timeIntervalSince1970)",
-                            "snapshotId": runtime.snapshot?.id.uuidString ?? "none",
-                            "cooldownId": runtime.cooldown?.id.uuidString ?? "none",
-                            "cooldownEnd": runtime.cooldown?.endsAt.ISO8601Format() ?? "none"])
+                didCommit: { before, runtime, date in
+                    AppLogger.shared.record("runtime_published", category: .storage, outcome: "succeeded",
+                        metadata: ["committedAtEpoch": "\(date.timeIntervalSince1970)"],
+                        before: before.map { DiagnosticRuntimeSnapshot($0, at: date) },
+                        after: DiagnosticRuntimeSnapshot(runtime, at: date))
                 })
         } else { self.runtimeStore = nil }
     }
@@ -85,6 +83,7 @@ final class AppGroupStorage {
         selection.logBreakLoopCounts(stage: "save_selection")
         try selection.breakLoopTokenCounts.saveIfSupported {
             try save(selection, forKey: Keys.activitySelection)
+            AppLogger.shared.record("selection_saved", category: .selection, outcome: "succeeded", metadata: selection.breakLoopTokenCounts.diagnosticCounts)
         }
     }
     
@@ -102,10 +101,9 @@ final class AppGroupStorage {
     func saveCycleConfiguration(
         _ configuration: CycleConfiguration
     ) throws {
-        try save(
-            configuration,
-            forKey: Keys.cycleConfiguration
-        )
+        try save(configuration, forKey: Keys.cycleConfiguration)
+        AppLogger.shared.record("configuration_saved", category: .selection, outcome: "succeeded",
+            metadata: ["usageLimitMinutes": "\(configuration.usageLimitMinutes)", "restDurationMinutes": "\(configuration.restDurationMinutes)"])
     }
 
     func loadCycleConfiguration() -> CycleConfiguration {

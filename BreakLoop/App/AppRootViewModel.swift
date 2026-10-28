@@ -59,46 +59,51 @@ final class AppRootViewModel: ObservableObject {
         storage: storage, deviceActivityService: deviceActivityService,
         managedSettingsService: managedSettingsService)
 
-    func handleSceneInactive() {
+    func handleSceneInactive(isBackground: Bool = false) {
+        AppLogger.shared.record(isBackground ? "app_backgrounded" : "app_inactive", category: .lifecycle)
+        PersistentLogStore.shared.flushAsync()
         if uiState == .authorized { dashboardViewModel.deactivate() }
     }
 
     func handleSceneActive() {
-        let currentStatus = authorizationService.authorizationStatus
-        AppLogger.shared.info("authorization_route_observed", message: "Foreground authorization status sampled.",
-            category: .authorization, metadata: ["phase": "foreground", "sampledStatus": "\(currentStatus)",
-                "previousStatus": lastKnownStatus.map { "\($0)" } ?? "none", "previousRoute": "\(uiState)",
-                "hasConfiguredSelection": "\(storage.hasConfiguredSelection())",
-                "observedAtEpoch": "\(Date().timeIntervalSince1970)"])
+        AppLogger.shared.withOperation("app_foreground") {
+            AppLogger.shared.record("app_foregrounded", category: .lifecycle)
+            let currentStatus = authorizationService.authorizationStatus
+            AppLogger.shared.info("authorization_route_observed", message: "Foreground authorization status sampled.",
+                category: .authorization, metadata: ["phase": "foreground", "sampledStatus": "\(currentStatus)",
+                    "previousStatus": lastKnownStatus.map { "\($0)" } ?? "none", "previousRoute": "\(uiState)",
+                    "hasConfiguredSelection": "\(storage.hasConfiguredSelection())",
+                    "observedAtEpoch": "\(Date().timeIntervalSince1970)"])
 
-        AppLogger.shared.info(
-            "status_checked",
-            message: "Screen Time authorization checked on scene active.",
-            category: .authorization,
-            metadata: ["status": "\(currentStatus)"]
-        )
+            AppLogger.shared.info(
+                "status_checked",
+                message: "Screen Time authorization checked on scene active.",
+                category: .authorization,
+                metadata: ["status": "\(currentStatus)"]
+            )
 
-        if currentStatus == .approved {
-            dashboardViewModel.activate()
-            if lastKnownStatus != .approved && lastKnownStatus != nil {
-                AppLogger.shared.info(
-                    "restored",
-                    message: "Screen Time authorization status changed to approved.",
-                    category: .authorization
-                )
-            }
-            uiState = .authorized
-            lastKnownStatus = .approved
-        } else {
-            // Previously approved, now revoked OR non-approved state
-            if lastKnownStatus == .approved {
-                handleAuthorizationRevoked(newStatus: currentStatus)
+            if currentStatus == .approved {
+                dashboardViewModel.activate()
+                if lastKnownStatus != .approved && lastKnownStatus != nil {
+                    AppLogger.shared.info(
+                        "restored",
+                        message: "Screen Time authorization status changed to approved.",
+                        category: .authorization
+                    )
+                }
+                uiState = .authorized
+                lastKnownStatus = .approved
             } else {
-                uiState = AuthorizationStateEvaluator.evaluate(
-                    status: currentStatus,
-                    hasPreviouslyConfigured: storage.hasConfiguredSelection()
-                )
-                lastKnownStatus = currentStatus
+                // Previously approved, now revoked OR non-approved state
+                if lastKnownStatus == .approved {
+                    handleAuthorizationRevoked(newStatus: currentStatus)
+                } else {
+                    uiState = AuthorizationStateEvaluator.evaluate(
+                        status: currentStatus,
+                        hasPreviouslyConfigured: storage.hasConfiguredSelection()
+                    )
+                    lastKnownStatus = currentStatus
+                }
             }
         }
     }
@@ -122,7 +127,7 @@ final class AppRootViewModel: ObservableObject {
                                          settings: managedSettingsService).stop(all: true)
         } catch {
             errorMessage = error.localizedDescription
-            AppLogger.shared.error("revocation_cleanup_failed", message: error.localizedDescription, category: .monitoring)
+            AppLogger.shared.failure("revocation_cleanup_failed", error: error, category: .monitoring)
         }
 
         let isDeniedInSettings = (newStatus == .denied)

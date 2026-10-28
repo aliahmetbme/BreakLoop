@@ -29,6 +29,8 @@ final class ManagedSettingsService: ManagedSettingsServiceProtocol {
     // These setters have no enforcement acknowledgement API. A successful write only means
     // valid settings were requested; entitlement/authorization/device enforcement needs device QA.
     func block(_ selection: FamilyActivitySelection) {
+        AppLogger.shared.record("shield_apply_attempted", category: .shield, outcome: "attempted",
+            metadata: selection.breakLoopTokenCounts.diagnosticCounts.merging(["shieldAPIAttempted": "true"]) { value, _ in value })
         // Tek tek seçilmiş uygulamalar
         store.shield.applications =
             selection.applicationTokens.isEmpty
@@ -43,6 +45,7 @@ final class ManagedSettingsService: ManagedSettingsServiceProtocol {
     }
 
     func unblock() {
+        AppLogger.shared.record("shield_clear_attempted", category: .shield, outcome: "attempted", metadata: ["shieldAPIAttempted": "true"])
         store.clearAllSettings()
     }
 }

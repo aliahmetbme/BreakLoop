@@ -6,14 +6,14 @@ import Darwin
 final class RuntimeFileStore: MonitoringRuntimeStore {
     private let directory: URL
     private var changedUnderLock = false
-    private let didCommit: (MonitoringRuntime, Date) -> Void
+    private let didCommit: (MonitoringRuntime?, MonitoringRuntime, Date) -> Void
     private let didChange: () -> Void
     private let migrate: () throws -> MonitoringRuntime
     var recordURL: URL { directory.appendingPathComponent("monitoring-runtime-v1.json") }
 
     init(directory: URL, migrate: @escaping () throws -> MonitoringRuntime = { MonitoringRuntime() },
          didChange: @escaping () -> Void = {},
-         didCommit: @escaping (MonitoringRuntime, Date) -> Void = { _, _ in }) {
+         didCommit: @escaping (MonitoringRuntime?, MonitoringRuntime, Date) -> Void = { _, _, _ in }) {
         self.directory = directory; self.migrate = migrate; self.didChange = didChange; self.didCommit = didCommit
     }
 
@@ -44,9 +44,14 @@ final class RuntimeFileStore: MonitoringRuntimeStore {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .sortedKeys
         let data = try encoder.encode(state)
-        if FileManager.default.fileExists(atPath: recordURL.path), try Data(contentsOf: recordURL) == data { return }
+        var before: MonitoringRuntime?
+        if FileManager.default.fileExists(atPath: recordURL.path) {
+            let previous = try Data(contentsOf: recordURL)
+            if previous == data { return }
+            before = try? JSONDecoder().decode(MonitoringRuntime.self, from: previous)
+        }
         try data.write(to: recordURL, options: .atomic)
         changedUnderLock = true
-        didCommit(state, Date())
+        didCommit(before, state, Date())
     }
 }
