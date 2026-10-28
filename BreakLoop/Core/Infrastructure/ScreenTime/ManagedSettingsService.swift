@@ -26,6 +26,8 @@ final class ManagedSettingsService: ManagedSettingsServiceProtocol {
         self.store = store
     }
 
+    // These setters have no enforcement acknowledgement API. A successful write only means
+    // valid settings were requested; entitlement/authorization/device enforcement needs device QA.
     func block(_ selection: FamilyActivitySelection) {
         // Tek tek seçilmiş uygulamalar
         store.shield.applications =

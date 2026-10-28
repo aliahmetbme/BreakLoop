@@ -65,6 +65,7 @@ final class AppRootViewModel: ObservableObject {
             do {
                 try MonitoringLifecycle.make(storage: storage, activity: deviceActivityService,
                                              settings: managedSettingsService).reconcile()
+                errorMessage = try storage.readRuntime().attention?.displayMessage
             } catch {
                 errorMessage = error.localizedDescription
                 AppLogger.shared.error("foreground_reconciliation_failed", message: error.localizedDescription, category: .monitoring)

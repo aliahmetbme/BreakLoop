@@ -57,15 +57,26 @@ final class DashboardViewModel: ObservableObject {
     }
 
     func refresh() {
-        perform { try lifecycle.reconcile() }
+        do {
+            try lifecycle.reconcile()
+            if let attention = try storage.readRuntime().attention { errorMessage = attention.displayMessage }
+        } catch {
+            errorMessage = error.localizedDescription
+            AppLogger.shared.error("dashboard_reconciliation_failed", message: error.localizedDescription, category: .monitoring)
+        }
         self.configuration = storage.loadCycleConfiguration()
         self.activeSnapshot = storage.loadActiveCycleSnapshot()
-        self.isBreakLoopActive = storage.isBreakLoopActive()
+        self.isBreakLoopActive = storage.isBreakLoopActive() && activeSnapshot.map {
+            deviceActivityService.activityNames.contains(MonitoringRuntime.focusName($0.id))
+        } == true
         self.deepFocusSession = storage.loadDeepFocusSession()
         self.cooldownEndDate = try? storage.loadCooldownEndDate()
 
-        if let savedSelection = try? storage.loadActivitySelection() {
-            self.selection = savedSelection
+        do {
+            if let savedSelection = try storage.loadActivitySelection() { self.selection = savedSelection }
+        } catch {
+            if errorMessage == nil { errorMessage = error.localizedDescription }
+            AppLogger.shared.error("dashboard_selection_read_failed", message: error.localizedDescription, category: .monitoring)
         }
     }
 

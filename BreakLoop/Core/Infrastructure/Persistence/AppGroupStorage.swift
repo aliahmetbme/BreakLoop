@@ -70,16 +70,12 @@ final class AppGroupStorage {
         )
     }
     
-    func loadActivitySelection()
-            throws -> FamilyActivitySelection? {
+    func loadActivitySelection() throws -> FamilyActivitySelection? {
+        guard let raw = defaults.object(forKey: Keys.activitySelection) else { return nil }
+        guard let data = raw as? Data else { throw SelectionFailure.corrupted }
+        return try JSONDecoder().decode(FamilyActivitySelection.self, from: data)
+    }
 
-            try load(
-                FamilyActivitySelection.self,
-                forKey: Keys.activitySelection
-            )
-        }
-    
-    
     func loadCooldownEndDate() throws -> Date? {
         if runtimeExists { return try readRuntime().cooldown?.endsAt }
         return try load(Date.self, forKey: Keys.cooldownEndDate)
@@ -181,7 +177,7 @@ extension AppGroupStorage: MonitoringRuntimeStore {
             checkpoint: try load(UsageCheckpointState.self, forKey: Keys.usageCheckpointState),
             cooldown: try load(Date.self, forKey: Keys.cooldownEndDate).map { RestrictionDeadline(endsAt: $0) },
             deepFocus: try load(DeepFocusSession.self, forKey: Keys.deepFocusSession),
-            legacyCooldown: true, legacyDeepFocus: true)
+            legacyCooldown: true, legacyDeepFocus: true, legacyFocus: true)
     }
 
 }
