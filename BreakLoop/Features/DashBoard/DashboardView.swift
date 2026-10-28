@@ -10,6 +10,7 @@ import FamilyControls
 
 struct DashboardView: View {
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
 
     @StateObject private var viewModel: DashboardViewModel
@@ -79,29 +80,39 @@ struct DashboardView: View {
 
     // MARK: - Header Bar
     private var dashboardHeader: some View {
-        HStack(alignment: .center) {
-            HStack(spacing: BLSpacing.xs) {
-                Image("AppLogo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32, height: 32)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-                Text("BreakLoop")
-                    .font(BLTypography.title2)
-                    .foregroundStyle(BLColor.textPrimary)
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: BLSpacing.sm) { headerBrand; headerControls }
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    HStack { headerBrand; Spacer(minLength: BLSpacing.sm); headerControls }
+                    VStack(alignment: .leading, spacing: BLSpacing.sm) { headerBrand; headerControls }
+                }
             }
+        }
+        .padding(.vertical, BLSpacing.xxs)
+    }
 
-            Spacer()
+    private var headerBrand: some View {
+        HStack(spacing: BLSpacing.xs) {
+            Image("AppLogo")
+                .resizable().scaledToFit().frame(width: 32, height: 32)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .accessibilityHidden(true)
+            Text("BreakLoop").font(BLTypography.title2)
+                .foregroundStyle(BLColor.textPrimary).fixedSize(horizontal: false, vertical: true)
+        }
+    }
 
-            HStack(spacing: BLSpacing.xs) {
+    private var headerControls: some View {
+        HStack(spacing: BLSpacing.xs) {
                 // Quick Mode Toggle
                 Button {
                     cycleAppearance()
                 } label: {
                     HStack(spacing: 4) {
                         Text("Mode")
-                            .font(.system(size: 11, weight: .medium))
+                            .font(BLTypography.caption)
                         Image(systemName: appearanceIcon)
                             .font(.system(size: 12))
                     }
@@ -111,6 +122,7 @@ struct DashboardView: View {
                     .background(BLColor.surfaceSubtle)
                     .clipShape(Capsule())
                 }
+                .frame(minWidth: 44, minHeight: 44)
                 .accessibilityLabel("Toggle Appearance Mode")
 
                 // Settings Navigation Button
@@ -120,14 +132,12 @@ struct DashboardView: View {
                     Image(systemName: "slider.horizontal.3")
                         .font(.body.weight(.medium))
                         .foregroundStyle(BLColor.textSecondary)
-                        .frame(width: 36, height: 36)
+                        .frame(width: 44, height: 44)
                         .background(BLColor.surfaceSubtle)
                         .clipShape(Circle())
                 }
                 .accessibilityLabel("Settings")
             }
-        }
-        .padding(.vertical, BLSpacing.xxs)
     }
 
     private var appearanceIcon: String {
@@ -165,13 +175,19 @@ struct DashboardView: View {
                     }
                 }
 
+                if viewModel.state.mode == .monitoring {
+                    BLStatusBadge(state: .active)
+                }
+
                 // Central Status Ring
                 statusRingView
                     .padding(.vertical, 2)
 
-                // Active state badge appears below the ring according to the approved design
                 if viewModel.state.mode == .monitoring {
-                    BLStatusBadge(state: .active)
+                    Label("MONITORING IS ON", systemImage: "waveform")
+                        .font(BLTypography.captionBold)
+                        .foregroundStyle(BLColor.brandPrimary)
+                        .accessibilityHidden(true)
                 }
 
                 // Title & Subtitles
@@ -187,7 +203,7 @@ struct DashboardView: View {
                             .foregroundStyle(BLColor.brandPrimary)
                             .multilineTextAlignment(.center)
 
-                        Text("Take a short pause. Your next cycle starts automatically.")
+                        Text("Your apps are paused. Take a moment away from the screen.")
                             .font(BLTypography.caption)
                             .foregroundStyle(BLColor.textSecondary)
                             .multilineTextAlignment(.center)
@@ -211,26 +227,21 @@ struct DashboardView: View {
 
     @ViewBuilder
     private var statusRingView: some View {
-        if viewModel.isDeepFocusActive {
-            BLStatusRing(
-                icon: "flame.fill",
-                statusColor: BLColor.statusDeepFocus,
-                badgeText: "LOCKED"
-            )
-        } else if viewModel.isCooldownActive {
-            BLStatusRing(
-                icon: "leaf.fill",
-                statusColor: BLColor.statusBreak,
-                progress: 0.65
-            )
+        if viewModel.isDeepFocusActive, let session = viewModel.deepFocusSession {
+            BLCountdownStatusView(endsAt: session.endsAt, startedAt: session.startedAt, isDeepFocus: true)
+        } else if viewModel.isCooldownActive, let end = viewModel.cooldownEndDate {
+            BLCountdownStatusView(endsAt: end, isDeepFocus: false)
         } else if viewModel.state.mode == .failure {
             BLStatusRing(icon: "exclamationmark.triangle", statusColor: BLColor.destructive)
         } else if viewModel.state.mode == .monitoring {
             BLStatusRing(
                 icon: "infinity",
                 statusColor: BLColor.brandInteractive,
-                badgeText: "ACTIVE"
+                badgeText: "ACTIVE",
+                size: dynamicTypeSize.isAccessibilitySize ? 100 : 200,
+                isMonitoring: true
             )
+            .accessibilityHidden(true)
         } else {
             BLStatusRing(
                 icon: "infinity",
@@ -241,15 +252,15 @@ struct DashboardView: View {
 
     private var statusTitle: String {
         if viewModel.isDeepFocusActive {
-            return "Deep Focus Active"
+            return "Protect your focus."
         } else if viewModel.isCooldownActive {
-            return "Time for a break"
+            return "Time for a break."
         } else if viewModel.state.mode == .failure {
             return "Monitoring needs attention"
         } else if viewModel.state.mode == .loading {
             return "Updating status…"
         } else if viewModel.state.mode == .monitoring {
-            return "BreakLoop Active"
+            return "Your cycle is running."
         } else {
             return "BreakLoop Off"
         }
@@ -257,13 +268,13 @@ struct DashboardView: View {
 
     private var statusSubtitle: String {
         if viewModel.isDeepFocusActive, let deepFocus = viewModel.deepFocusSession {
-            return "Apps strictly shielded until \(deepFocus.endsAt.formatted(date: .omitted, time: .shortened))"
+            return "Selected apps stay paused for this session. Focus ends at \(deepFocus.endsAt.formatted(date: .omitted, time: .shortened))"
         } else if viewModel.state.mode == .failure {
             return "Reopen BreakLoop or retry after resolving the error below."
         } else if viewModel.state.mode == .loading {
             return "Reading the latest monitoring state"
         } else if viewModel.state.mode == .monitoring {
-            return "Monitoring your selected apps truthful to Apple Screen Time API. Next break engages automatically at limit."
+            return "Selected apps are being monitored. A break begins at your shared usage limit."
         } else {
             return "Ready when you are"
         }
@@ -338,11 +349,11 @@ struct DashboardView: View {
                         }
 
                         VStack(alignment: .leading, spacing: 3) {
-                            Text("\(viewModel.selectedAppsCount) apps paused · \(viewModel.effectiveRestMinutes) min recovery break")
+                            Text("Your recovery break")
                                 .font(BLTypography.headline)
                                 .foregroundStyle(BLColor.textPrimary)
 
-                            Text("Screen Time shield is active across selected apps. Step away and let your attention recover naturally.")
+                            Text("\(viewModel.selectedAppsCount) apps paused · \(viewModel.effectiveRestMinutes) min cooldown")
                                 .font(BLTypography.caption)
                                 .foregroundStyle(BLColor.textSecondary)
                         }
@@ -357,7 +368,7 @@ struct DashboardView: View {
                     } label: {
                         HStack {
                             Spacer()
-                            Label("Need more time? Extend by 15 min", systemImage: "arrow.clockwise")
+                            Label("Extend by 15 min", systemImage: "plus")
                                 .font(BLTypography.secondaryMedium)
                                 .foregroundStyle(BLColor.brandPrimary)
                             Spacer()
@@ -365,6 +376,13 @@ struct DashboardView: View {
                         .frame(minHeight: 44)
                     }
                     .buttonStyle(.plain)
+                }
+            } else if viewModel.isDeepFocusActive, let session = viewModel.deepFocusSession {
+                VStack(alignment: .leading, spacing: BLSpacing.xs) {
+                    Label("Deep Focus session", systemImage: "sparkle")
+                        .font(BLTypography.headline).foregroundStyle(BLColor.textPrimary)
+                    Text("\(session.durationMinutes) min planned · \(viewModel.selectedAppsCount) apps selected")
+                        .font(BLTypography.caption).foregroundStyle(BLColor.textSecondary)
                 }
             } else if viewModel.isBreakLoopActive {
                 // Active Rule Card (matching design Screen 2)
@@ -392,7 +410,7 @@ struct DashboardView: View {
                     Divider()
                         .background(BLColor.divider)
 
-                    HStack {
+                    (dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: BLSpacing.xs)) : AnyLayout(HStackLayout())) {
                         Image(systemName: "square.grid.2x2")
                             .font(.caption)
                             .foregroundStyle(BLColor.textSecondary)
@@ -496,9 +514,9 @@ struct DashboardView: View {
                             .fill(BLColor.surfaceSubtle)
                             .frame(width: 38, height: 38)
 
-                        Image(systemName: "flame.fill")
+                        Image(systemName: "sparkle")
                             .font(.subheadline)
-                            .foregroundStyle(BLColor.brandDeep)
+                            .foregroundStyle(BLColor.brandPrimary)
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
@@ -555,9 +573,9 @@ struct DeepFocusSheet: View {
                                 .fill(BLColor.surfaceSubtle)
                                 .frame(width: 60, height: 60)
 
-                            Image(systemName: "flame.fill")
+                            Image(systemName: "sparkle")
                                 .font(.title2)
-                                .foregroundStyle(BLColor.brandDeep)
+                                .foregroundStyle(BLColor.brandPrimary)
                         }
 
                         Text("Deep Focus")
@@ -588,7 +606,7 @@ struct DeepFocusSheet: View {
 
                     BLPrimaryButton(
                         title: "Launch Deep Focus (\(selectedDuration >= 60 ? "\(selectedDuration / 60)h" : "\(selectedDuration)m"))",
-                        icon: "flame.fill"
+                        icon: "sparkle"
                     ) {
                         onStart(selectedDuration)
                         dismiss()

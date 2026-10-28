@@ -12,6 +12,7 @@ struct FocusSetupView: View {
 
     @StateObject private var viewModel = FocusSetupViewModel.makeDefault()
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var isModal: Bool = true
 
@@ -156,14 +157,14 @@ struct FocusSetupView: View {
     private var usageLimitCard: some View {
         BLCard {
             VStack(alignment: .leading, spacing: BLSpacing.sm) {
-                HStack(alignment: .firstTextBaseline) {
+                (dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: BLSpacing.xxs)) : AnyLayout(HStackLayout(alignment: .firstTextBaseline))) {
                     Text("Usage Limit")
                         .font(BLTypography.headline)
                         .foregroundStyle(BLColor.textPrimary)
 
                     Spacer()
 
-                    Text("Continuous allowance")
+                    Text("Combined allowance")
                         .font(BLTypography.caption)
                         .foregroundStyle(BLColor.textSecondary)
                 }
@@ -186,7 +187,7 @@ struct FocusSetupView: View {
     private var breakDurationCard: some View {
         BLCard {
             VStack(alignment: .leading, spacing: BLSpacing.sm) {
-                HStack(alignment: .firstTextBaseline) {
+                (dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: BLSpacing.xxs)) : AnyLayout(HStackLayout(alignment: .firstTextBaseline))) {
                     Text("Break Duration")
                         .font(BLTypography.headline)
                         .foregroundStyle(BLColor.textPrimary)
@@ -204,7 +205,7 @@ struct FocusSetupView: View {
                     minItemWidth: 84
                 )
 
-                Text("Apps unlock automatically once the calming pause window elapses.")
+                Text("Your break ends at the verified cooldown deadline.")
                     .font(BLTypography.caption)
                     .foregroundStyle(BLColor.textSecondary)
                     .padding(.top, BLSpacing.xxs)

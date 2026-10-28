@@ -24,9 +24,12 @@ struct BLSecondaryButton: View {
                 }
                 Text(title)
                     .font(BLTypography.button)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .foregroundStyle(isEnabled ? BLColor.secondaryButtonForeground : BLColor.secondaryButtonForeground.opacity(0.4))
             .frame(maxWidth: isFullWidth ? .infinity : nil)
+            .padding(.vertical, BLSpacing.xs)
             .frame(minHeight: 48)
             .padding(.horizontal, BLSpacing.md)
             .background(

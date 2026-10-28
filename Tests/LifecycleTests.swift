@@ -306,6 +306,9 @@ func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure
         let beforeSelectionTests = count
         try runCooldownSelectionRegressionTests()
         print("Cooldown/selection regressions: \(count - beforeSelectionTests) checks passed")
+        let beforePresentation = count
+        runTimePresentationTests()
+        print("Time presentation: \(count - beforePresentation) checks passed")
         let beforeDiagnostics = count
         try runDiagnosticArchiveTests()
         print("Diagnostic archive regressions: \(count - beforeDiagnostics) checks passed")

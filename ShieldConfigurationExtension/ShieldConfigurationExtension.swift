@@ -19,70 +19,39 @@ class ShieldConfigurationExtension: ShieldConfigurationDataSource {
     private func makeShieldConfiguration() -> ShieldConfiguration {
         defer { _ = PersistentLogStore.shared.flush(timeout: 0.03) }
         AppLogger.shared.record("shield_presented", category: .shield, outcome: "observed")
+        let now = Date()
+        // Read one authoritative generation; an unreadable record uses the safe fallback.
+        let runtime = try? storage.readRuntime()
         let formatter = DateFormatter()
         formatter.timeStyle = .short
-
-        if let deepFocus = storage.loadDeepFocusSession(), deepFocus.isActive {
-            let endTimeString = formatter.string(from: deepFocus.endsAt)
-            return ShieldConfiguration(
-                backgroundBlurStyle: .systemThickMaterialDark,
-                backgroundColor: UIColor(red: 0.08, green: 0.07, blue: 0.12, alpha: 0.95),
-                icon: UIImage(systemName: "flame.fill")?.withTintColor(.systemOrange, renderingMode: .alwaysOriginal),
-                title: ShieldConfiguration.Label(
-                    text: "Deep Focus Active",
-                    color: .white
-                ),
-                subtitle: ShieldConfiguration.Label(
-                    text: "Selected apps are blocked until \(endTimeString). Stay in the flow.",
-                    color: UIColor(white: 0.8, alpha: 1.0)
-                ),
-                primaryButtonLabel: ShieldConfiguration.Label(
-                    text: "Stay Focused",
-                    color: .white
-                ),
-                primaryButtonBackgroundColor: UIColor.systemOrange
-            )
+        let title: String
+        let subtitle: String
+        let asset: String
+        if let session = runtime?.deepFocus, session.endsAt > now {
+            title = "Protect your focus."
+            subtitle = "Selected apps are paused until \(formatter.string(from: session.endsAt))."
+            asset = "BLShieldHorizonDeepFocus"
+        } else if let deadline = runtime?.cooldown, deadline.endsAt > now {
+            title = "A little space."
+            subtitle = "Your selected apps are paused until \(formatter.string(from: deadline.endsAt))."
+            asset = "BLShieldHorizonCooldown"
+        } else {
+            title = "A moment away."
+            subtitle = "This app is temporarily unavailable."
+            asset = "BLShieldHorizonFallback"
         }
-
-        if let cooldownEnd = try? storage.loadCooldownEndDate() {
-            let endTimeString = formatter.string(from: cooldownEnd)
-            return ShieldConfiguration(
-                backgroundBlurStyle: .systemThickMaterialDark,
-                backgroundColor: UIColor(red: 0.07, green: 0.08, blue: 0.14, alpha: 0.95),
-                icon: UIImage(systemName: "hourglass")?.withTintColor(.systemIndigo, renderingMode: .alwaysOriginal),
-                title: ShieldConfiguration.Label(
-                    text: "Break the loop.",
-                    color: .white
-                ),
-                subtitle: ShieldConfiguration.Label(
-                    text: "Your usage limit is complete. Take a short break until \(endTimeString).",
-                    color: UIColor(white: 0.8, alpha: 1.0)
-                ),
-                primaryButtonLabel: ShieldConfiguration.Label(
-                    text: "Take a Break",
-                    color: .white
-                ),
-                primaryButtonBackgroundColor: UIColor.systemIndigo
-            )
-        }
-
+        let brand = UIColor(red: 67/255, green: 78/255, blue: 232/255, alpha: 1)
+        let icon = UIImage(named: asset, in: Bundle(for: ShieldConfigurationExtension.self), compatibleWith: nil)
+            ?? UIImage(systemName: "pause.circle.fill")?.withTintColor(brand, renderingMode: .alwaysOriginal)
         return ShieldConfiguration(
             backgroundBlurStyle: .systemThickMaterialDark,
-            backgroundColor: UIColor(red: 0.07, green: 0.08, blue: 0.14, alpha: 0.95),
-            icon: UIImage(systemName: "pause.circle.fill")?.withTintColor(.systemIndigo, renderingMode: .alwaysOriginal),
-            title: ShieldConfiguration.Label(
-                text: "Break the loop.",
-                color: .white
-            ),
-            subtitle: ShieldConfiguration.Label(
-                text: "Your usage limit is complete. Take a short break before continuing.",
-                color: UIColor(white: 0.8, alpha: 1.0)
-            ),
-            primaryButtonLabel: ShieldConfiguration.Label(
-                text: "Close",
-                color: .white
-            ),
-            primaryButtonBackgroundColor: UIColor.systemIndigo
+            backgroundColor: UIColor(red: 12/255, green: 14/255, blue: 20/255, alpha: 1),
+            icon: icon,
+            title: ShieldConfiguration.Label(text: title, color: UIColor(red: 245/255, green: 246/255, blue: 250/255, alpha: 1)),
+            subtitle: ShieldConfiguration.Label(text: subtitle,
+                color: UIColor(red: 184/255, green: 193/255, blue: 217/255, alpha: 1)),
+            primaryButtonLabel: ShieldConfiguration.Label(text: "Close App", color: .white),
+            primaryButtonBackgroundColor: brand
         )
     }
 

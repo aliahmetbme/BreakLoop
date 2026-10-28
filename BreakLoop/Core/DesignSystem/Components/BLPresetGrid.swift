@@ -24,11 +24,13 @@ struct BLPresetGrid<T: Hashable>: View {
     @Binding var selected: T
     var minItemWidth: CGFloat = 84
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
         LazyVGrid(
-            columns: [
-                GridItem(.adaptive(minimum: minItemWidth), spacing: BLSpacing.sm)
-            ],
+            columns: dynamicTypeSize.isAccessibilitySize
+                ? [GridItem(.flexible())]
+                : [GridItem(.adaptive(minimum: minItemWidth), spacing: BLSpacing.sm)],
             spacing: BLSpacing.sm
         ) {
             ForEach(options) { option in
@@ -38,6 +40,9 @@ struct BLPresetGrid<T: Hashable>: View {
                 } label: {
                     Text(option.label)
                         .font(BLTypography.bodyMedium)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.vertical, BLSpacing.xs)
                         .foregroundStyle(isSelected ? Color.white : BLColor.textPrimary)
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: 46) // Accessible touch target

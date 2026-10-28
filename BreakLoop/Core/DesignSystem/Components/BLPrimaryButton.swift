@@ -39,10 +39,13 @@ struct BLPrimaryButton: View {
                     }
                     Text(title)
                         .font(BLTypography.button)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .foregroundStyle(Color.white)
             .frame(maxWidth: isFullWidth ? .infinity : nil)
+            .padding(.vertical, BLSpacing.xs)
             .frame(minHeight: 52)
             .padding(.horizontal, BLSpacing.lg)
             .background(

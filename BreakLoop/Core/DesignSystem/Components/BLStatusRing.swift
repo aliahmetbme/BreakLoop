@@ -15,6 +15,10 @@ struct BLStatusRing: View {
     var isOffState: Bool = false
     var size: CGFloat = 100
 
+    var isMonitoring: Bool = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
+
     private let strokeWidth: CGFloat = 3.5
 
     var body: some View {
@@ -37,21 +41,32 @@ struct BLStatusRing: View {
                     )
                     .frame(width: size, height: size)
 
-                // Refined arc stroke
-                Circle()
-                    .trim(from: 0, to: progress ?? 0.75)
-                    .stroke(
-                        statusColor,
-                        style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
-                    )
-                    .rotationEffect(.degrees(-90))
-                    .frame(width: size, height: size)
+                // The orbit indicates liveness only; it is never measured usage.
+                TimelineView(.animation(minimumInterval: 1.0 / 30,
+                    paused: !isMonitoring || reduceMotion || scenePhase != .active || ProcessInfo.processInfo.isLowPowerModeEnabled)) { context in
+                    ZStack {
+                        if isMonitoring {
+                            let moving = !reduceMotion && scenePhase == .active && !ProcessInfo.processInfo.isLowPowerModeEnabled
+                            let breath = moving ? (sin(context.date.timeIntervalSinceReferenceDate * .pi / 2.8) + 1) / 2 : 0.5
+                            Circle().fill(statusColor.opacity(0.04 + breath * 0.04))
+                                .frame(width: size + 20, height: size + 20)
+                        }
+                        Circle()
+                            .trim(from: 0, to: isMonitoring ? 0.22 : min(1, max(0, progress ?? 0)))
+                            .stroke(statusColor, style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round))
+                            .rotationEffect(.degrees(-90 + (isMonitoring && !reduceMotion && scenePhase == .active && !ProcessInfo.processInfo.isLowPowerModeEnabled
+                                ? context.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 10) * 36 : 0)))
+                            .frame(width: size, height: size)
+                    }
+                }
 
                 // Center Icon and optional Badge text (e.g., "ACTIVE")
                 VStack(spacing: 3) {
-                    Image(systemName: icon)
-                        .font(.system(size: size * 0.30, weight: .semibold))
-                        .foregroundStyle(statusColor)
+                    if !icon.isEmpty {
+                        Image(systemName: icon)
+                            .font(.system(size: min(size * 0.30, 36), weight: .semibold))
+                            .foregroundStyle(statusColor)
+                    }
 
                     if let badgeText = badgeText {
                         Text(badgeText)
@@ -70,7 +85,7 @@ struct BLStatusRing: View {
 
 #Preview {
     HStack(spacing: 24) {
-        BLStatusRing(icon: "infinity", statusColor: BLColor.brandInteractive, badgeText: "ACTIVE")
+        BLStatusRing(icon: "infinity", statusColor: BLColor.brandInteractive, badgeText: "ACTIVE", isMonitoring: true)
         BLStatusRing(icon: "infinity", isOffState: true)
         BLStatusRing(icon: "leaf.fill", statusColor: BLColor.statusBreak, progress: 0.65)
     }

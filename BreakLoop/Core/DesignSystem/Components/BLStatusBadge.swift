@@ -29,13 +29,14 @@ struct BLStatusBadge: View {
             switch self {
             case .active: return BLColor.brandInteractive
             case .breakActive: return BLColor.statusBreak
-            case .deepFocus: return BLColor.brandDeep
+            case .deepFocus: return BLColor.statusDeepFocus
             case .inactive: return BLColor.textTertiary
             case .permissionRequired: return BLColor.destructive
             }
         }
     }
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let state: StatusState
 
     var body: some View {
@@ -46,12 +47,13 @@ struct BLStatusBadge: View {
 
             Text(state.title)
                 .font(BLTypography.badge)
-                .foregroundStyle(state.color)
+                .fixedSize(horizontal: false, vertical: true)
+                .foregroundStyle(state == .deepFocus ? BLColor.brandPrimary : state.color)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
         .background(state.color.opacity(0.10))
-        .clipShape(Capsule())
+        .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize.isAccessibilitySize ? BLRadius.control : BLRadius.pill, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Status: \(state.title)")
     }
