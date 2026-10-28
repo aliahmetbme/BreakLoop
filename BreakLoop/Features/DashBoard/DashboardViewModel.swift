@@ -45,7 +45,19 @@ final class DashboardViewModel: ObservableObject {
         refresh()
     }
 
+    private var lifecycle: MonitoringLifecycle {
+        .make(storage: storage, activity: deviceActivityService, settings: managedSettingsService)
+    }
+
+    private func perform(_ action: () throws -> Void) {
+        do { try action() } catch {
+            errorMessage = error.localizedDescription
+            AppLogger.shared.error("dashboard_transition_failed", message: error.localizedDescription, category: .monitoring)
+        }
+    }
+
     func refresh() {
+        perform { try lifecycle.reconcile() }
         self.configuration = storage.loadCycleConfiguration()
         self.activeSnapshot = storage.loadActiveCycleSnapshot()
         self.isBreakLoopActive = storage.isBreakLoopActive()
@@ -91,33 +103,16 @@ final class DashboardViewModel: ObservableObject {
         }
 
         errorMessage = nil
-        let snapshot = CycleSnapshot(configuration: configuration)
-        try? storage.saveActiveCycleSnapshot(snapshot)
-        storage.clearUsageCheckpointState()
-        storage.setBreakLoopActive(true)
-
-        do {
-            try deviceActivityService.startMonitoring(
-                selection: selection,
-                snapshot: snapshot
-            )
-            isBreakLoopActive = true
-            activeSnapshot = snapshot
-        } catch {
-            errorMessage = error.localizedDescription
+        perform {
+            try storage.saveActivitySelection(selection)
+            try lifecycle.start()
         }
+        refresh()
     }
 
     func stopBreakLoop() {
-        deviceActivityService.stopMonitoring()
-        managedSettingsService.unblock()
-        storage.clearUsageCheckpointState()
-        storage.clearCooldownEndDate()
-        storage.clearActiveCycleSnapshot()
-        storage.setBreakLoopActive(false)
-
-        isBreakLoopActive = false
-        activeSnapshot = nil
+        perform { try lifecycle.stop() }
+        refresh()
     }
 
     func startDeepFocus(durationMinutes: Int) {
@@ -127,39 +122,21 @@ final class DashboardViewModel: ObservableObject {
         }
 
         errorMessage = nil
-        let session = DeepFocusSession(
-            durationMinutes: durationMinutes
-        )
-
-        try? storage.saveDeepFocusSession(session)
-        managedSettingsService.block(selection)
-
-        do {
-            try deviceActivityService.startDeepFocus(durationMinutes: durationMinutes)
-            deepFocusSession = session
+        perform {
+            try storage.saveActivitySelection(selection)
+            try lifecycle.startDeepFocus(minutes: durationMinutes)
             isDeepFocusSheetPresented = false
-        } catch {
-            errorMessage = error.localizedDescription
         }
+        refresh()
     }
 
     func stopDeepFocus() {
-        deviceActivityService.stopDeepFocus()
-        storage.clearDeepFocusSession()
-        deepFocusSession = nil
-
-        // Deep focus bittiğinde eğer normal BreakLoop aktiftiyse kalkanı kaldırma yerine normal cycle'a dön
-        if isBreakLoopActive {
-            startBreakLoop()
-        } else {
-            managedSettingsService.unblock()
-        }
+        perform { try lifecycle.stopDeepFocus() }
+        refresh()
     }
 
     func extendCooldown(by minutes: Int = 15) {
-        guard let currentEnd = cooldownEndDate, isCooldownActive else { return }
-        let newEnd = currentEnd.addingTimeInterval(TimeInterval(minutes * 60))
-        try? storage.saveCooldownEndDate(newEnd)
-        self.cooldownEndDate = newEnd
+        perform { try lifecycle.extendCooldown(minutes: minutes) }
+        refresh()
     }
 }

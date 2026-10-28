@@ -9,6 +9,8 @@ import SwiftUI
 import FamilyControls
 
 struct DashboardView: View {
+    @Environment(\.scenePhase) private var scenePhase
+
 
     @StateObject private var viewModel = DashboardViewModel()
     @EnvironmentObject private var appearanceController: AppearanceController
@@ -55,6 +57,9 @@ struct DashboardView: View {
                 viewModel.refresh()
             }) {
                 FocusSetupView(isModal: true)
+            }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { viewModel.refresh() }
             }
             .onAppear {
                 viewModel.refresh()

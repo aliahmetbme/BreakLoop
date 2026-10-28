@@ -98,6 +98,10 @@
 				Core/Infrastructure/Logging/PersistentLogStore.swift,
 				Core/Infrastructure/Persistence/AppGroupStorage.swift,
 				Core/Infrastructure/ScreenTime/DeviceActivityService.swift,
+				Core/Infrastructure/ScreenTime/ManagedSettingsService.swift,
+				Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift,
+				Core/Infrastructure/Lifecycle/RuntimeFileStore.swift,
+				Core/Infrastructure/Lifecycle/MonitoringLifecycleFactory.swift,
 				Core/Shared/DeviceActivityConstants.swift,
 			);
 			target = FE3DE73E30744B460038A0B4 /* DeviceActivityMonitorExtension */;
@@ -110,6 +114,9 @@
 				Core/Infrastructure/Logging/LogCatagory.swift,
 				Core/Infrastructure/Logging/PersistentLogStore.swift,
 				Core/Infrastructure/Persistence/AppGroupStorage.swift,
+				Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift,
+				Core/Infrastructure/Lifecycle/RuntimeFileStore.swift,
+				Core/Domain/Services/UsageCycleCalculators.swift,
 			);
 			target = FE3DE75330744B6E0038A0B4 /* ShieldConfigurationExtension */;
 		};
@@ -121,6 +128,9 @@
 				Core/Infrastructure/Logging/LogCatagory.swift,
 				Core/Infrastructure/Logging/PersistentLogStore.swift,
 				Core/Infrastructure/Persistence/AppGroupStorage.swift,
+				Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift,
+				Core/Infrastructure/Lifecycle/RuntimeFileStore.swift,
+				Core/Domain/Services/UsageCycleCalculators.swift,
 			);
 			target = FE3DE76830744BA20038A0B4 /* ShieldActionExtension */;
 		};

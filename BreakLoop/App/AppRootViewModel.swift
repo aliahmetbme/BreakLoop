@@ -62,6 +62,13 @@ final class AppRootViewModel: ObservableObject {
         )
 
         if currentStatus == .approved {
+            do {
+                try MonitoringLifecycle.make(storage: storage, activity: deviceActivityService,
+                                             settings: managedSettingsService).reconcile()
+            } catch {
+                errorMessage = error.localizedDescription
+                AppLogger.shared.error("foreground_reconciliation_failed", message: error.localizedDescription, category: .monitoring)
+            }
             if lastKnownStatus != .approved && lastKnownStatus != nil {
                 AppLogger.shared.info(
                     "restored",
@@ -99,15 +106,13 @@ final class AppRootViewModel: ObservableObject {
             category: .monitoring
         )
 
-        // Stop all active monitoring (normal focus, cooldown, and deep focus)
-        deviceActivityService.stopMonitoring()
-
-        // Remove active shields so apps are not permanently locked in an unauthorized state
-        managedSettingsService.unblock()
-
-        // Clear transient runtime state (activeCycleSnapshot, deepFocus, checkpoints, cooldown)
-        // User's configured selections and cycleConfiguration are strictly PRESERVED
-        storage.clearTransientRuntimeState()
+        do {
+            try MonitoringLifecycle.make(storage: storage, activity: deviceActivityService,
+                                         settings: managedSettingsService).stop(all: true)
+        } catch {
+            errorMessage = error.localizedDescription
+            AppLogger.shared.error("revocation_cleanup_failed", message: error.localizedDescription, category: .monitoring)
+        }
 
         let isDeniedInSettings = (newStatus == .denied)
         uiState = .permissionRevoked(isDeniedInSettings: isDeniedInSettings)

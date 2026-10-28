@@ -80,39 +80,9 @@ final class AppGroupStorage {
         }
     
     
-    func saveCooldownEndDate(_ date: Date) throws {
-        try save(date, forKey: Keys.cooldownEndDate)
-    }
-
     func loadCooldownEndDate() throws -> Date? {
-        try load(Date.self, forKey: Keys.cooldownEndDate)
-    }
-
-    func clearCooldownEndDate() {
-        remove(forKey: Keys.cooldownEndDate)
-    }
-    
-    func saveUsageCheckpointState(
-        _ state: UsageCheckpointState
-    ) throws {
-        try save(
-            state,
-            forKey: Keys.usageCheckpointState
-        )
-    }
-
-    func loadUsageCheckpointState()
-    throws -> UsageCheckpointState? {
-        try load(
-            UsageCheckpointState.self,
-            forKey: Keys.usageCheckpointState
-        )
-    }
-
-    func clearUsageCheckpointState() {
-        remove(
-            forKey: Keys.usageCheckpointState
-        )
+        if runtimeExists { return try readRuntime().cooldown?.endsAt }
+        return try load(Date.self, forKey: Keys.cooldownEndDate)
     }
 
     func saveCycleConfiguration(
@@ -138,44 +108,19 @@ final class AppGroupStorage {
         return .default
     }
 
-    func saveActiveCycleSnapshot(_ snapshot: CycleSnapshot) throws {
-        try save(snapshot, forKey: Keys.activeCycleSnapshot)
-    }
-
     func loadActiveCycleSnapshot() -> CycleSnapshot? {
-        try? load(CycleSnapshot.self, forKey: Keys.activeCycleSnapshot)
-    }
-
-    func clearActiveCycleSnapshot() {
-        remove(forKey: Keys.activeCycleSnapshot)
-    }
-
-    func saveDeepFocusSession(_ session: DeepFocusSession) throws {
-        try save(session, forKey: Keys.deepFocusSession)
+        if runtimeExists { return try? readRuntime().snapshot }
+        return try? load(CycleSnapshot.self, forKey: Keys.activeCycleSnapshot)
     }
 
     func loadDeepFocusSession() -> DeepFocusSession? {
-        try? load(DeepFocusSession.self, forKey: Keys.deepFocusSession)
-    }
-
-    func clearDeepFocusSession() {
-        remove(forKey: Keys.deepFocusSession)
-    }
-
-    func setBreakLoopActive(_ isActive: Bool) {
-        defaults.set(isActive, forKey: Keys.isBreakLoopActive)
+        if runtimeExists { return try? readRuntime().deepFocus }
+        return try? load(DeepFocusSession.self, forKey: Keys.deepFocusSession)
     }
 
     func isBreakLoopActive() -> Bool {
-        defaults.bool(forKey: Keys.isBreakLoopActive)
-    }
-
-    func clearTransientRuntimeState() {
-        clearActiveCycleSnapshot()
-        setBreakLoopActive(false)
-        clearDeepFocusSession()
-        clearCooldownEndDate()
-        clearUsageCheckpointState()
+        if runtimeExists { return (try? readRuntime().snapshot) != nil }
+        return defaults.bool(forKey: Keys.isBreakLoopActive)
     }
 
     func hasConfiguredSelection() -> Bool {
@@ -204,4 +149,39 @@ enum AppAppearance: String, Codable, CaseIterable {
     case system
     case light
     case dark
+}
+
+
+extension AppGroupStorage: MonitoringRuntimeStore {
+    private var runtimeDirectory: URL? {
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Self.suiteName)
+    }
+    private var runtimeURL: URL? { runtimeDirectory?.appendingPathComponent("monitoring-runtime-v1.json") }
+    private var runtimeExists: Bool {
+        runtimeURL.map { FileManager.default.fileExists(atPath: $0.path) } ?? false
+    }
+
+    private func runtimeFileStore() throws -> RuntimeFileStore {
+        guard let directory = runtimeDirectory else { throw LifecycleError.storageUnavailable }
+        return RuntimeFileStore(directory: directory) { [self] in try migrateRuntime() }
+    }
+
+    func withRuntimeLock<T>(_ body: () throws -> T) throws -> T {
+        try runtimeFileStore().withRuntimeLock(body)
+    }
+
+    func readRuntime() throws -> MonitoringRuntime { try runtimeFileStore().readRuntime() }
+    func writeRuntime(_ state: MonitoringRuntime) throws { try runtimeFileStore().writeRuntime(state) }
+
+    private func migrateRuntime() throws -> MonitoringRuntime {
+        // One-way migration. Never discard existing configuration or legacy runtime data on upgrade.
+        return MonitoringRuntime(
+            snapshot: defaults.bool(forKey: Keys.isBreakLoopActive)
+                ? try load(CycleSnapshot.self, forKey: Keys.activeCycleSnapshot) : nil,
+            checkpoint: try load(UsageCheckpointState.self, forKey: Keys.usageCheckpointState),
+            cooldown: try load(Date.self, forKey: Keys.cooldownEndDate).map { RestrictionDeadline(endsAt: $0) },
+            deepFocus: try load(DeepFocusSession.self, forKey: Keys.deepFocusSession),
+            legacyCooldown: true, legacyDeepFocus: true)
+    }
+
 }

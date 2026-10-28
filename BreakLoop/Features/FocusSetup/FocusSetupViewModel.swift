@@ -87,31 +87,25 @@ final class FocusSetupViewModel: ObservableObject {
             return
         }
 
-        saveSelection()
-        storage.clearUsageCheckpointState()
-
-        let configuration = storage.loadCycleConfiguration()
-        let snapshot = CycleSnapshot(configuration: configuration)
-        try? storage.saveActiveCycleSnapshot(snapshot)
-        storage.setBreakLoopActive(true)
-
+        errorMessage = nil
         do {
-            try deviceActivityService.startMonitoring(
-                selection: selection,
-                snapshot: snapshot
-            )
+            try storage.saveActivitySelection(selection)
+            try MonitoringLifecycle.make(storage: storage, activity: deviceActivityService,
+                                         settings: managedSettingsService).start()
         } catch {
             errorMessage = error.localizedDescription
+            AppLogger.shared.error("setup_start_failed", message: error.localizedDescription, category: .monitoring)
         }
     }
 
     func stopMonitoring() {
-        deviceActivityService.stopMonitoring()
-        managedSettingsService.unblock()
-        storage.clearUsageCheckpointState()
-        storage.clearCooldownEndDate()
-        storage.clearActiveCycleSnapshot()
-        storage.setBreakLoopActive(false)
+        do {
+            try MonitoringLifecycle.make(storage: storage, activity: deviceActivityService,
+                                         settings: managedSettingsService).stop()
+        } catch {
+            errorMessage = error.localizedDescription
+            AppLogger.shared.error("setup_stop_failed", message: error.localizedDescription, category: .monitoring)
+        }
     }
 
     private func loadSelection() {

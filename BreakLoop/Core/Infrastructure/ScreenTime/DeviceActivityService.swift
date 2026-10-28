@@ -1,250 +1,67 @@
-//
-//  DeviceActivityService.swift
-//  BreakLoop
-//
-//  Created by Ali ahmet Erdoğdu on 6.10.2026.
-//
-
 import Foundation
 import DeviceActivity
 import FamilyControls
 
 protocol DeviceActivityServiceProtocol {
-
-    func startMonitoring(
-        selection: FamilyActivitySelection,
-        snapshot: CycleSnapshot
-    ) throws
-
-    func startMonitoring(
-        selection: FamilyActivitySelection,
-        configuration: CycleConfiguration
-    ) throws
-
-    func startMonitoring(
-        selection: FamilyActivitySelection,
-        limitMinutes: Int
-    ) throws
-
-    func startCooldown(
-        durationMinutes: Int
-    ) throws
-
-    func startDeepFocus(
-        durationMinutes: Int
-    ) throws
-
-    func stopDeepFocus()
-
+    func startMonitoring(selection: FamilyActivitySelection, snapshot: CycleSnapshot) throws
+    func startDeadline(name: String, end: Date) throws
+    func stopActivities(_ names: [String])
+    var activityNames: [String] { get }
     func stopMonitoring()
 }
 
 final class DeviceActivityService: DeviceActivityServiceProtocol {
-
     private let center = DeviceActivityCenter()
+    var activityNames: [String] { center.activities.map(\.rawValue) }
 
     static func makeDailySchedule() -> DeviceActivitySchedule {
-        DeviceActivitySchedule(
-            intervalStart: DateComponents(
-                hour: 0,
-                minute: 0
-            ),
-            intervalEnd: DateComponents(
-                hour: 23,
-                minute: 59
-            ),
-            repeats: true
-        )
+        DeviceActivitySchedule(intervalStart: DateComponents(hour: 0, minute: 0),
+                               intervalEnd: DateComponents(hour: 23, minute: 59), repeats: true)
     }
 
-    static func checkpointStep(
-        for limitMinutes: Int
-    ) -> Int {
+    static func checkpointStep(for limitMinutes: Int) -> Int {
         CheckpointCalculator.checkpointStep(for: limitMinutes)
     }
 
-    static func makeFocusEvents(
-        selection: FamilyActivitySelection,
-        limitMinutes: Int
-    ) -> [DeviceActivityEvent.Name: DeviceActivityEvent] {
+    static func makeFocusEvents(selection: FamilyActivitySelection, limitMinutes: Int)
+        -> [DeviceActivityEvent.Name: DeviceActivityEvent] {
         var events: [DeviceActivityEvent.Name: DeviceActivityEvent] = [:]
-
-        let step = checkpointStep(for: limitMinutes)
-        var minute = step
-
-        while minute < limitMinutes {
-            events[
-                DeviceActivityConstants.checkpointEvent(
-                    minute: minute
-                )
-            ] = DeviceActivityEvent(
-                applications: selection.applicationTokens,
-                categories: selection.categoryTokens,
-                webDomains: [],
-                threshold: DateComponents(
-                    minute: minute
-                ),
-                includesPastActivity: false
-            )
-
-            minute += step
+        for minute in CheckpointCalculator.generateCheckpoints(for: limitMinutes) {
+            events[DeviceActivityConstants.checkpointEvent(minute: minute)] = DeviceActivityEvent(
+                applications: selection.applicationTokens, categories: selection.categoryTokens,
+                webDomains: [], threshold: DateComponents(minute: minute), includesPastActivity: false)
         }
-
-        // Final usage limit
-        events[
-            DeviceActivityConstants.thresholdEvent
-        ] = DeviceActivityEvent(
-            applications: selection.applicationTokens,
-            categories: selection.categoryTokens,
-            webDomains: [],
-            threshold: DateComponents(
-                minute: limitMinutes
-            ),
-            includesPastActivity: false
-        )
-
+        events[DeviceActivityConstants.thresholdEvent] = DeviceActivityEvent(
+            applications: selection.applicationTokens, categories: selection.categoryTokens,
+            webDomains: [], threshold: DateComponents(minute: limitMinutes), includesPastActivity: false)
         return events
     }
 
-    func startCooldown(
-        durationMinutes: Int
-    ) throws {
-
-        let now = Date()
-
-        guard let endDate = Calendar.current.date(
-            byAdding: .minute,
-            value: durationMinutes,
-            to: now
-        ) else {
-            return
-        }
-
-        let startComponents = Calendar.current.dateComponents(
-            [.hour, .minute, .second],
-            from: now
-        )
-
-        let endComponents = Calendar.current.dateComponents(
-            [.hour, .minute, .second],
-            from: endDate
-        )
-
-        let schedule = DeviceActivitySchedule(
-            intervalStart: startComponents,
-            intervalEnd: endComponents,
-            repeats: false
-        )
-
-        try center.startMonitoring(
-            DeviceActivityConstants.cooldownActivity,
-            during: schedule
-        )
+    static func deadlineSchedule(end: Date, now: Date = Date()) throws -> DeviceActivitySchedule {
+        // Use complete dates in UTC so midnight, DST and device time-zone changes cannot
+        // silently choose a different wall-clock day. Validate Apple's actual interpretation.
+        let plan = try DeadlineSchedulePlan(end: end, now: now)
+        let schedule = DeviceActivitySchedule(intervalStart: plan.startComponents,
+                                             intervalEnd: plan.endComponents, repeats: false)
+        try plan.validate(schedule.nextInterval)
+        return schedule
     }
 
-    func startDeepFocus(
-        durationMinutes: Int
-    ) throws {
-        let now = Date()
-
-        guard let endDate = Calendar.current.date(
-            byAdding: .minute,
-            value: durationMinutes,
-            to: now
-        ) else {
-            return
-        }
-
-        let startComponents = Calendar.current.dateComponents(
-            [.hour, .minute, .second],
-            from: now
-        )
-
-        let endComponents = Calendar.current.dateComponents(
-            [.hour, .minute, .second],
-            from: endDate
-        )
-
-        let schedule = DeviceActivitySchedule(
-            intervalStart: startComponents,
-            intervalEnd: endComponents,
-            repeats: false
-        )
-
-        center.stopMonitoring([DeviceActivityConstants.deepFocusActivity])
-
-        try center.startMonitoring(
-            DeviceActivityConstants.deepFocusActivity,
-            during: schedule
-        )
-
-        AppLogger.shared.info(
-            "deep_focus_monitoring_started",
-            message: "Deep Focus monitoring scheduled.",
-            category: .monitoring,
-            metadata: [
-                "durationMinutes": "\(durationMinutes)",
-                "endsAt": endDate.ISO8601Format()
-            ]
-        )
+    func startDeadline(name: String, end: Date) throws {
+        let schedule = try Self.deadlineSchedule(end: end)
+        try center.startMonitoring(DeviceActivityName(name), during: schedule)
     }
 
-    func stopDeepFocus() {
-        center.stopMonitoring([DeviceActivityConstants.deepFocusActivity])
-    }
-
-    func stopMonitoring() {
-        center.stopMonitoring([
-            DeviceActivityConstants.focusActivity,
-            DeviceActivityConstants.cooldownActivity,
-            DeviceActivityConstants.deepFocusActivity
-        ])
-    }
-
-    func startMonitoring(
-        selection: FamilyActivitySelection,
-        snapshot: CycleSnapshot
-    ) throws {
-        try startMonitoring(
-            selection: selection,
-            limitMinutes: snapshot.usageLimitMinutes
-        )
-    }
-
-    func startMonitoring(
-        selection: FamilyActivitySelection,
-        configuration: CycleConfiguration
-    ) throws {
-        try startMonitoring(
-            selection: selection,
-            limitMinutes: configuration.usageLimitMinutes
-        )
-    }
-
-    func startMonitoring(
-        selection: FamilyActivitySelection,
-        limitMinutes: Int
-    ) throws {
+    func startMonitoring(selection: FamilyActivitySelection, snapshot: CycleSnapshot) throws {
         let schedule = Self.makeDailySchedule()
-        let events = Self.makeFocusEvents(
-            selection: selection,
-            limitMinutes: limitMinutes
-        )
-
-        try center.startMonitoring(
-            DeviceActivityConstants.focusActivity,
-            during: schedule,
-            events: events
-        )
-
-        AppLogger.shared.info(
-            "focus_monitoring_started",
-            message: "Initial focus monitoring started.",
-            category: .monitoring,
-            metadata: [
-                "limitMinutes": "\(limitMinutes)",
-                "checkpointCount": "\(events.count - 1)"
-            ]
-        )
+        guard schedule.nextInterval != nil else { throw LifecycleError.invalidSchedule }
+        try center.startMonitoring(DeviceActivityName(MonitoringRuntime.focusName(snapshot.id)), during: schedule,
+            events: Self.makeFocusEvents(selection: selection, limitMinutes: snapshot.usageLimitMinutes))
     }
+
+    func stopActivities(_ names: [String]) {
+        guard !names.isEmpty else { return }
+        center.stopMonitoring(names.map { DeviceActivityName($0) })
+    }
+    func stopMonitoring() { stopActivities(activityNames.filter { $0.hasPrefix("breakloop.") }) }
 }
