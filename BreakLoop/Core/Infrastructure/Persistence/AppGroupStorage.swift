@@ -24,6 +24,7 @@ final class AppGroupStorage {
     }
     
     private let defaults: UserDefaults
+    private let runtimeStore: RuntimeFileStore?
     
     init() {
         guard let defaults = UserDefaults(
@@ -33,6 +34,23 @@ final class AppGroupStorage {
         }
         
         self.defaults = defaults
+        if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Self.suiteName) {
+            self.runtimeStore = RuntimeFileStore(directory: directory,
+                migrate: { try Self.migrateRuntime(defaults: defaults) },
+                didChange: {
+                    let status = RuntimeChangeSignal.post()
+                    AppLogger.shared.info("runtime_change_signaled", message: "Runtime transaction completed and lock released.",
+                        category: .monitoring, metadata: ["signalStatus": "\(status)", "signaledAt": Date().ISO8601Format()])
+                },
+                didCommit: { runtime, date in
+                    AppLogger.shared.info("runtime_published",
+                        message: "Runtime committed: cooldown=\(runtime.cooldown?.id.uuidString ?? "none"), committedAt=\(date.timeIntervalSince1970).",
+                        category: .monitoring, metadata: ["committedAtEpoch": "\(date.timeIntervalSince1970)",
+                            "snapshotId": runtime.snapshot?.id.uuidString ?? "none",
+                            "cooldownId": runtime.cooldown?.id.uuidString ?? "none",
+                            "cooldownEnd": runtime.cooldown?.endsAt.ISO8601Format() ?? "none"])
+                })
+        } else { self.runtimeStore = nil }
     }
     
     func save<T: Codable>(
@@ -149,17 +167,13 @@ enum AppAppearance: String, Codable, CaseIterable {
 
 
 extension AppGroupStorage: MonitoringRuntimeStore {
-    private var runtimeDirectory: URL? {
-        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Self.suiteName)
-    }
-    private var runtimeURL: URL? { runtimeDirectory?.appendingPathComponent("monitoring-runtime-v1.json") }
     private var runtimeExists: Bool {
-        runtimeURL.map { FileManager.default.fileExists(atPath: $0.path) } ?? false
+        runtimeStore.map { FileManager.default.fileExists(atPath: $0.recordURL.path) } ?? false
     }
 
     private func runtimeFileStore() throws -> RuntimeFileStore {
-        guard let directory = runtimeDirectory else { throw LifecycleError.storageUnavailable }
-        return RuntimeFileStore(directory: directory) { [self] in try migrateRuntime() }
+        guard let runtimeStore else { throw LifecycleError.storageUnavailable }
+        return runtimeStore
     }
 
     func withRuntimeLock<T>(_ body: () throws -> T) throws -> T {
@@ -169,7 +183,11 @@ extension AppGroupStorage: MonitoringRuntimeStore {
     func readRuntime() throws -> MonitoringRuntime { try runtimeFileStore().readRuntime() }
     func writeRuntime(_ state: MonitoringRuntime) throws { try runtimeFileStore().writeRuntime(state) }
 
-    private func migrateRuntime() throws -> MonitoringRuntime {
+    private static func migrateRuntime(defaults: UserDefaults) throws -> MonitoringRuntime {
+        func load<T: Decodable>(_ type: T.Type, forKey key: String) throws -> T? {
+            guard let data = defaults.data(forKey: key) else { return nil }
+            return try JSONDecoder().decode(type, from: data)
+        }
         // One-way migration. Never discard existing configuration or legacy runtime data on upgrade.
         return MonitoringRuntime(
             snapshot: defaults.bool(forKey: Keys.isBreakLoopActive)

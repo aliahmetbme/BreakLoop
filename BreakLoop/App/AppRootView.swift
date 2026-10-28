@@ -37,7 +37,7 @@ struct AppRootView: View {
         Group {
             switch viewModel.uiState {
             case .authorized:
-                DashboardView()
+                DashboardView(viewModel: viewModel.dashboardViewModel)
 
             case .firstTimeOnboarding:
                 OnboardingView(onAuthorized: {
@@ -66,10 +66,11 @@ struct AppRootView: View {
         .onAppear {
             viewModel.handleSceneActive()
         }
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 viewModel.handleSceneActive()
-            }
+            } else { viewModel.handleSceneInactive() }
         }
+        .onDisappear { viewModel.handleSceneInactive() }
     }
 }

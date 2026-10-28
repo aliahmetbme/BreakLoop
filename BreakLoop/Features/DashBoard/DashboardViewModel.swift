@@ -12,11 +12,14 @@ import FamilyControls
 @MainActor
 final class DashboardViewModel: ObservableObject {
 
-    @Published var isBreakLoopActive: Bool = false
-    @Published var deepFocusSession: DeepFocusSession?
-    @Published var cooldownEndDate: Date?
+    @Published private(set) var state = DashboardState.loading
     @Published var configuration: CycleConfiguration = .default
-    @Published var activeSnapshot: CycleSnapshot?
+    var activeSnapshot: CycleSnapshot? { state.runtime?.snapshot }
+    var isBreakLoopActive: Bool { state.runtime?.snapshot != nil && state.mode != .failure }
+    var deepFocusSession: DeepFocusSession? { state.runtime?.deepFocus }
+    var cooldownEndDate: Date? { state.runtime?.cooldown?.endsAt }
+    var isDeepFocusActive: Bool { state.mode == .deepFocus }
+    var canStopBreakLoop: Bool { state.canStopBreakLoop }
     @Published var selection = FamilyActivitySelection()
     @Published var isDeepFocusSheetPresented: Bool = false
     @Published var errorMessage: String?
@@ -45,45 +48,62 @@ final class DashboardViewModel: ObservableObject {
         refresh()
     }
 
+    private lazy var synchronizer = DashboardStateSynchronizer(
+        read: { [storage] in try storage.readRuntime() },
+        reconcile: { [storage, deviceActivityService, managedSettingsService] in
+            try MonitoringLifecycle.make(storage: storage, activity: deviceActivityService,
+                                         settings: managedSettingsService).reconcile()
+        },
+        observe: { changed in
+            try RuntimeChangeSignal.observe { Task { @MainActor in changed() } }
+        },
+        publish: { [weak self] in self?.state = $0 },
+        log: { event, metadata in
+            AppLogger.shared.info(event,
+                message: "Dashboard read: \(metadata["reason"] ?? "unknown"), mode=\(metadata["mode"] ?? "unknown"), cooldown=\(metadata["cooldownId"] ?? "none"), observedAt=\(metadata["observedAtEpoch"] ?? "unknown").",
+                category: .monitoring, metadata: metadata)
+        })
+
+    func activate() {
+        refreshConfiguration()
+        synchronizer.activate()
+    }
+
+    func deactivate() { synchronizer.deactivate() }
+
     private var lifecycle: MonitoringLifecycle {
         .make(storage: storage, activity: deviceActivityService, settings: managedSettingsService)
     }
 
     private func perform(_ action: () throws -> Void) {
-        do { try action() } catch {
+        do {
+            try action()
+            errorMessage = nil
+            synchronizer.actionCompleted()
+        } catch {
             errorMessage = error.localizedDescription
             AppLogger.shared.error("dashboard_transition_failed", message: error.localizedDescription, category: .monitoring)
         }
     }
 
+    // Read-only: sheet dismissal, notifications and UI refresh never reconcile or reschedule.
     func refresh() {
+        refreshConfiguration()
+        synchronizer.refresh()
+    }
+
+    private func refreshConfiguration() {
+        configuration = storage.loadCycleConfiguration()
         do {
-            try lifecycle.reconcile()
-            if let attention = try storage.readRuntime().attention { errorMessage = attention.displayMessage }
+            if let savedSelection = try storage.loadActivitySelection() { selection = savedSelection }
         } catch {
             errorMessage = error.localizedDescription
-            AppLogger.shared.error("dashboard_reconciliation_failed", message: error.localizedDescription, category: .monitoring)
-        }
-        self.configuration = storage.loadCycleConfiguration()
-        self.activeSnapshot = storage.loadActiveCycleSnapshot()
-        self.isBreakLoopActive = storage.isBreakLoopActive() && activeSnapshot.map {
-            deviceActivityService.activityNames.contains(MonitoringRuntime.focusName($0.id))
-        } == true
-        self.deepFocusSession = storage.loadDeepFocusSession()
-        self.cooldownEndDate = try? storage.loadCooldownEndDate()
-
-        do {
-            if let savedSelection = try storage.loadActivitySelection() { self.selection = savedSelection }
-        } catch {
-            if errorMessage == nil { errorMessage = error.localizedDescription }
             AppLogger.shared.error("dashboard_selection_read_failed", message: error.localizedDescription, category: .monitoring)
         }
     }
 
-    var isCooldownActive: Bool {
-        guard let cooldownEndDate = cooldownEndDate else { return false }
-        return Date() < cooldownEndDate
-    }
+    var isCooldownActive: Bool { state.mode == .cooldown }
+    var displayedError: String? { state.errorMessage ?? errorMessage }
 
     var hasSelection: Bool {
         !selection.applicationTokens.isEmpty ||

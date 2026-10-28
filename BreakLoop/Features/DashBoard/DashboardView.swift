@@ -12,7 +12,10 @@ struct DashboardView: View {
     @Environment(\.scenePhase) private var scenePhase
 
 
-    @StateObject private var viewModel = DashboardViewModel()
+    @StateObject private var viewModel: DashboardViewModel
+
+    init() { _viewModel = StateObject(wrappedValue: DashboardViewModel()) }
+    init(viewModel: DashboardViewModel) { _viewModel = StateObject(wrappedValue: viewModel) }
     @EnvironmentObject private var appearanceController: AppearanceController
     @State private var isRuleSheetPresented = false
 
@@ -30,11 +33,11 @@ struct DashboardView: View {
                     ruleSummaryCard
 
                     // 3. Secondary Deep Focus Entry (visible when not in Deep Focus and not in forced cooldown)
-                    if viewModel.deepFocusSession?.isActive != true && !viewModel.isCooldownActive {
+                    if !viewModel.isDeepFocusActive && !viewModel.isCooldownActive {
                         deepFocusEntryCard
                     }
 
-                    if let errorMessage = viewModel.errorMessage {
+                    if let errorMessage = viewModel.displayedError {
                         Text(errorMessage)
                             .font(BLTypography.caption)
                             .foregroundStyle(BLColor.destructive)
@@ -59,11 +62,12 @@ struct DashboardView: View {
                 FocusSetupView(isModal: true)
             }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { viewModel.refresh() }
+                if phase == .active { viewModel.activate() } else { viewModel.deactivate() }
             }
             .onAppear {
-                viewModel.refresh()
+                if scenePhase == .active { viewModel.activate() }
             }
+            .onDisappear { viewModel.deactivate() }
         }
     }
 
@@ -141,16 +145,16 @@ struct DashboardView: View {
         BLCard(padding: BLSpacing.lg) {
             VStack(spacing: BLSpacing.md) {
                 // Forced Break state shows badge at top
-                if viewModel.isCooldownActive {
-                    HStack {
-                        Spacer()
-                        BLStatusBadge(state: .breakActive)
-                        Spacer()
-                    }
-                } else if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+                if viewModel.isDeepFocusActive {
                     HStack {
                         Spacer()
                         BLStatusBadge(state: .deepFocus)
+                        Spacer()
+                    }
+                } else if viewModel.isCooldownActive {
+                    HStack {
+                        Spacer()
+                        BLStatusBadge(state: .breakActive)
                         Spacer()
                     }
                 }
@@ -160,7 +164,7 @@ struct DashboardView: View {
                     .padding(.vertical, 2)
 
                 // Active state badge appears below the ring according to the approved design
-                if viewModel.isBreakLoopActive && !viewModel.isCooldownActive && viewModel.deepFocusSession?.isActive != true {
+                if viewModel.state.mode == .monitoring {
                     BLStatusBadge(state: .active)
                 }
 
@@ -201,7 +205,7 @@ struct DashboardView: View {
 
     @ViewBuilder
     private var statusRingView: some View {
-        if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+        if viewModel.isDeepFocusActive {
             BLStatusRing(
                 icon: "flame.fill",
                 statusColor: BLColor.statusDeepFocus,
@@ -213,7 +217,9 @@ struct DashboardView: View {
                 statusColor: BLColor.statusBreak,
                 progress: 0.65
             )
-        } else if viewModel.isBreakLoopActive {
+        } else if viewModel.state.mode == .failure {
+            BLStatusRing(icon: "exclamationmark.triangle", statusColor: BLColor.destructive)
+        } else if viewModel.state.mode == .monitoring {
             BLStatusRing(
                 icon: "infinity",
                 statusColor: BLColor.brandInteractive,
@@ -228,11 +234,15 @@ struct DashboardView: View {
     }
 
     private var statusTitle: String {
-        if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+        if viewModel.isDeepFocusActive {
             return "Deep Focus Active"
         } else if viewModel.isCooldownActive {
             return "Time for a break"
-        } else if viewModel.isBreakLoopActive {
+        } else if viewModel.state.mode == .failure {
+            return "Monitoring needs attention"
+        } else if viewModel.state.mode == .loading {
+            return "Updating status…"
+        } else if viewModel.state.mode == .monitoring {
             return "BreakLoop Active"
         } else {
             return "BreakLoop Off"
@@ -240,9 +250,13 @@ struct DashboardView: View {
     }
 
     private var statusSubtitle: String {
-        if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+        if viewModel.isDeepFocusActive, let deepFocus = viewModel.deepFocusSession {
             return "Apps strictly shielded until \(deepFocus.endsAt.formatted(date: .omitted, time: .shortened))"
-        } else if viewModel.isBreakLoopActive {
+        } else if viewModel.state.mode == .failure {
+            return "Reopen BreakLoop or retry after resolving the error below."
+        } else if viewModel.state.mode == .loading {
+            return "Reading the latest monitoring state"
+        } else if viewModel.state.mode == .monitoring {
             return "Monitoring your selected apps truthful to Apple Screen Time API. Next break engages automatically at limit."
         } else {
             return "Ready when you are"
@@ -251,17 +265,17 @@ struct DashboardView: View {
 
     @ViewBuilder
     private var actionButtons: some View {
-        if let deepFocus = viewModel.deepFocusSession, deepFocus.isActive {
+        if viewModel.isDeepFocusActive {
             BLSecondaryButton(title: "End Deep Focus Early", icon: "xmark.circle.fill") {
                 viewModel.stopDeepFocus()
             }
         } else if viewModel.isCooldownActive {
             EmptyView()
-        } else if viewModel.isBreakLoopActive {
+        } else if viewModel.canStopBreakLoop {
             BLSecondaryButton(title: "Stop BreakLoop", icon: "stop.circle") {
                 viewModel.stopBreakLoop()
             }
-        } else {
+        } else if viewModel.state.mode != .loading {
             VStack(spacing: BLSpacing.sm) {
                 BLPrimaryButton(title: "Start BreakLoop", icon: "play.fill") {
                     viewModel.startBreakLoop()

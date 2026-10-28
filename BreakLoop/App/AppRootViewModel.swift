@@ -51,6 +51,16 @@ final class AppRootViewModel: ObservableObject {
         )
     }
 
+    // Root and visible Dashboard share one synchronizer. Activation is idempotent, so
+    // foreground recovery also works while a settings/navigation screen covers the Dashboard.
+    private(set) lazy var dashboardViewModel = DashboardViewModel(
+        storage: storage, deviceActivityService: deviceActivityService,
+        managedSettingsService: managedSettingsService)
+
+    func handleSceneInactive() {
+        if uiState == .authorized { dashboardViewModel.deactivate() }
+    }
+
     func handleSceneActive() {
         let currentStatus = authorizationService.authorizationStatus
 
@@ -62,14 +72,7 @@ final class AppRootViewModel: ObservableObject {
         )
 
         if currentStatus == .approved {
-            do {
-                try MonitoringLifecycle.make(storage: storage, activity: deviceActivityService,
-                                             settings: managedSettingsService).reconcile()
-                errorMessage = try storage.readRuntime().attention?.displayMessage
-            } catch {
-                errorMessage = error.localizedDescription
-                AppLogger.shared.error("foreground_reconciliation_failed", message: error.localizedDescription, category: .monitoring)
-            }
+            dashboardViewModel.activate()
             if lastKnownStatus != .approved && lastKnownStatus != nil {
                 AppLogger.shared.info(
                     "restored",

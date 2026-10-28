@@ -31,6 +31,7 @@ final class Harness {
     let store = MemoryStore()
     var time = Date(timeIntervalSince1970: 1_800_000_000)
     var failSchedule = false
+    var scheduleAttempts = 0
     var monitored: [String] = []
     var shielded = false
     var rejected: [String] = []
@@ -66,6 +67,7 @@ final class Harness {
         log: { [unowned self] event, _, metadata in rejected.append(event); diagnostics.append(metadata) })
     func schedule(_ name: String) throws {
         precondition(store.locked, "Scheduling must hold the shared lock")
+        scheduleAttempts += 1
         onScheduleAttempt?(name)
         if failSchedule { throw InjectedFailure.scheduling }
         monitored.append(name)
@@ -84,7 +86,11 @@ func check(_ value: @autoclosure () throws -> Bool, _ message: String) {
 func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure("Expected failure") } catch { count += 1 } }
 
 @main struct LifecycleTests {
-    static func main() throws {
+    @MainActor static func main() throws {
+        if CommandLine.arguments.count == 2, CommandLine.arguments[1] == "--post-runtime-change" {
+            guard RuntimeChangeSignal.post() == 0 else { exit(1) }
+            return
+        }
         if CommandLine.arguments.count == 3, CommandLine.arguments[1] == "--increment" {
             let store = RuntimeFileStore(directory: URL(fileURLWithPath: CommandLine.arguments[2]))
             for _ in 0..<30 {
@@ -284,6 +290,9 @@ func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure
         let legacyCount = count
         try hardeningTests()
         print("Lifecycle regressions: \(count) checks passed (original \(legacyCount) plus \(count - legacyCount) hardening)")
+        let beforeDashboardTests = count
+        try runDashboardSynchronizationTests()
+        print("Dashboard synchronization: \(count - beforeDashboardTests) checks passed")
     }
 }
 
