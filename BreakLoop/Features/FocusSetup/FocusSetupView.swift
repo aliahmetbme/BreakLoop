@@ -17,37 +17,37 @@ struct FocusSetupView: View {
     var isModal: Bool = true
 
     private let usagePresets: [BLPresetOption<Int>] = [
-        BLPresetOption(label: "10m", value: 10),
-        BLPresetOption(label: "15m", value: 15),
-        BLPresetOption(label: "20m", value: 20),
-        BLPresetOption(label: "30m", value: 30),
-        BLPresetOption(label: "45m", value: 45),
-        BLPresetOption(label: "60m", value: 60)
+        BLPresetOption(label: String(localized: "10m"), value: 10),
+        BLPresetOption(label: String(localized: "15m"), value: 15),
+        BLPresetOption(label: String(localized: "20m"), value: 20),
+        BLPresetOption(label: String(localized: "30m"), value: 30),
+        BLPresetOption(label: String(localized: "45m"), value: 45),
+        BLPresetOption(label: String(localized: "60m"), value: 60)
     ]
 
     private let breakPresets: [BLPresetOption<Int>] = [
-        BLPresetOption(label: "15m", value: 15),
-        BLPresetOption(label: "20m", value: 20),
-        BLPresetOption(label: "30m", value: 30),
-        BLPresetOption(label: "45m", value: 45),
-        BLPresetOption(label: "60m", value: 60)
+        BLPresetOption(label: String(localized: "15m"), value: 15),
+        BLPresetOption(label: String(localized: "20m"), value: 20),
+        BLPresetOption(label: String(localized: "30m"), value: 30),
+        BLPresetOption(label: String(localized: "45m"), value: 45),
+        BLPresetOption(label: String(localized: "60m"), value: 60)
     ]
 
     var body: some View {
         if isModal {
             NavigationStack {
                 configurationContent
-                    .navigationTitle("BreakLoop Rule")
+                    .navigationTitle(String(localized: "BreakLoop Rule"))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") {
+                            Button(String(localized: "Cancel")) {
                                 dismiss()
                             }
                         }
 
                         ToolbarItem(placement: .confirmationAction) {
-                            Button("Save") {
+                            Button(String(localized: "Save")) {
                                 if viewModel.saveConfiguration() { dismiss() }
                             }
                             .fontWeight(.semibold)
@@ -56,8 +56,8 @@ struct FocusSetupView: View {
                     }
             }
             .familyActivityPicker(
-                headerText: "Choose apps or categories",
-                footerText: "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving.",
+                headerText: String(localized: "Choose apps or categories"),
+                footerText: String(localized: "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving."),
                 isPresented: $viewModel.isPickerPresented,
                 selection: $viewModel.selection
             )
@@ -66,15 +66,15 @@ struct FocusSetupView: View {
             }
         } else {
             configurationContent
-                .navigationTitle("Manage Apps")
+                .navigationTitle(String(localized: "Manage Apps"))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(.visible, for: .navigationBar)
                 .onDisappear {
                     viewModel.saveConfiguration()
                 }
                 .familyActivityPicker(
-                    headerText: "Choose apps or categories",
-                    footerText: "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving.",
+                    headerText: String(localized: "Choose apps or categories"),
+                    footerText: String(localized: "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving."),
                     isPresented: $viewModel.isPickerPresented,
                     selection: $viewModel.selection
                 )
@@ -139,11 +139,11 @@ struct FocusSetupView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("\(viewModel.usageLimitMinutes) min use → \(viewModel.restDurationMinutes) min break")
+                    Text(String(localized: "setup.formula", defaultValue: "\(viewModel.usageLimitMinutes) min use → \(viewModel.restDurationMinutes) min break"))
                         .font(BLTypography.headline)
                         .foregroundStyle(BLColor.textPrimary)
 
-                    Text("After \(viewModel.usageLimitMinutes) minutes of combined usage, your selected apps will pause for \(viewModel.restDurationMinutes) minutes. Changes apply to next cycle.")
+                    Text(String(localized: "setup.explanation", defaultValue: "After \(viewModel.usageLimitMinutes) minutes of combined usage, your selected apps will pause for \(viewModel.restDurationMinutes) minutes. Changes apply to next cycle."))
                         .font(BLTypography.caption)
                         .foregroundStyle(BLColor.textSecondary)
                 }
@@ -236,7 +236,7 @@ struct FocusSetupView: View {
                             .foregroundStyle(BLColor.textPrimary)
 
                         if viewModel.selection.breakLoopTokenCounts.hasAny {
-                            Text("\(viewModel.selection.applicationTokens.count) apps, \(viewModel.selection.categoryTokens.count) categories, \(viewModel.selection.webDomainTokens.count) websites")
+                            Text(String(localized: "setup.selection", defaultValue: "\(viewModel.selection.applicationTokens.count) apps, \(viewModel.selection.categoryTokens.count) categories, \(viewModel.selection.webDomainTokens.count) websites"))
                                 .font(BLTypography.caption)
                                 .foregroundStyle(BLColor.textSecondary)
                         } else {
@@ -255,7 +255,7 @@ struct FocusSetupView: View {
             }
         }
         .buttonStyle(BLPressableScaleStyle())
-        .accessibilityLabel("Select Managed Apps")
+        .accessibilityLabel(String(localized: "Select Managed Apps"))
     }
 }
 

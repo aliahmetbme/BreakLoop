@@ -1,0 +1,402 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "A monitoring change is already in progress. Refresh status before trying again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A monitoring change is already in progress. Refresh status before trying again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir izleme değişikliği zaten sürüyor. Yeniden denemeden önce durumu yenile."
+          }
+        }
+      }
+    },
+    "Diagnostic App Group storage is unavailable. No Caches fallback was used.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostic App Group storage is unavailable. No Caches fallback was used."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanılama için ortak depolama alanına erişilemiyor. Önbelleğe kayıt yapılmadı."
+          }
+        }
+      }
+    },
+    "Diagnostic event exceeds the configured archive budget.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostic event exceeds the configured archive budget."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanılama olayı, arşiv için ayrılan boyutu aşıyor."
+          }
+        }
+      }
+    },
+    "Diagnostics are busy. Retry shortly.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostics are busy. Retry shortly."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanılama şu anda meşgul. Birazdan tekrar dene."
+          }
+        }
+      }
+    },
+    "Legacy migration is incomplete; existing archived events remain readable.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legacy migration is incomplete; existing archived events remain readable."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eski kayıtların aktarımı tamamlanmadı; mevcut arşiv okunabilir durumda."
+          }
+        }
+      }
+    },
+    "Malformed/interrupted lines or damaged metadata were recovered; some diagnostic history may be incomplete.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Malformed/interrupted lines or damaged metadata were recovered; some diagnostic history may be incomplete."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bozuk veya yarım kalmış satırlar ya da hasarlı üst veriler kurtarıldı; tanılama geçmişinin bir bölümü eksik olabilir."
+          }
+        }
+      }
+    },
+    "Pending diagnostic events have not finished flushing.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pending diagnostic events have not finished flushing."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bekleyen tanılama olaylarının kaydı henüz tamamlanmadı."
+          }
+        }
+      }
+    },
+    "Select at least one app or category before saving or starting.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select at least one app or category before saving or starting."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydetmeden veya başlatmadan önce en az bir uygulama veya kategori seç."
+          }
+        }
+      }
+    },
+    "Select at most 50 apps and 50 categories before saving or starting.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select at most 50 apps and 50 categories before saving or starting."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydetmeden veya başlatmadan önce en fazla 50 uygulama ve 50 kategori seç."
+          }
+        }
+      }
+    },
+    "Shared monitoring storage is unavailable.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shared monitoring storage is unavailable."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ortak izleme depolama alanına erişilemiyor."
+          }
+        }
+      }
+    },
+    "The monitoring change was superseded. Refresh status before trying again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The monitoring change was superseded. Refresh status before trying again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzleme değişikliğinin yerini başka bir işlem aldı. Yeniden denemeden önce durumu yenile."
+          }
+        }
+      }
+    },
+    "The monitoring duration is not supported.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The monitoring duration is not supported."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu izleme süresi desteklenmiyor."
+          }
+        }
+      }
+    },
+    "The previous monitoring activity is no longer running. Start BreakLoop again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The previous monitoring activity is no longer running. Start BreakLoop again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önceki izleme artık çalışmıyor. BreakLoop’u yeniden başlat."
+          }
+        }
+      }
+    },
+    "The saved app selection could not be decoded. Select apps or categories in Rules and save them again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The saved app selection could not be decoded. Select apps or categories in Rules and save them again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı uygulama seçimi okunamadı. Kurallar’dan uygulama veya kategori seçip yeniden kaydet."
+          }
+        }
+      }
+    },
+    "The saved app selection could not be read from shared storage. Reopen BreakLoop when storage is available.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The saved app selection could not be read from shared storage. Reopen BreakLoop when storage is available."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulama seçimi ortak depolama alanından okunamadı. Depolama kullanılabilir olduğunda BreakLoop’u yeniden aç."
+          }
+        }
+      }
+    },
+    "The saved app selection is missing. Select apps or categories in Rules and save them again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The saved app selection is missing. Select apps or categories in Rules and save them again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı uygulama seçimi bulunamadı. Kurallar’dan uygulama veya kategori seçip yeniden kaydet."
+          }
+        }
+      }
+    },
+    "The selection is empty or unsupported. Select up to 50 apps and 50 categories; website selections are not supported.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selection is empty or unsupported. Select up to 50 apps and 50 categories; website selections are not supported."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçim boş veya desteklenmiyor. En fazla 50 uygulama ve 50 kategori seç; web siteleri desteklenmiyor."
+          }
+        }
+      }
+    },
+    "The system could not schedule the requested monitoring interval.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The system could not schedule the requested monitoring interval."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sistem, istenen izleme aralığını planlayamadı."
+          }
+        }
+      }
+    },
+    "error.interrupted": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop monitoring was interrupted. %@ Fix the problem and start BreakLoop again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop izlemesi kesintiye uğradı. %@ Sorunu giderip BreakLoop’u yeniden başlat."
+          }
+        }
+      }
+    },
+    "error.recovered": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recovered: %@ Active restriction settings have been reconciled; verify enforcement on your device."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sorun giderildi: %@ Etkin kısıtlama ayarları eşitlendi; engellemenin cihazında çalıştığını kontrol et."
+          }
+        }
+      }
+    },
+    "error.recovery": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ Recovery could not be saved because shared storage failed: %@ Monitoring state needs attention; reopen BreakLoop when storage is available."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ Ortak depolama hatası nedeniyle kurtarma kaydedilemedi: %@ İzleme durumunun kontrol edilmesi gerekiyor; depolama kullanılabilir olduğunda BreakLoop’u yeniden aç."
+          }
+        }
+      }
+    },
+    "error.websites": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This selection includes %#@arg1@. BreakLoop v1.0 supports apps and categories only. Remove websites in the picker before saving or starting."
+          },
+          "substitutions": {
+            "arg1": {
+              "argNum": 1,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg website"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%arg websites"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu seçim %lld web sitesi içeriyor. BreakLoop v1.0 yalnızca uygulama ve kategorileri destekler. Kaydetmeden veya başlatmadan önce web sitelerini seçim ekranından kaldır."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -62,22 +62,22 @@ struct OnboardingView: View {
                     VStack(alignment: .leading, spacing: BLSpacing.md) {
                         FeatureRow(
                             icon: "timer",
-                            title: "Shared Usage Budget",
-                            subtitle: "Track multiple distracting apps under one combined limit."
+                            title: String(localized: "Shared Usage Budget"),
+                            subtitle: String(localized: "Track multiple distracting apps under one combined limit.")
                         )
                         Divider()
                             .background(BLColor.divider)
                         FeatureRow(
                             icon: "leaf.fill",
-                            title: "Natural Rest & Cooldown",
-                            subtitle: "Healthy 15-minute breaks automatically reset your cycle without shields."
+                            title: String(localized: "Natural Rest & Cooldown"),
+                            subtitle: String(localized: "Healthy 15-minute breaks automatically reset your cycle without shields.")
                         )
                         Divider()
                             .background(BLColor.divider)
                         FeatureRow(
                             icon: "flame.fill",
-                            title: "Deep Focus Mode",
-                            subtitle: "Zero-tolerance complete shielding for hours of distraction-free work."
+                            title: String(localized: "Deep Focus Mode"),
+                            subtitle: String(localized: "Zero-tolerance complete shielding for hours of distraction-free work.")
                         )
                     }
                 }
@@ -87,12 +87,12 @@ struct OnboardingView: View {
                 // Action CTAs
                 VStack(spacing: BLSpacing.sm) {
                     if viewModel.isAuthorized {
-                        BLPrimaryButton(title: "Continue to Dashboard") {
+                        BLPrimaryButton(title: String(localized: "Continue to Dashboard")) {
                             onAuthorized?()
                         }
                     } else {
                         BLPrimaryButton(
-                            title: "Enable Screen Time Access",
+                            title: String(localized: "Enable Screen Time Access"),
                             isLoading: viewModel.isRequestingAuthorization
                         ) {
                             Task {

@@ -28,7 +28,7 @@ struct SettingsView: View {
                                 .foregroundStyle(BLColor.textSecondary)
                         }
                         Spacer(minLength: 8)
-                        Text("\(viewModel.usageLimitMinutes) min")
+                        Text(String(localized: "minutes.usage", defaultValue: "\(viewModel.usageLimitMinutes) min"))
                             .font(BLTypography.headline)
                             .foregroundStyle(BLColor.brandPrimary)
                             .monospacedDigit()
@@ -37,7 +37,7 @@ struct SettingsView: View {
                     HStack {
                         Spacer()
                         Stepper(
-                            "Usage Limit",
+                            String(localized: "Usage Limit"),
                             value: Binding(
                                 get: { viewModel.usageLimitMinutes },
                                 set: { viewModel.updateUsageLimit($0) }
@@ -62,7 +62,7 @@ struct SettingsView: View {
                                 .foregroundStyle(BLColor.textSecondary)
                         }
                         Spacer(minLength: 8)
-                        Text("\(viewModel.restDurationMinutes) min")
+                        Text(String(localized: "minutes.rest", defaultValue: "\(viewModel.restDurationMinutes) min"))
                             .font(BLTypography.headline)
                             .foregroundStyle(BLColor.brandPrimary)
                             .monospacedDigit()
@@ -71,7 +71,7 @@ struct SettingsView: View {
                     HStack {
                         Spacer()
                         Stepper(
-                            "Rest Duration",
+                            String(localized: "Rest Duration"),
                             value: Binding(
                                 get: { viewModel.restDurationMinutes },
                                 set: { viewModel.updateRestDuration($0) }
@@ -87,14 +87,14 @@ struct SettingsView: View {
                 Text("BreakLoop Rules")
             } footer: {
                 if let snapshot = viewModel.activeSnapshot {
-                    Text("An active cycle is in progress (\(snapshot.usageLimitMinutes)m limit / \(snapshot.restDurationMinutes)m rest). Changes will take effect on your next fresh cycle.")
+                    Text(String(localized: "settings.activeCycle", defaultValue: "An active cycle is in progress (\(snapshot.usageLimitMinutes)m limit / \(snapshot.restDurationMinutes)m rest). Changes will take effect on your next fresh cycle."))
                 } else {
                     Text("Timer runs when any monitored app is open. When depleted, a calming cooldown is enforced.")
                 }
             }
 
             // Section 2: Apps Selection
-            Section("Apps & Categories") {
+            Section(String(localized: "Apps & Categories")) {
                 NavigationLink {
                     FocusSetupView(isModal: false)
                 } label: {
@@ -121,7 +121,7 @@ struct SettingsView: View {
             }
 
             // Section 3: Screen Time Permission
-            Section("Permissions") {
+            Section(String(localized: "Permissions")) {
                 HStack(spacing: BLSpacing.sm) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -168,8 +168,8 @@ struct SettingsView: View {
             }
 
             // Section 4: Appearance Selection (Direct reactive binding)
-            Section("Appearance") {
-                Picker("Theme", selection: Binding(
+            Section(String(localized: "Appearance")) {
+                Picker(String(localized: "Theme"), selection: Binding(
                     get: { appearanceController.appearance },
                     set: { appearanceController.setAppearance($0) }
                 )) {
@@ -181,12 +181,12 @@ struct SettingsView: View {
                 .padding(.vertical, 2)
             }
 
-            Section("Diagnostics") {
-                NavigationLink("Event History & Export") { DiagnosticsView() }
+            Section(String(localized: "Diagnostics")) {
+                NavigationLink(String(localized: "Event History & Export")) { DiagnosticsView() }
             }
 
             // Section 5: About
-            Section("About") {
+            Section(String(localized: "About")) {
                 HStack {
                     Text("Version")
                         .font(BLTypography.body)
@@ -210,7 +210,7 @@ struct SettingsView: View {
         }
         .scrollContentBackground(.hidden)
         .background(BLColor.background.ignoresSafeArea())
-        .navigationTitle("Settings")
+        .navigationTitle(String(localized: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.visible, for: .navigationBar)
         .onAppear {

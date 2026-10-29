@@ -17,11 +17,11 @@ struct BLStatusBadge: View {
 
         var title: String {
             switch self {
-            case .active: return "BreakLoop Active"
-            case .breakActive: return "Mindful Pause Active"
-            case .deepFocus: return "Deep Focus Active"
-            case .inactive: return "BreakLoop Off"
-            case .permissionRequired: return "Permission Required"
+            case .active: return String(localized: "BreakLoop Active")
+            case .breakActive: return String(localized: "Mindful Pause Active")
+            case .deepFocus: return String(localized: "Deep Focus Active")
+            case .inactive: return String(localized: "BreakLoop Off")
+            case .permissionRequired: return String(localized: "Permission Required")
             }
         }
 
@@ -55,7 +55,7 @@ struct BLStatusBadge: View {
         .background(state.color.opacity(0.10))
         .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize.isAccessibilitySize ? BLRadius.control : BLRadius.pill, style: .continuous))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Status: \(state.title)")
+        .accessibilityLabel(String(localized: "accessibility.status", defaultValue: "Status: \(state.title)"))
     }
 }
 

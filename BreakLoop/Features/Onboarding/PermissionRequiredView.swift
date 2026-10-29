@@ -80,11 +80,11 @@ struct PermissionRequiredView: View {
                 // Action CTAs
                 VStack(spacing: BLSpacing.sm) {
                     if isDeniedInSettings {
-                        BLPrimaryButton(title: "Open iOS Settings", icon: "gearshape.fill") {
+                        BLPrimaryButton(title: String(localized: "Open iOS Settings"), icon: "gearshape.fill") {
                             onOpenSettings()
                         }
                     } else {
-                        BLPrimaryButton(title: "Allow Screen Time Access", isLoading: isRequesting) {
+                        BLPrimaryButton(title: String(localized: "Allow Screen Time Access"), isLoading: isRequesting) {
                             onAllowAccess()
                         }
                     }

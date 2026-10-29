@@ -91,6 +91,7 @@
 		FE3DE77E30744D680038A0B4 /* Exceptions for "BreakLoop" folder in "DeviceActivityMonitorExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				SharedErrors.xcstrings,
 				Core/Domain/Models/BreakLoopDomainModels.swift,
 				Core/Domain/Services/UsageCycleCalculators.swift,
 				Core/Infrastructure/Logging/AppLogger.swift,
@@ -110,6 +111,7 @@
 		FE3DE77F30744D680038A0B4 /* Exceptions for "BreakLoop" folder in "ShieldConfigurationExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				SharedErrors.xcstrings,
 				Core/Domain/Models/BreakLoopDomainModels.swift,
 				Core/Infrastructure/Logging/AppLogger.swift,
 				Core/Infrastructure/Logging/LogCatagory.swift,
@@ -125,6 +127,7 @@
 		FE3DE78030744D680038A0B4 /* Exceptions for "BreakLoop" folder in "ShieldActionExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				SharedErrors.xcstrings,
 				Core/Domain/Models/BreakLoopDomainModels.swift,
 				Core/Infrastructure/Logging/AppLogger.swift,
 				Core/Infrastructure/Logging/LogCatagory.swift,
@@ -369,6 +372,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				tr,
 				Base,
 			);
 			mainGroup = FE3DE70B3074476A0038A0B4;

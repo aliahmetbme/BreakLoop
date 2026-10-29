@@ -40,9 +40,9 @@ enum DiagnosticArchiveError: LocalizedError {
     case unavailable, busy, oversized
     var errorDescription: String? {
         switch self {
-        case .unavailable: return "Diagnostic App Group storage is unavailable. No Caches fallback was used."
-        case .busy: return "Diagnostics are busy. Retry shortly."
-        case .oversized: return "Diagnostic event exceeds the configured archive budget."
+        case .unavailable: return String(localized: "Diagnostic App Group storage is unavailable. No Caches fallback was used.", table: "SharedErrors")
+        case .busy: return String(localized: "Diagnostics are busy. Retry shortly.", table: "SharedErrors")
+        case .oversized: return String(localized: "Diagnostic event exceeds the configured archive budget.", table: "SharedErrors")
         }
     }
 }
@@ -310,9 +310,9 @@ final class PersistentLogStore: @unchecked Sendable {
             }
             entries.sort(by: Self.order)
             queueLock.lock(); let error = lastError; let lost = dropped; queueLock.unlock()
-            let status = !completed ? "Pending diagnostic events have not finished flushing." :
-                (snapshot.migrationIncomplete ? "Legacy migration is incomplete; existing archived events remain readable." :
-                    (error ?? ((malformed > 0 || snapshot.manifest.integrityWarning == true) ? "Malformed/interrupted lines or damaged metadata were recovered; some diagnostic history may be incomplete." : nil)))
+            let status = !completed ? String(localized: "Pending diagnostic events have not finished flushing.", table: "SharedErrors") :
+                (snapshot.migrationIncomplete ? String(localized: "Legacy migration is incomplete; existing archived events remain readable.", table: "SharedErrors") :
+                    (error ?? ((malformed > 0 || snapshot.manifest.integrityWarning == true) ? String(localized: "Malformed/interrupted lines or damaged metadata were recovered; some diagnostic history may be incomplete.", table: "SharedErrors") : nil)))
             return DiagnosticHistory(events: Array(entries.suffix(max(1, limit))), oldest: oldest, newest: newest,
                 bytes: snapshot.bytes, earlyEvictionAt: snapshot.manifest.earlyEvictionAt,
                 droppedEvents: snapshot.manifest.droppedEvents + lost, error: status,

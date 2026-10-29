@@ -61,7 +61,7 @@ private final class DiagnosticsViewModel: ObservableObject {
     }
     enum FilterError: LocalizedError {
         case invalidOperation, invalidDates
-        var errorDescription: String? { self == .invalidOperation ? "Enter a complete operation UUID or leave it empty." : "Start date must precede end date." }
+        var errorDescription: String? { self == .invalidOperation ? String(localized: "Enter a complete operation UUID or leave it empty.") : String(localized: "Start date must precede end date.") }
     }
 }
 
@@ -70,76 +70,76 @@ struct DiagnosticsView: View {
     @State private var confirmDelete = false
     var body: some View {
         Form {
-            Section("Available History") {
+            Section(String(localized: "Available History")) {
                 if let history = model.history {
                     if let oldest = history.oldest, let newest = history.newest {
                         Text("\(oldest.formatted()) — \(newest.formatted())")
                     } else { Text("No archived events available.") }
-                    Text("\(ByteCountFormatter.string(fromByteCount: Int64(history.bytes), countStyle: .file)) of \(ByteCountFormatter.string(fromByteCount: Int64(history.maximumBytes), countStyle: .file)) · target: at least \(history.retentionDays) days")
+                    Text(String(localized: "diagnostics.storage", defaultValue: "\(ByteCountFormatter.string(fromByteCount: Int64(history.bytes), countStyle: .file)) of \(ByteCountFormatter.string(fromByteCount: Int64(history.maximumBytes), countStyle: .file)) · target: at least \(history.retentionDays) days"))
                     if let eviction = history.earlyEvictionAt {
-                        Text("Storage pressure evicted history early on \(eviction.formatted()). Some requested days may be missing.")
+                        Text(String(localized: "diagnostics.eviction", defaultValue: "Storage pressure evicted history early on \(eviction.formatted()). Some requested days may be missing."))
                             .foregroundStyle(.orange)
                     }
-                    if history.droppedEvents > 0 { Text("\(history.droppedEvents) events were dropped or could not be confirmed during logging failures.").foregroundStyle(.orange) }
+                    if history.droppedEvents > 0 { Text(String(localized: "diagnostics.dropped", defaultValue: "\(history.droppedEvents) events were dropped or could not be confirmed during logging failures.")).foregroundStyle(.orange) }
                 }
                 if let error = model.error { Text(error).foregroundStyle(.red) }
                 Text("Local only. Shield API attempts do not prove iOS enforcement.")
                     .font(.caption).foregroundStyle(.secondary)
             }
-            Section("Filter Events") {
-                DatePicker("From", selection: $model.start, displayedComponents: .date)
-                DatePicker("Through", selection: $model.end, displayedComponents: .date)
-                Picker("Category", selection: $model.category) {
+            Section(String(localized: "Filter Events")) {
+                DatePicker(String(localized: "From"), selection: $model.start, displayedComponents: .date)
+                DatePicker(String(localized: "Through"), selection: $model.end, displayedComponents: .date)
+                Picker(String(localized: "Category"), selection: $model.category) {
                     Text("All").tag("all")
-                    ForEach(LogCategory.allCases, id: \.rawValue) { Text($0.rawValue).tag($0.rawValue) }
+                    ForEach(LogCategory.allCases, id: \.rawValue) { Text($0.localizedTitle).tag($0.rawValue) }
                 }
-                Picker("Severity", selection: $model.severity) {
+                Picker(String(localized: "Severity"), selection: $model.severity) {
                     Text("All").tag("all")
-                    ForEach(LogLevel.allCases, id: \.rawValue) { Text($0.rawValue).tag($0.rawValue) }
+                    ForEach(LogLevel.allCases, id: \.rawValue) { Text($0.localizedTitle).tag($0.rawValue) }
                 }
-                TextField("Operation UUID (optional)", text: $model.operation)
+                TextField(String(localized: "Operation UUID (optional)"), text: $model.operation)
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
-                Button("Apply Filters / Refresh") { Task { await model.reload() } }.disabled(model.busy)
+                Button(String(localized: "Apply Filters / Refresh")) { Task { await model.reload() } }.disabled(model.busy)
             }
             Section {
-                Button("Export Logs") { Task { await model.export() } }.disabled(model.busy)
+                Button(String(localized: "Export Logs")) { Task { await model.export() } }.disabled(model.busy)
             } footer: { Text("Export includes all matching retained events, not just the timeline's latest 300. Save the JSONL file to Files or iCloud Drive using the Share Sheet to keep it after uninstalling BreakLoop.") }
-            Section("Recent Matching Events (up to 300)") {
+            Section(String(localized: "Recent Matching Events (up to 300)")) {
                 ForEach((model.history?.events ?? []).reversed()) { entry in
                     NavigationLink {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 12) {
-                                Text(entry.event).font(.headline)
-                                Text("\(entry.timestamp.formatted()) · \(entry.level.rawValue) · \(entry.category.rawValue)")
-                                Text("Process: \(entry.process ?? "unknown")")
-                                Text("Version: \(entry.appVersion ?? "unknown") (\(entry.appBuild ?? "unknown"))")
-                                Text("Source: \(entry.sourceRevision ?? "not supplied / unverified")")
-                                Text("Operation: \(entry.operationID?.uuidString ?? "unknown")").textSelection(.enabled)
-                                if let parent = entry.parentOperationID { Text("Parent operation: \(parent.uuidString)").textSelection(.enabled) }
-                                Text("Outcome: \(entry.outcome ?? "unknown")")
+                                LabeledContent(String(localized: "Event Code")) { Text(verbatim: entry.event) }.font(.headline)
+                                Text("\(entry.timestamp.formatted()) · \(entry.level.localizedTitle) · \(entry.category.localizedTitle)")
+                                Text(String(localized: "diagnostics.process", defaultValue: "Process: \(entry.process ?? String(localized: "unknown"))"))
+                                Text(String(localized: "diagnostics.version", defaultValue: "Version: \(entry.appVersion ?? String(localized: "unknown")) (\(entry.appBuild ?? String(localized: "unknown")))"))
+                                Text(String(localized: "diagnostics.source", defaultValue: "Source: \(entry.sourceRevision ?? String(localized: "not supplied / unverified"))"))
+                                Text(String(localized: "diagnostics.operation", defaultValue: "Operation: \(entry.operationID?.uuidString ?? String(localized: "unknown"))")).textSelection(.enabled)
+                                if let parent = entry.parentOperationID { Text(String(localized: "diagnostics.parent", defaultValue: "Parent operation: \(parent.uuidString)")).textSelection(.enabled) }
+                                Text(String(localized: "diagnostics.outcome", defaultValue: "Outcome: \(entry.localizedOutcome)"))
                                 Text(entry.metadata.sorted { $0.key < $1.key }.map { "\($0.key): \($0.value)" }.joined(separator: "\n")).textSelection(.enabled)
-                                Text("Before: \(entry.before?.snapshotID?.uuidString ?? "none") · After: \(entry.after?.snapshotID?.uuidString ?? "none")")
+                                Text(String(localized: "diagnostics.beforeAfter", defaultValue: "Before: \(entry.before?.snapshotID?.uuidString ?? String(localized: "none")) · After: \(entry.after?.snapshotID?.uuidString ?? String(localized: "none"))"))
                                 Text("Export to inspect full sanitized deadlines and ownership snapshots.").font(.caption)
                             }.frame(maxWidth: .infinity, alignment: .leading).padding()
-                        }.navigationTitle("Diagnostic Event")
+                        }.navigationTitle(String(localized: "Diagnostic Event"))
                     } label: {
                         VStack(alignment: .leading) {
-                            Text(entry.event.replacingOccurrences(of: "_", with: " "))
-                            Text("\(entry.timestamp.formatted()) · \(entry.level.rawValue)").font(.caption).foregroundStyle(.secondary)
+                            Text(verbatim: entry.event)
+                            Text("\(entry.timestamp.formatted()) · \(entry.level.localizedTitle)").font(.caption).foregroundStyle(.secondary)
                         }
                     }
                 }
             }
             Section {
-                Button("Delete Diagnostic History", role: .destructive) { confirmDelete = true }.disabled(model.busy)
+                Button(String(localized: "Delete Diagnostic History"), role: .destructive) { confirmDelete = true }.disabled(model.busy)
             } footer: { Text("Deletes only diagnostics. Monitoring, selected apps and cycle configuration are preserved.") }
         }
-        .navigationTitle("Diagnostics")
+        .navigationTitle(String(localized: "Diagnostics"))
         .overlay { if model.busy { ProgressView() } }
         .task { await model.reload() }
-        .confirmationDialog("Permanently delete local diagnostic history?", isPresented: $confirmDelete, titleVisibility: .visible) {
-            Button("Delete History", role: .destructive) { Task { await model.delete() } }
-            Button("Cancel", role: .cancel) {}
+        .confirmationDialog(String(localized: "Permanently delete local diagnostic history?"), isPresented: $confirmDelete, titleVisibility: .visible) {
+            Button(String(localized: "Delete History"), role: .destructive) { Task { await model.delete() } }
+            Button(String(localized: "Cancel"), role: .cancel) {}
         }
         .sheet(item: $model.exported) { DiagnosticShareSheet(url: $0.url) }
     }
@@ -149,4 +149,44 @@ private struct DiagnosticShareSheet: UIViewControllerRepresentable {
     let url: URL
     func makeUIViewController(context: Context) -> UIActivityViewController { UIActivityViewController(activityItems: [url], applicationActivities: nil) }
     func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
+}
+
+// UI labels only: Codable raw values and exported identifiers never change.
+private extension LogLevel {
+    var localizedTitle: String {
+        switch self {
+        case .debug: return String(localized: "Debug")
+        case .info: return String(localized: "Information")
+        case .warning: return String(localized: "Warning")
+        case .error: return String(localized: "Error")
+        }
+    }
+}
+private extension LogCategory {
+    var localizedTitle: String {
+        switch self {
+        case .authorization: return String(localized: "Authorization")
+        case .selection: return String(localized: "Selection")
+        case .monitoring: return String(localized: "Monitoring")
+        case .threshold: return String(localized: "Threshold")
+        case .cooldown: return String(localized: "Cooldown")
+        case .shield: return String(localized: "Shield")
+        case .session: return String(localized: "Session")
+        case .storage: return String(localized: "Storage")
+        case .lifecycle: return String(localized: "Lifecycle")
+        }
+    }
+}
+private extension LogEntry {
+    var localizedOutcome: String {
+        switch outcome {
+        case "attempted": return String(localized: "Attempted")
+        case "succeeded": return String(localized: "Succeeded")
+        case "failed": return String(localized: "Failed")
+        case "observed": return String(localized: "Observed")
+        case "rejected": return String(localized: "Rejected")
+        case "accepted": return String(localized: "Accepted")
+        default: return outcome ?? String(localized: "unknown")
+        }
+    }
 }

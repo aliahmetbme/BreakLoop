@@ -320,7 +320,7 @@ final class MonitoringLifecycle {
         interrupted.snapshot = nil; interrupted.checkpoint = nil
         interrupted.attention = MonitoringAttention(code: code, occurredAt: now(),
             activity: old.snapshot.map { MonitoringRuntime.focusName($0.id) },
-            message: "BreakLoop monitoring was interrupted. \(error.localizedDescription) Fix the problem and start BreakLoop again.")
+            message: String(localized: "error.interrupted", defaultValue: "BreakLoop monitoring was interrupted. \(error.localizedDescription) Fix the problem and start BreakLoop again.", table: "SharedErrors"))
         report("normal_cycle_interrupted", interrupted.attention!.diagnostic,
                metadata: ["failureCode": code.rawValue, "activity": interrupted.attention!.activity ?? "none",
                           "originalErrorDomain": (error as NSError).domain, "originalErrorCode": "\((error as NSError).code)"])
@@ -526,12 +526,12 @@ enum LifecycleError: LocalizedError, Equatable {
     case invalidDuration, invalidSchedule, storageUnavailable, monitorUnavailable, transitionInProgress, transitionCancelled
     var errorDescription: String? {
         switch self {
-        case .transitionInProgress: return "A monitoring change is already in progress. Refresh status before trying again."
-        case .transitionCancelled: return "The monitoring change was superseded. Refresh status before trying again."
-        case .invalidDuration: return "The monitoring duration is not supported."
-        case .invalidSchedule: return "The system could not schedule the requested monitoring interval."
-        case .monitorUnavailable: return "The previous monitoring activity is no longer running. Start BreakLoop again."
-        case .storageUnavailable: return "Shared monitoring storage is unavailable."
+        case .transitionInProgress: return String(localized: "A monitoring change is already in progress. Refresh status before trying again.", table: "SharedErrors")
+        case .transitionCancelled: return String(localized: "The monitoring change was superseded. Refresh status before trying again.", table: "SharedErrors")
+        case .invalidDuration: return String(localized: "The monitoring duration is not supported.", table: "SharedErrors")
+        case .invalidSchedule: return String(localized: "The system could not schedule the requested monitoring interval.", table: "SharedErrors")
+        case .monitorUnavailable: return String(localized: "The previous monitoring activity is no longer running. Start BreakLoop again.", table: "SharedErrors")
+        case .storageUnavailable: return String(localized: "Shared monitoring storage is unavailable.", table: "SharedErrors")
         }
     }
 }
@@ -585,8 +585,24 @@ struct MonitoringAttention: Codable, Equatable {
     let message: String
     var resolvedAt: Date?
     var diagnostic: String { "code=\(code.rawValue); activity=\(activity ?? "none"); \(message)" }
+    // Translate the presentation from stable codes, including attention saved in another language.
+    // The persisted diagnostic message remains available unchanged in the export.
+    var localizedReason: String {
+        switch code {
+        case .selectionMissing: return SelectionFailure.missing.localizedDescription
+        case .selectionCorrupted: return SelectionFailure.corrupted.localizedDescription
+        case .selectionUnsupported: return SelectionFailure.unsupported.localizedDescription
+        case .selectionUnavailable: return SelectionFailure.persistence(LifecycleError.storageUnavailable).localizedDescription
+        case .cooldownScheduling:
+            return String(localized: "error.interrupted", defaultValue: "BreakLoop monitoring was interrupted. \(LifecycleError.invalidSchedule.localizedDescription) Fix the problem and start BreakLoop again.", table: "SharedErrors")
+        case .runtimePersistence:
+            return String(localized: "error.interrupted", defaultValue: "BreakLoop monitoring was interrupted. \(LifecycleError.storageUnavailable.localizedDescription) Fix the problem and start BreakLoop again.", table: "SharedErrors")
+        case .monitorUnavailable:
+            return String(localized: "error.interrupted", defaultValue: "BreakLoop monitoring was interrupted. \(LifecycleError.monitorUnavailable.localizedDescription) Fix the problem and start BreakLoop again.", table: "SharedErrors")
+        }
+    }
     var displayMessage: String {
-        resolvedAt == nil ? message : "Recovered: \(message) Active restriction settings have been reconciled; verify enforcement on your device."
+        resolvedAt == nil ? localizedReason : String(localized: "error.recovered", defaultValue: "Recovered: \(localizedReason) Active restriction settings have been reconciled; verify enforcement on your device.", table: "SharedErrors")
     }
 }
 
@@ -594,7 +610,7 @@ struct MonitoringRecoveryError: LocalizedError {
     let original: Error
     let persistence: Error
     var errorDescription: String? {
-        "\(original.localizedDescription) Recovery could not be saved because shared storage failed: \(persistence.localizedDescription) Monitoring state needs attention; reopen BreakLoop when storage is available."
+        String(localized: "error.recovery", defaultValue: "\(original.localizedDescription) Recovery could not be saved because shared storage failed: \(persistence.localizedDescription) Monitoring state needs attention; reopen BreakLoop when storage is available.", table: "SharedErrors")
     }
 }
 
@@ -628,10 +644,10 @@ enum SelectionFailure: LocalizedError {
     case missing, corrupted, unsupported, persistence(Error)
     var errorDescription: String? {
         switch self {
-        case .missing: return "The saved app selection is missing. Select apps or categories in Rules and save them again."
-        case .corrupted: return "The saved app selection could not be decoded. Select apps or categories in Rules and save them again."
-        case .unsupported: return "The selection is empty or unsupported. Select up to 50 apps and 50 categories; website selections are not supported."
-        case .persistence: return "The saved app selection could not be read from shared storage. Reopen BreakLoop when storage is available."
+        case .missing: return String(localized: "The saved app selection is missing. Select apps or categories in Rules and save them again.", table: "SharedErrors")
+        case .corrupted: return String(localized: "The saved app selection could not be decoded. Select apps or categories in Rules and save them again.", table: "SharedErrors")
+        case .unsupported: return String(localized: "The selection is empty or unsupported. Select up to 50 apps and 50 categories; website selections are not supported.", table: "SharedErrors")
+        case .persistence: return String(localized: "The saved app selection could not be read from shared storage. Reopen BreakLoop when storage is available.", table: "SharedErrors")
         }
     }
     static func isSelectionError(_ error: Error) -> Bool { error is SelectionFailure }
@@ -664,10 +680,10 @@ struct SelectionTokenCounts: Equatable {
     var hasAny: Bool { applicationTokens > 0 || categoryTokens > 0 || webDomainTokens > 0 }
     var validationMessage: String? {
         if webDomainTokens > 0 {
-            return "This selection includes \(webDomainTokens) websites. BreakLoop v1.0 supports apps and categories only. Remove websites in the picker before saving or starting."
+            return String(localized: "error.websites", defaultValue: "This selection includes \(webDomainTokens) websites. BreakLoop v1.0 supports apps and categories only. Remove websites in the picker before saving or starting.", table: "SharedErrors")
         }
-        if applicationTokens > 50 || categoryTokens > 50 { return "Select at most 50 apps and 50 categories before saving or starting." }
-        if !hasAny { return "Select at least one app or category before saving or starting." }
+        if applicationTokens > 50 || categoryTokens > 50 { return String(localized: "Select at most 50 apps and 50 categories before saving or starting.", table: "SharedErrors") }
+        if !hasAny { return String(localized: "Select at least one app or category before saving or starting.", table: "SharedErrors") }
         return nil
     }
     var diagnosticCounts: [String: String] {

@@ -21,13 +21,13 @@ struct DashboardState: Equatable {
     }
     var recoveryDescription: String {
         guard synchronizationError == nil, let runtime else {
-            return "Current monitoring state could not be verified. Refresh status before starting another session."
+            return String(localized: "Current monitoring state could not be verified. Refresh status before starting another session.")
         }
         if runtime.deepFocus != nil || runtime.cooldown != nil {
-            return "A restriction is still recorded. Refresh status; recovery will preserve existing ownership."
+            return String(localized: "A restriction is still recorded. Refresh status; recovery will preserve existing ownership.")
         }
-        if runtime.snapshot != nil { return "Monitoring is still recorded. Review apps and refresh status, or stop the recorded session before retrying." }
-        return "Monitoring is interrupted. Review the saved apps, refresh status, then retry BreakLoop."
+        if runtime.snapshot != nil { return String(localized: "Monitoring is still recorded. Review apps and refresh status, or stop the recorded session before retrying.") }
+        return String(localized: "Monitoring is interrupted. Review the saved apps, refresh status, then retry BreakLoop.")
     }
 
     init(runtime: MonitoringRuntime?, synchronizationError: String? = nil) {
@@ -35,7 +35,7 @@ struct DashboardState: Equatable {
         self.synchronizationError = synchronizationError
         if let synchronizationError { errorMessage = synchronizationError }
         else if let attention = runtime?.attention, attention.resolvedAt == nil, attention.code.isSelectionFailure {
-            errorMessage = "Previous selection issue (\(attention.occurredAt.formatted(date: .omitted, time: .standard))): \(attention.message) Review the current saved selection before retrying."
+            errorMessage = String(localized: "dashboard.previousSelection", defaultValue: "Previous selection issue (\(attention.occurredAt.formatted(date: .omitted, time: .standard))): \(attention.localizedReason) Review the current saved selection before retrying.")
         } else { errorMessage = runtime?.attention?.displayMessage }
         if synchronizationError != nil || runtime == nil { mode = .failure }
         else if runtime?.pendingTransition != nil { mode = .loading }
@@ -103,7 +103,7 @@ final class DashboardStateSynchronizer {
                 guard let self, self.isActive, self.epoch == currentEpoch else { return }
                 self.refresh(reason: "invalidation")
             }
-        } catch { observerError = "Live state updates are unavailable. Reopen BreakLoop to refresh. \(error.localizedDescription)" }
+        } catch { observerError = String(localized: "dashboard.liveUnavailable", defaultValue: "Live state updates are unavailable. Reopen BreakLoop to refresh. \(error.localizedDescription)") }
         refresh(reason: "foreground_initial")
         reconcileAndRefresh(reason: "foreground_reconciled")
         // Read-only, bounded coverage for publication just after activation or coalesced signals.

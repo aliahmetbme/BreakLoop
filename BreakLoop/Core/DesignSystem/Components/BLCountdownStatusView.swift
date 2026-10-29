@@ -45,7 +45,7 @@ struct BLCountdownStatusView: View {
 
     private func timer(seconds: Int, compact: Bool) -> some View {
         VStack(spacing: BLSpacing.xs) {
-            Text(isDeepFocus ? "FOCUS TIME LEFT" : "TIME REMAINING")
+            Text(isDeepFocus ? String(localized: "FOCUS TIME LEFT") : String(localized: "TIME REMAINING"))
                 .font(BLTypography.captionBold)
                 .fixedSize(horizontal: false, vertical: true)
                 .tracking(1.5)
@@ -61,7 +61,7 @@ struct BLCountdownStatusView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            Text(isDeepFocus ? "Stay in the flow." : "Rest. Breathe. Return.")
+            Text(isDeepFocus ? String(localized: "Stay in the flow.") : String(localized: "Rest. Breathe. Return."))
                 .font(BLTypography.caption)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundStyle(BLColor.brandPrimary)
@@ -71,13 +71,13 @@ struct BLCountdownStatusView: View {
     }
 
     private func digits(seconds: Int, font: Font) -> some View {
-        Text(seconds == 0 ? "Finishing…" : BLTimePresentation.label(seconds: seconds))
+        Text(seconds == 0 ? String(localized: "Finishing…") : BLTimePresentation.label(seconds: seconds))
             .font(font)
             .monospacedDigit()
             .foregroundStyle(BLColor.textPrimary)
             .contentTransition(reduceMotion ? .identity : .numericText(countsDown: true))
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: seconds)
-            .accessibilityLabel(isDeepFocus ? "Focus time remaining" : "Break time remaining")
-            .accessibilityValue(seconds == 0 ? "Finishing" : Duration.seconds(seconds).formatted(.units(allowed: [.hours, .minutes, .seconds], width: .wide)))
+            .accessibilityLabel(isDeepFocus ? String(localized: "Focus time remaining") : String(localized: "Break time remaining"))
+            .accessibilityValue(seconds == 0 ? String(localized: "accessibility.finishing", defaultValue: "Finishing") : Duration.seconds(seconds).formatted(.units(allowed: [.hours, .minutes, .seconds], width: .wide)))
     }
 }

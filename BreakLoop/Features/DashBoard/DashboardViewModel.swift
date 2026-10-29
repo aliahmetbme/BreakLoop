@@ -159,7 +159,7 @@ final class DashboardViewModel: ObservableObject {
 
     func startDeepFocus(durationMinutes: Int) {
         guard state.canConfigureDeepFocus else {
-            errorMessage = "Refresh monitoring status before starting Deep Focus."; return
+            errorMessage = String(localized: "Refresh monitoring status before starting Deep Focus."); return
         }
         errorMessage = nil
         perform {
