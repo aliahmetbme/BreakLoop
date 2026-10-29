@@ -36,6 +36,7 @@ extension MonitoringLifecycle {
             stop: { names in
                 for name in names { AppLogger.shared.record("monitoring_stop_attempted", category: .monitoring, outcome: "attempted", metadata: ["activity": name]) }
                 activity.stopActivities(names)
+                for name in names { AppLogger.shared.record("monitoring_stop_completed", category: .monitoring, outcome: "succeeded", metadata: ["activity": name]) }
             },
             prepareShield: { try selectionLoader(stage: "prepare_shield").prepare() },
             clearShield: { settings.unblock() },

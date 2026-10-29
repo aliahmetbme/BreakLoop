@@ -6,6 +6,7 @@ swiftc -module-cache-path "$build_dir/module-cache" \
   BreakLoop/Core/Domain/Models/BreakLoopDomainModels.swift \
   BreakLoop/Core/Domain/Services/UsageCycleCalculators.swift \
   BreakLoop/Core/Domain/Services/BLTimePresentation.swift \
+  BreakLoop/Core/Domain/Services/AuthorizationStartupPolicy.swift \
   BreakLoop/Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift \
   BreakLoop/Core/Infrastructure/Lifecycle/RuntimeFileStore.swift \
   BreakLoop/Core/Infrastructure/Persistence/RuntimeChangeSignal.swift \
@@ -13,6 +14,7 @@ swiftc -module-cache-path "$build_dir/module-cache" \
   BreakLoop/Core/Infrastructure/Logging/LogCatagory.swift \
   BreakLoop/Core/Infrastructure/Logging/PersistentLogStore.swift \
   BreakLoop/Core/Infrastructure/Logging/AppLogger.swift \
+  Tests/LockContentionTests.swift \
   Tests/TimePresentationTests.swift \
   Tests/DiagnosticArchiveTests.swift \
   Tests/DashboardSynchronizationTests.swift \

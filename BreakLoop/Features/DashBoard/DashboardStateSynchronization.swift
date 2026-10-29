@@ -12,11 +12,11 @@ struct DashboardState: Equatable {
     var canOfferInactiveStarts: Bool { mode == .inactive }
     var canConfigureDeepFocus: Bool { mode == .inactive || mode == .monitoring }
     var canStopRecordedBreakLoop: Bool {
-        mode == .failure && synchronizationError == nil && runtime?.snapshot != nil
+        runtime?.pendingTransition == nil && mode == .failure && synchronizationError == nil && runtime?.snapshot != nil
             && runtime?.cooldown == nil && runtime?.deepFocus == nil
     }
     var canRetryBreakLoop: Bool {
-        mode == .failure && synchronizationError == nil && runtime != nil
+        runtime?.pendingTransition == nil && mode == .failure && synchronizationError == nil && runtime != nil
             && runtime?.snapshot == nil && runtime?.cooldown == nil && runtime?.deepFocus == nil
     }
     var recoveryDescription: String {
@@ -38,6 +38,7 @@ struct DashboardState: Equatable {
             errorMessage = "Previous selection issue (\(attention.occurredAt.formatted(date: .omitted, time: .standard))): \(attention.message) Review the current saved selection before retrying."
         } else { errorMessage = runtime?.attention?.displayMessage }
         if synchronizationError != nil || runtime == nil { mode = .failure }
+        else if runtime?.pendingTransition != nil { mode = .loading }
         // Keep an elapsed owner visible until lifecycle reconciliation actually removes it.
         else if runtime?.deepFocus != nil { mode = .deepFocus }
         else if runtime?.cooldown != nil { mode = .cooldown }

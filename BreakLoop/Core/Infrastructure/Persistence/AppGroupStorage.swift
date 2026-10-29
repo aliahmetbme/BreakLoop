@@ -178,6 +178,10 @@ extension AppGroupStorage: MonitoringRuntimeStore {
         try runtimeFileStore().withRuntimeLock(body)
     }
 
+    func withoutRuntimeLock<T>(_ body: () throws -> T) throws -> T {
+        try runtimeFileStore().withoutRuntimeLock(body)
+    }
+
     func readRuntime() throws -> MonitoringRuntime { try runtimeFileStore().readRuntime() }
     func writeRuntime(_ state: MonitoringRuntime) throws { try runtimeFileStore().writeRuntime(state) }
 

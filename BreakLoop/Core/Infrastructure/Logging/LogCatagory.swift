@@ -104,6 +104,11 @@ struct DiagnosticRuntimeSnapshot: Codable, Equatable {
 // Free-form messages/errors and arbitrary metadata are intentionally not archived or exported.
 enum DiagnosticPrivacy {
     private static let knownActions: Set<String> = [
+        "monitoring_cleanup_failed", "transition_callback_deferred", "transition_recovered", "transition_rollback_pending",
+        "runtime_lock_wait_began", "runtime_lock_wait_ended", "runtime_lock_hold_began", "runtime_lock_hold_ended",
+        "device_start_began", "device_start_ended", "device_stop_began", "device_stop_ended",
+        "device_inventory_began", "device_inventory_ended", "device_callback_began", "device_callback_ended",
+        "monitoring_stop_completed",
         "authorization_request_attempted", "authorization_request_completed", "authorization_request_failed",
         "app_foreground_attempted", "app_foreground_completed", "app_foreground_failed",
         "dashboard_action_attempted", "dashboard_action_completed", "dashboard_action_failed",
@@ -133,12 +138,12 @@ enum DiagnosticPrivacy {
         "usage_checkpoint", "usage_checkpoint_reached", "usage_threshold_reached",
     ]
     static func action(_ value: String) -> String { knownActions.contains(value) ? value : "unrecognized_event" }
-    private static let numeric = Set(["applicationTokens", "categoryTokens", "webDomainTokens", "applicationCount", "categoryCount", "usageMinute", "limitMinutes", "restMinutes", "durationMinutes", "usageLimitMinutes", "restDurationMinutes", "thresholdMinutes", "committedAtEpoch", "observedAtEpoch", "validatedAtEpoch", "attentionOccurredAt", "priorAttentionAt", "originalErrorCode", "recoveryErrorCode", "signalStatus", "checkpointCount", "minutes", "droppedEvents"])
-    private static let ids = Set(["snapshotId", "cooldownId", "deepFocusId", "operationId"])
+    private static let numeric = Set(["processID", "threadID", "uptimeSeconds", "durationMs", "activityCount", "applicationTokens", "categoryTokens", "webDomainTokens", "applicationCount", "categoryCount", "usageMinute", "limitMinutes", "restMinutes", "durationMinutes", "usageLimitMinutes", "restDurationMinutes", "thresholdMinutes", "committedAtEpoch", "observedAtEpoch", "validatedAtEpoch", "attentionOccurredAt", "priorAttentionAt", "originalErrorCode", "recoveryErrorCode", "signalStatus", "checkpointCount", "minutes", "droppedEvents"])
+    private static let ids = Set(["spanId", "snapshotId", "cooldownId", "deepFocusId", "operationId"])
     private static let dates = Set(["cooldownEnd", "endsAt", "scheduledEndAt", "requestedEnd", "now", "observedAt", "signaledAt"])
-    private static let flags = Set(["naturalRest", "cooldownExpired", "willStartFocus", "synchronized", "safeStatePersisted", "hasConfiguredSelection", "shieldAPIAttempted"])
-    private static let codes = Set(["selectionMissing", "selectionCorrupted", "selectionUnsupported", "selectionUnavailable", "cooldownScheduling", "runtimePersistence", "monitorUnavailable", "invalidSchedule", "invalidDuration", "storageUnavailable", "none"])
-    private static let words = Set(["accepted", "rejected", "initial", "foreground", "background", "approved", "denied", "notDetermined", "Approved", "Denied", "Not Determined", "loading", "inactive", "monitoring", "cooldown", "deepFocus", "failure", "persisted_attention", "current_synchronization", "start_focus", "prepare_shield", "save_selection", "dashboard_read", "dashboard_start", "picker_change", "manual", "invalidation", "foreground_initial", "foreground_reconciled", "foreground_recheck", "owner_deadline", "user_recovery", "action_completed", "attempted", "succeeded", "failed", "unknown"])
+    private static let flags = Set(["isMainThread", "runtimeLockHeld", "naturalRest", "cooldownExpired", "willStartFocus", "synchronized", "safeStatePersisted", "hasConfiguredSelection", "shieldAPIAttempted"])
+    private static let codes = Set(["selectionMissing", "selectionCorrupted", "selectionUnsupported", "selectionUnavailable", "cooldownScheduling", "runtimePersistence", "monitorUnavailable", "transitionInProgress", "transitionCancelled", "invalidSchedule", "invalidDuration", "storageUnavailable", "none"])
+    private static let words = Set(["accepted", "rejected", "initial", "authorization_recheck", "interval_start", "interval_end", "threshold", "foreground", "background", "approved", "denied", "notDetermined", "Approved", "Denied", "Not Determined", "loading", "inactive", "monitoring", "cooldown", "deepFocus", "failure", "persisted_attention", "current_synchronization", "start_focus", "prepare_shield", "save_selection", "dashboard_read", "dashboard_start", "picker_change", "manual", "invalidation", "foreground_initial", "foreground_reconciled", "foreground_recheck", "owner_deadline", "user_recovery", "action_completed", "attempted", "succeeded", "failed", "unknown"])
     static func metadata(_ input: [String: String]) -> [String: String] {
         var result: [String: String] = [:]
         for (key, value) in input where value.count <= 128 {

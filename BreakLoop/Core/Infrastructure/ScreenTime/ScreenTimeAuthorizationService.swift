@@ -12,28 +12,27 @@ import FamilyControls
 
 enum AuthorizationUIState: Equatable {
     case authorized
+    case checkingAuthorization
     case firstTimeOnboarding
     case permissionRevoked(isDeniedInSettings: Bool)
 }
 
 struct AuthorizationStateEvaluator {
-    static func evaluate(
-        status: AuthorizationStatus,
-        hasPreviouslyConfigured: Bool
-    ) -> AuthorizationUIState {
+    static func sample(_ status: AuthorizationStatus) -> AuthorizationStartupPolicy.Sample {
         switch status {
-        case .approved:
-            return .authorized
-        case .denied:
-            return .permissionRevoked(isDeniedInSettings: true)
-        case .notDetermined:
-            if hasPreviouslyConfigured {
-                return .permissionRevoked(isDeniedInSettings: false)
-            } else {
-                return .firstTimeOnboarding
-            }
-        @unknown default:
-            return .permissionRevoked(isDeniedInSettings: true)
+        case .approved: return .approved
+        case .denied: return .denied
+        case .notDetermined: return .undetermined
+        @unknown default: return .unknown
+        }
+    }
+    static func evaluate(status: AuthorizationStatus, hasPreviouslyConfigured: Bool,
+                         settled: Bool = false) -> AuthorizationUIState {
+        switch AuthorizationStartupPolicy.route(sample: sample(status), configured: hasPreviouslyConfigured, settled: settled) {
+        case .authorized: return .authorized
+        case .checking: return .checkingAuthorization
+        case .onboarding: return .firstTimeOnboarding
+        case .permissionRequired: return .permissionRevoked(isDeniedInSettings: status == .denied)
         }
     }
 }

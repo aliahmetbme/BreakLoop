@@ -14,6 +14,15 @@ final class MemoryStore: MonitoringRuntimeStore {
         defer { locked = false; let callback = afterUnlock; afterUnlock = nil; callback?() }
         return try body()
     }
+    func withoutRuntimeLock<T>(_ body: () throws -> T) throws -> T {
+        precondition(locked)
+        locked = false
+        let result = Result { try body() }
+        let callback = afterUnlock; afterUnlock = nil; callback?()
+        precondition(!locked)
+        locked = true
+        return try result.get()
+    }
     func readRuntime() throws -> MonitoringRuntime { state }
     func writeRuntime(_ state: MonitoringRuntime) throws {
         precondition(locked)
@@ -39,6 +48,7 @@ final class Harness {
     var config = CycleConfiguration.default
     var onStart: ((String) -> Void)?
     var onScheduleAttempt: ((String) -> Void)?
+    var onStop: (([String]) -> Void)?
     var selectionData: Data? = try! JSONEncoder().encode(TestSelection())
     var selectionReadError: Error?
     var shieldWrites = 0
@@ -65,14 +75,21 @@ final class Harness {
             try schedule(MonitoringRuntime.focusName(snapshot.id))
         },
         startDeadline: { [unowned self] name, _ in try schedule(name) },
-        stop: { [unowned self] names in monitored.removeAll { names.contains($0) } },
+        stop: { [unowned self] names in
+            precondition(!store.locked, "Apple stop must not hold the shared runtime lock")
+            monitored.removeAll { names.contains($0) }
+            onStop?(names)
+        },
         prepareShield: { [unowned self] in try selectionLoader.prepare() },
         clearShield: { [unowned self] in shielded = false; clears += 1 },
-        activities: { [unowned self] in monitored }),
+        activities: { [unowned self] in
+            precondition(!store.locked, "Apple inventory must not hold the shared runtime lock")
+            return monitored
+        }),
         now: { [unowned self] in time }, configuration: { [unowned self] in config },
         log: { [unowned self] event, _, metadata in rejected.append(event); diagnostics.append(metadata) })
     func schedule(_ name: String) throws {
-        precondition(store.locked, "Scheduling must hold the shared lock")
+        precondition(!store.locked, "Scheduling must never hold the shared runtime lock")
         scheduleAttempts += 1
         onScheduleAttempt?(name)
         if failSchedule { throw InjectedFailure.scheduling }
@@ -93,6 +110,14 @@ func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure
 
 @main struct LifecycleTests {
     @MainActor static func main() throws {
+        if CommandLine.arguments.count == 4, CommandLine.arguments[1] == "--reentrant-worker" {
+            try runReentrantWorker(directory: CommandLine.arguments[2], name: CommandLine.arguments[3])
+            return
+        }
+        if CommandLine.arguments.count == 3, CommandLine.arguments[1] == "--inflight-worker" {
+            try runInflightWorker(directory: CommandLine.arguments[2])
+            return
+        }
         if CommandLine.arguments.count == 4, CommandLine.arguments[1] == "--diagnostic-writer" {
             try diagnosticWorker(directory: CommandLine.arguments[2], index: Int(CommandLine.arguments[3])!)
             return
@@ -132,7 +157,7 @@ func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure
         do {
             let h = Harness()
             h.onStart = { name in
-                // Models an immediate extension callback waiting on the production cross-process lock.
+                // Models an immediate extension callback during the unlocked scheduling call.
                 h.store.afterUnlock = { try! h.sut.threshold(name: name, minute: 2) }
             }
             try h.sut.start()
@@ -306,6 +331,9 @@ func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure
         let beforeSelectionTests = count
         try runCooldownSelectionRegressionTests()
         print("Cooldown/selection regressions: \(count - beforeSelectionTests) checks passed")
+        let beforeContention = count
+        try runLockContentionTests()
+        print("Lock contention / termination / authorization: \(count - beforeContention) checks passed")
         let beforePresentation = count
         runTimePresentationTests()
         print("Time presentation: \(count - beforePresentation) checks passed")
@@ -444,7 +472,8 @@ func hardeningTests() throws {
     do {
         let h = Harness(); try h.sut.start(); try h.sut.startDeepFocus(minutes: 60)
         let focus = MonitoringRuntime.focusName(h.store.state.snapshot!.id)
-        h.failSchedule = true; h.store.failWrite = true
+        h.failSchedule = true
+        h.onScheduleAttempt = { _ in h.store.failWrite = true; h.onScheduleAttempt = nil }
         do { try h.sut.threshold(name: focus, minute: nil); preconditionFailure("Expected recovery write failure") }
         catch let error as MonitoringRecoveryError {
             check(error.original as? InjectedFailure == .scheduling, "Recovery write failure retains original scheduling error")
@@ -466,7 +495,10 @@ func hardeningTests() throws {
     do {
         let h = Harness(); try h.sut.start()
         let focus = MonitoringRuntime.focusName(h.store.state.snapshot!.id)
-        h.store.failedWritesRemaining = 1 // schedule succeeds, publishing cooldown fails, recovery write succeeds
+        h.onStart = { _ in
+            h.onStart = nil
+            h.store.failedWritesRemaining = 1 // intent is durable; final publication fails
+        }
         fails { try h.sut.threshold(name: focus, minute: nil) }
         check(h.store.state.attention?.code == .runtimePersistence, "Failed cooldown publication distinguished from failed scheduling")
         check(h.store.state.snapshot == nil && h.monitored.isEmpty && !h.shielded,

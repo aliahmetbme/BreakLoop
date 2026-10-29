@@ -171,7 +171,7 @@ func runCooldownSelectionRegressionTests() throws {
         h.store.state.attention = MonitoringAttention(code: .selectionUnsupported, occurredAt: h.time,
             activity: nil, message: SelectionFailure.unsupported.localizedDescription)
         h.time = h.store.state.cooldown!.endsAt
-        h.store.failedWritesRemaining = 1
+        h.onStart = { _ in h.onStart = nil; h.store.failedWritesRemaining = 1 }
         fails { try h.sut.reconcile() }
         check(h.store.state.snapshot == nil && h.store.state.attention?.code == .selectionUnsupported,
               "Failed fresh-cycle publication does not clear historical attention as if the restart committed")

@@ -39,6 +39,16 @@ struct AppRootView: View {
             case .authorized:
                 DashboardView(viewModel: viewModel.dashboardViewModel)
 
+            case .checkingAuthorization:
+                VStack(spacing: BLSpacing.md) {
+                    ProgressView()
+                    Text("Checking Screen Time access…")
+                        .font(BLTypography.secondary)
+                        .foregroundStyle(BLColor.textSecondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(BLColor.background)
+
             case .firstTimeOnboarding:
                 OnboardingView(onAuthorized: {
                     viewModel.handleSceneActive()

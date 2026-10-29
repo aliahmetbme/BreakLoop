@@ -17,6 +17,7 @@ final class AppRootViewModel: ObservableObject {
     @Published var isRequestingAuthorization: Bool = false
     @Published var errorMessage: String?
 
+    private var authorizationRecheck: Task<Void, Never>?
     private var lastKnownStatus: AuthorizationStatus?
     private let authorizationService: ScreenTimeAuthorizationServiceProtocol
     private let deviceActivityService: DeviceActivityServiceProtocol
@@ -60,6 +61,7 @@ final class AppRootViewModel: ObservableObject {
         managedSettingsService: managedSettingsService)
 
     func handleSceneInactive(isBackground: Bool = false) {
+        authorizationRecheck?.cancel(); authorizationRecheck = nil
         AppLogger.shared.record(isBackground ? "app_backgrounded" : "app_inactive", category: .lifecycle)
         PersistentLogStore.shared.flushAsync()
         if uiState == .authorized { dashboardViewModel.deactivate() }
@@ -82,29 +84,44 @@ final class AppRootViewModel: ObservableObject {
                 metadata: ["status": "\(currentStatus)"]
             )
 
-            if currentStatus == .approved {
-                dashboardViewModel.activate()
-                if lastKnownStatus != .approved && lastKnownStatus != nil {
-                    AppLogger.shared.info(
-                        "restored",
-                        message: "Screen Time authorization status changed to approved.",
-                        category: .authorization
-                    )
-                }
-                uiState = .authorized
-                lastKnownStatus = .approved
-            } else {
-                // Previously approved, now revoked OR non-approved state
-                if lastKnownStatus == .approved {
-                    handleAuthorizationRevoked(newStatus: currentStatus)
-                } else {
-                    uiState = AuthorizationStateEvaluator.evaluate(
-                        status: currentStatus,
-                        hasPreviouslyConfigured: storage.hasConfiguredSelection()
-                    )
-                    lastKnownStatus = currentStatus
-                }
+            resolveAuthorization(currentStatus)
+        }
+    }
+
+    private func resolveAuthorization(_ status: AuthorizationStatus, settled: Bool = false) {
+        if status == .approved {
+            authorizationRecheck?.cancel(); authorizationRecheck = nil
+            dashboardViewModel.activate()
+            uiState = .authorized
+            lastKnownStatus = .approved
+        } else if AuthorizationStartupPolicy.provesRevocation(previouslyApproved: lastKnownStatus == .approved,
+                                                               sample: AuthorizationStateEvaluator.sample(status)) {
+            authorizationRecheck?.cancel(); authorizationRecheck = nil
+            handleAuthorizationRevoked(newStatus: status)
+        } else {
+            if uiState == .authorized { dashboardViewModel.deactivate() }
+            uiState = AuthorizationStateEvaluator.evaluate(status: status,
+                hasPreviouslyConfigured: storage.hasConfiguredSelection(), settled: settled)
+            // Do not convert a transient unknown/notDetermined sample into cleanup.
+            if status == .denied { lastKnownStatus = status }
+            if uiState == .checkingAuthorization { scheduleAuthorizationRecheck() }
+        }
+    }
+
+    private func scheduleAuthorizationRecheck() {
+        guard authorizationRecheck == nil else { return }
+        authorizationRecheck = Task { @MainActor [weak self] in
+            for (index, delay) in [250_000_000, 500_000_000, 1_000_000_000].enumerated() {
+                do { try await Task.sleep(nanoseconds: UInt64(delay)) } catch { return }
+                guard let self, !Task.isCancelled else { return }
+                let status = self.authorizationService.authorizationStatus
+                AppLogger.shared.record("authorization_route_observed", category: .authorization,
+                    metadata: ["phase": "authorization_recheck", "sampledStatus": "\(status)",
+                        "hasConfiguredSelection": "\(self.storage.hasConfiguredSelection())"])
+                self.resolveAuthorization(status, settled: index == 2)
+                if self.uiState != .checkingAuthorization { break }
             }
+            self?.authorizationRecheck = nil
         }
     }
 
@@ -158,20 +175,12 @@ final class AppRootViewModel: ObservableObject {
                 uiState = .authorized
                 lastKnownStatus = .approved
             } else {
-                uiState = AuthorizationStateEvaluator.evaluate(
-                    status: newStatus,
-                    hasPreviouslyConfigured: storage.hasConfiguredSelection()
-                )
-                lastKnownStatus = newStatus
+                resolveAuthorization(newStatus)
             }
         } catch {
             errorMessage = error.localizedDescription
             let currentStatus = authorizationService.authorizationStatus
-            uiState = AuthorizationStateEvaluator.evaluate(
-                status: currentStatus,
-                hasPreviouslyConfigured: storage.hasConfiguredSelection()
-            )
-            lastKnownStatus = currentStatus
+            resolveAuthorization(currentStatus)
         }
     }
 

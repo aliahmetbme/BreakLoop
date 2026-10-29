@@ -1,7 +1,11 @@
 import Foundation
+import Darwin
 
 // One atomic runtime record; configuration and the user's selection remain in their existing keys.
 struct MonitoringRuntime: Codable, Equatable {
+    var pendingTransition: PendingMonitoringTransition?
+    var retiredActivities: [String]?
+    var deferredCallbacks: [DeferredMonitoringCallback]?
     var snapshot: CycleSnapshot?
     var checkpoint: UsageCheckpointState?
     var cooldown: RestrictionDeadline?
@@ -31,8 +35,10 @@ struct RestrictionDeadline: Codable, Equatable {
 }
 
 protocol MonitoringRuntimeStore {
-    // Must serialize *across processes*, including the entire schedule/commit/shield operation.
+    // Serialize short state/ownership critical sections across processes. Apple DeviceActivity
+    // calls must use withoutRuntimeLock and revalidate their durable intent on return.
     func withRuntimeLock<T>(_ body: () throws -> T) throws -> T
+    func withoutRuntimeLock<T>(_ body: () throws -> T) throws -> T
     func readRuntime() throws -> MonitoringRuntime
     func writeRuntime(_ state: MonitoringRuntime) throws
 }
@@ -45,6 +51,42 @@ struct MonitoringDriver {
     var prepareShield: () throws -> () -> Void
     var clearShield: () -> Void
     var activities: () -> [String]
+}
+
+struct DeferredMonitoringCallback: Codable, Equatable {
+    enum Kind: String, Codable { case started, ended, threshold }
+    let kind: Kind
+    let name: String
+    var minute: Int? = nil
+}
+
+struct PendingMonitoringTransition: Codable, Equatable {
+    let id: UUID
+    let ownerPID: Int32
+    let ownerInstance: UUID
+    let addedActivities: [String]
+    var callbacks: [DeferredMonitoringCallback]?
+    init(addedActivities: [String]) {
+        id = UUID(); ownerPID = getpid(); ownerInstance = PendingMonitoringOperations.instance
+        self.addedActivities = addedActivities
+    }
+}
+
+// Process-local liveness is not a timeout lease. Cross-process death is checked via
+// kill(pid, 0); EPERM means possibly alive, never permission to cancel an active intent.
+private enum PendingMonitoringOperations {
+    static let instance = UUID()
+    static let lock = NSLock()
+    static var active: Set<UUID> = []
+    static func begin(_ id: UUID) { lock.lock(); defer { lock.unlock() }; active.insert(id) }
+    static func end(_ id: UUID) { lock.lock(); defer { lock.unlock() }; active.remove(id) }
+    static func isActive(_ pending: PendingMonitoringTransition) -> Bool {
+        if pending.ownerPID == getpid() {
+            lock.lock(); defer { lock.unlock() }
+            return pending.ownerInstance == instance && active.contains(pending.id)
+        }
+        return kill(pending.ownerPID, 0) == 0 || errno != ESRCH
+    }
 }
 
 // Shared by app and extension, and exercised directly by regression tests.
@@ -65,8 +107,103 @@ final class MonitoringLifecycle {
         self.configuration = configuration; self.logger = log; self.operation = operation
     }
 
-    private func withOperationLock(_ action: String, _ work: () throws -> Void) throws {
-        try operation(action) { try storage.withRuntimeLock(work) }
+    private func withOperationLock(_ action: String, callback: DeferredMonitoringCallback? = nil,
+                                   _ work: () throws -> Void) throws {
+        do {
+        try operation(action) {
+            try storage.withRuntimeLock {
+                var state = try storage.readRuntime()
+                if let pending = state.pendingTransition {
+                    if PendingMonitoringOperations.isActive(pending) {
+                        if let callback {
+                            var callbacks = pending.callbacks ?? []
+                            if !callbacks.contains(callback) { callbacks.append(callback) }
+                            state.pendingTransition?.callbacks = callbacks
+                            try storage.writeRuntime(state)
+                            report("transition_callback_deferred", action)
+                            return
+                        }
+                        if action == "reconcile" { return }
+                        guard action == "stop_breakloop" || action == "stop_deep_focus" else {
+                            throw LifecycleError.transitionInProgress
+                        }
+                    }
+                    if !PendingMonitoringOperations.isActive(pending), let callback,
+                       callback.kind == .threshold {
+                        let actual = try storage.withoutRuntimeLock { driver.activities() }
+                        if !actual.contains(callback.name) {
+                            report("stale_threshold_rejected", callback.name)
+                            return
+                        }
+                        // Re-read after the inventory boundary rather than overwrite a newer intent.
+                        guard try storage.readRuntime() == state else { throw LifecycleError.transitionCancelled }
+                    }
+                    // Cancellation/recovery invalidates the intent before any stop call.
+                    // Completion of its in-flight Apple request can no longer publish it.
+                    state.pendingTransition = nil
+                    state.retiredActivities = unique((state.retiredActivities ?? []) + pending.addedActivities)
+                    state.deferredCallbacks = uniqueCallbacks((state.deferredCallbacks ?? []) + (pending.callbacks ?? []))
+                    try storage.writeRuntime(state)
+                    report("transition_recovered", action, metadata: ["spanId": pending.id.uuidString])
+                }
+                try work()
+            }
+        }
+        } catch {
+            try? drainCallbacks()
+            throw error
+        }
+        try drainCallbacks()
+    }
+
+    private func unique(_ values: [String]) -> [String]? {
+        let result = Array(Set(values)).sorted()
+        return result.isEmpty ? nil : result
+    }
+    private func uniqueCallbacks(_ values: [DeferredMonitoringCallback]) -> [DeferredMonitoringCallback]? {
+        var result: [DeferredMonitoringCallback] = []
+        for value in values where !result.contains(value) { result.append(value) }
+        return result.isEmpty ? nil : result
+    }
+
+    private func drainCallbacks() throws {
+        let key = "breakloop.runtime.drainingCallbacks"
+        guard Thread.current.threadDictionary[key] == nil else { return }
+        Thread.current.threadDictionary[key] = true
+        defer { Thread.current.threadDictionary.removeObject(forKey: key) }
+        while true {
+            let callback = try storage.withRuntimeLock {
+                let state = try storage.readRuntime()
+                return state.pendingTransition == nil ? state.deferredCallbacks?.first : nil
+            }
+            guard let callback else { return }
+            // Keep the event durable until replay succeeds. A process death can replay it
+            // again; generation checks and checkpoint monotonicity make that idempotent.
+            switch callback.kind {
+            case .started: try intervalStarted(name: callback.name)
+            case .ended: try intervalEnded(name: callback.name)
+            case .threshold: try threshold(name: callback.name, minute: callback.minute)
+            }
+            try storage.withRuntimeLock {
+                var state = try storage.readRuntime()
+                state.deferredCallbacks = uniqueCallbacks((state.deferredCallbacks ?? []).filter { $0 != callback })
+                try storage.writeRuntime(state)
+            }
+        }
+    }
+
+    // Inventory is also an XPC boundary. Never use a pre-inventory state after another
+    // process changed it while this lease was released.
+    private func inventory() throws -> [String] {
+        let before = try storage.readRuntime()
+        let names = try storage.withoutRuntimeLock { driver.activities() }
+        guard try storage.readRuntime() == before else { throw LifecycleError.transitionCancelled }
+        return names
+    }
+
+    private func stopActivities(_ names: [String]) throws {
+        guard !names.isEmpty else { return }
+        try storage.withoutRuntimeLock { driver.stop(names) }
     }
 
     private func report(_ event: String, _ detail: String, metadata: [String: String] = [:]) {
@@ -76,39 +213,86 @@ final class MonitoringLifecycle {
     // Preparation and scheduling can fail before publication. ManagedSettings writes after
     // publication use the already validated/captured selection and have no throwing API.
     private func commit(_ proposed: MonitoringRuntime, replacing old: MonitoringRuntime,
-                        clearsSelectionAttentionOnStart: Bool = false,
+                        clearsSelectionAttentionOnStart: Bool = false, schedules: Bool = false,
                         start: () throws -> Void = {}) throws {
         var next = proposed
-        let apply: () -> Void
-        do {
-            apply = next.ownsShield(at: now()) ? try driver.prepareShield() : driver.clearShield
-        } catch {
-            try recordSelectionFailure(error, state: old)
-            throw error
+        let live = try storage.readRuntime()
+        if !schedules {
+            guard live.snapshot?.id == old.snapshot?.id, live.cooldown == old.cooldown,
+                  live.deepFocus == old.deepFocus, live.pendingTransition == nil else {
+                throw LifecycleError.transitionCancelled
+            }
+            next.deferredCallbacks = uniqueCallbacks((next.deferredCallbacks ?? []) + (live.deferredCallbacks ?? []))
+            next.retiredActivities = unique((next.retiredActivities ?? []) + (live.retiredActivities ?? []))
         }
+        let apply: () -> Void
+        do { apply = next.ownsShield(at: now()) ? try driver.prepareShield() : driver.clearShield }
+        catch { try recordSelectionFailure(error, state: old); throw error }
         if next.ownsShield(at: now()), next.attention?.code.isSelectionFailure == true, next.attention?.resolvedAt == nil {
             next.attention?.resolvedAt = now()
         }
         let added = next.activityNames.filter { !old.activityNames.contains($0) }
+        let intent = PendingMonitoringTransition(addedActivities: added)
+        if schedules {
+            var reserved = old
+            reserved.pendingTransition = intent
+            PendingMonitoringOperations.begin(intent.id)
+            do { try storage.writeRuntime(reserved) }
+            catch { PendingMonitoringOperations.end(intent.id); throw error }
+        }
+        defer { if schedules { PendingMonitoringOperations.end(intent.id) } }
         do {
-            try start()
-            // A validated, successfully scheduled fresh focus cycle supersedes an old selection
-            // failure even when no shield is owned (the normal post-cooldown state).
-            if clearsSelectionAttentionOnStart, next.attention?.code.isSelectionFailure == true {
-                next.attention = nil
+            if schedules {
+                try storage.withoutRuntimeLock { try start() }
+                let current = try storage.readRuntime()
+                guard current.pendingTransition?.id == intent.id else { throw LifecycleError.transitionCancelled }
+                next.deferredCallbacks = uniqueCallbacks((current.deferredCallbacks ?? []) + (current.pendingTransition?.callbacks ?? []))
+                next.retiredActivities = current.retiredActivities
+                next.pendingTransition = nil
             }
+            if clearsSelectionAttentionOnStart, next.attention?.code.isSelectionFailure == true { next.attention = nil }
+            next.retiredActivities = unique((next.retiredActivities ?? []) + old.activityNames.filter { !next.activityNames.contains($0) })
             try storage.writeRuntime(next)
         } catch {
-            driver.stop(added)
+            // Roll back only this intent. A concurrent Stop or newer generation wins.
+            var current = try storage.readRuntime()
+            if current.pendingTransition?.id == intent.id {
+                let callbacks = current.pendingTransition?.callbacks ?? []
+                current.pendingTransition = nil
+                current.deferredCallbacks = uniqueCallbacks((current.deferredCallbacks ?? []) + callbacks)
+                current.retiredActivities = unique((current.retiredActivities ?? []) + added)
+                do { try storage.writeRuntime(current) }
+                catch { report("transition_rollback_pending", "Recovery remains durable.") }
+            }
+            let protected = Set(current.activityNames + (current.pendingTransition?.addedActivities ?? []))
+            try stopActivities(added.filter { !protected.contains($0) })
+            // Prune a successfully stopped rollback ledger without restoring old state.
+            var cleaned = try storage.readRuntime()
+            cleaned.retiredActivities = unique((cleaned.retiredActivities ?? []).filter { !added.contains($0) })
+            try? storage.writeRuntime(cleaned)
             report("transition_failed", String(describing: error))
             throw error
         }
-        stopObsolete(next)
+        // Shield ownership is serialized with publication. No stale shield write after
+        // releasing for stop/inventory; cleanup re-reads the current generation instead.
         if next.ownsShield(at: now()) { apply() } else { driver.clearShield() }
+        do { try stopObsolete() }
+        catch { report("monitoring_cleanup_failed", String(describing: error)) }
     }
 
-    private func stopObsolete(_ next: MonitoringRuntime) {
-        driver.stop(driver.activities().filter { $0.hasPrefix("breakloop.") && !next.activityNames.contains($0) })
+    private func stopObsolete() throws {
+        let names = try storage.withoutRuntimeLock { driver.activities() }
+        var current = try storage.readRuntime()
+        let protected = Set(current.activityNames + (current.pendingTransition?.addedActivities ?? []))
+        let obsolete = Array(Set(names.filter { $0.hasPrefix("breakloop.") && !protected.contains($0) }
+            + (current.retiredActivities ?? []).filter { !protected.contains($0) })).sorted()
+        guard !obsolete.isEmpty else { return }
+        current.retiredActivities = unique((current.retiredActivities ?? []) + obsolete)
+        try storage.writeRuntime(current)
+        try stopActivities(obsolete)
+        var after = try storage.readRuntime()
+        after.retiredActivities = unique((after.retiredActivities ?? []).filter { !obsolete.contains($0) })
+        try storage.writeRuntime(after)
     }
 
     private func recordSelectionFailure(_ error: Error, state: MonitoringRuntime) throws {
@@ -128,7 +312,11 @@ final class MonitoringLifecycle {
     // before stopping it. If storage fails, stop it anyway and reject callbacks by inventory;
     // foreground reconciliation must not automatically revive a missing generation.
     private func interrupt(_ old: MonitoringRuntime, error: Error, code: MonitoringFailureCode) throws {
-        var interrupted = old
+        let current = try storage.readRuntime()
+        guard current.snapshot?.id == old.snapshot?.id, current.cooldown == old.cooldown else {
+            throw LifecycleError.transitionCancelled
+        }
+        var interrupted = current
         interrupted.snapshot = nil; interrupted.checkpoint = nil
         interrupted.attention = MonitoringAttention(code: code, occurredAt: now(),
             activity: old.snapshot.map { MonitoringRuntime.focusName($0.id) },
@@ -137,17 +325,17 @@ final class MonitoringLifecycle {
                metadata: ["failureCode": code.rawValue, "activity": interrupted.attention!.activity ?? "none",
                           "originalErrorDomain": (error as NSError).domain, "originalErrorCode": "\((error as NSError).code)"])
         do { try storage.writeRuntime(interrupted) } catch let persistenceError {
-            if let snapshot = old.snapshot { driver.stop([MonitoringRuntime.focusName(snapshot.id)]) }
+            if let snapshot = old.snapshot { try stopActivities([MonitoringRuntime.focusName(snapshot.id)]) }
             report("interruption_persistence_failed", "original=\(error); persistence=\(persistenceError)",
                    metadata: ["failureCode": MonitoringFailureCode.runtimePersistence.rawValue,
                               "activity": interrupted.attention!.activity ?? "none",
                               "originalFailureCode": code.rawValue, "safeStatePersisted": "false"])
             throw MonitoringRecoveryError(original: error, persistence: persistenceError)
         }
-        stopObsolete(interrupted)
+        try stopObsolete()
         // Preserve an existing Deep Focus shield without reloading a possibly broken selection.
         // No new shield is introduced by interruption, and expired/no owners can safely clear.
-        if !interrupted.ownsShield(at: now()) { driver.clearShield() }
+        if !(try storage.readRuntime()).ownsShield(at: now()) { driver.clearShield() }
         throw error
     }
 
@@ -155,13 +343,13 @@ final class MonitoringLifecycle {
         try withOperationLock("start_breakloop") {
             let old = try storage.readRuntime()
             if let snapshot = old.snapshot,
-               old.legacyFocus == true || driver.activities().contains(MonitoringRuntime.focusName(snapshot.id)) {
+               try (old.legacyFocus == true || inventory().contains(MonitoringRuntime.focusName(snapshot.id))) {
                 return // Repeated Start preserves a valid session; explicit Start can replace a missing generation.
             }
             var next = old
             let snapshot = CycleSnapshot(configuration: configuration(), startedAt: now())
             next.snapshot = snapshot; next.checkpoint = nil; next.legacyFocus = nil; next.attention = nil
-            try commit(next, replacing: old) { try driver.startFocus(snapshot) }
+            try commit(next, replacing: old, schedules: true) { try driver.startFocus(snapshot) }
         }
     }
 
@@ -182,7 +370,7 @@ final class MonitoringLifecycle {
             var next = old
             let session = DeepFocusSession(startedAt: Date(timeIntervalSince1970: ceil(now().timeIntervalSince1970)), durationMinutes: minutes)
             next.deepFocus = session; next.legacyDeepFocus = nil
-            try commit(next, replacing: old) {
+            try commit(next, replacing: old, schedules: true) {
                 try driver.startDeadline(MonitoringRuntime.deepFocusName(session.id), session.endsAt)
             }
         }
@@ -203,14 +391,14 @@ final class MonitoringLifecycle {
             var next = old
             let deadline = RestrictionDeadline(endsAt: Date(timeIntervalSince1970: ceil(end.timeIntervalSince1970 + Double(minutes) * 60)))
             next.cooldown = deadline; next.legacyCooldown = nil
-            try commit(next, replacing: old) {
+            try commit(next, replacing: old, schedules: true) {
                 try driver.startDeadline(MonitoringRuntime.cooldownName(deadline.id), deadline.endsAt)
             }
         }
     }
 
     func intervalEnded(name: String) throws {
-        try withOperationLock("interval_end_callback") {
+        try withOperationLock("interval_end_callback", callback: DeferredMonitoringCallback(kind: .ended, name: name)) {
             let state = try storage.readRuntime()
             let valid = state.cooldown.map { state.cooldownName == name && $0.endsAt <= now() } == true
                 || state.deepFocus.map { state.deepFocusName == name && $0.endsAt <= now() } == true
@@ -220,7 +408,7 @@ final class MonitoringLifecycle {
     }
 
     func intervalStarted(name: String) throws {
-        try withOperationLock("interval_start_callback") {
+        try withOperationLock("interval_start_callback", callback: DeferredMonitoringCallback(kind: .started, name: name)) {
             let state = try storage.readRuntime()
             guard state.activityNames.contains(name) else { report("stale_start_rejected", name); return }
             try reconcileLocked(state)
@@ -245,7 +433,7 @@ final class MonitoringLifecycle {
         if cooldownExpired, next.snapshot != nil {
             next.snapshot = CycleSnapshot(configuration: configuration(), startedAt: now())
         }
-        let currentNames = driver.activities()
+        let currentNames = try inventory()
         if let snapshot = old.snapshot, !cooldownExpired, old.legacyFocus != true,
            !currentNames.contains(MonitoringRuntime.focusName(snapshot.id)) {
             // An absent monitor can be the result of an interruption whose write failed.
@@ -261,10 +449,11 @@ final class MonitoringLifecycle {
                 "cooldownExpired": "\(cooldownExpired)", "willStartFocus": "\(snapshotToStart != nil)",
                 "priorAttentionCode": old.attention?.code.rawValue ?? "none",
                 "priorAttentionAt": old.attention.map { "\($0.occurredAt.timeIntervalSince1970)" } ?? "none"])
-            try commit(next, replacing: old, clearsSelectionAttentionOnStart: snapshotToStart != nil) {
+            try commit(next, replacing: old, clearsSelectionAttentionOnStart: snapshotToStart != nil, schedules: snapshotToStart != nil) {
                 if let snapshotToStart { try driver.startFocus(snapshotToStart) }
             }
         } catch {
+            if error as? LifecycleError == .transitionCancelled { throw error }
             if SelectionFailure.isSelectionError(error) || (error as? MonitoringRecoveryError).map({ SelectionFailure.isSelectionError($0.original) }) == true {
                 // Persist elapsed-owner cleanup even while another valid owner cannot be reapplied.
                 // Do not clear that owner's already installed shield or schedule.
@@ -275,8 +464,8 @@ final class MonitoringLifecycle {
                 do { try storage.writeRuntime(next) } catch let persistenceError {
                     throw MonitoringRecoveryError(original: error, persistence: persistenceError)
                 }
-                stopObsolete(next)
-                if !next.ownsShield(at: now()) { driver.clearShield() }
+                try stopObsolete()
+                if !(try storage.readRuntime()).ownsShield(at: now()) { driver.clearShield() }
             } else if snapshotToStart != nil || cooldownExpired || next.deepFocus != old.deepFocus {
                 next.snapshot = nil; next.checkpoint = nil
                 try commit(next, replacing: old)
@@ -286,10 +475,10 @@ final class MonitoringLifecycle {
     }
 
     func threshold(name: String, minute: Int?) throws {
-        try withOperationLock("threshold_callback") {
+        try withOperationLock("threshold_callback", callback: DeferredMonitoringCallback(kind: .threshold, name: name, minute: minute)) {
             let old = try storage.readRuntime()
             guard let snapshot = old.snapshot, name == MonitoringRuntime.focusName(snapshot.id),
-                  old.cooldown == nil, driver.activities().contains(name) else { report("stale_threshold_rejected", name); return }
+                  old.cooldown == nil, try inventory().contains(name) else { report("stale_threshold_rejected", name); return }
             let usage = minute ?? snapshot.usageLimitMinutes
             report(minute == nil ? "usage_threshold_reached" : "usage_checkpoint_reached", "Usage callback observed.",
                    metadata: ["usageMinute": "\(usage)", "activity": name])
@@ -307,21 +496,22 @@ final class MonitoringLifecycle {
             if naturalRest {
                 let fresh = CycleSnapshot(configuration: configuration(), startedAt: now())
                 next.snapshot = fresh; next.checkpoint = nil
-                try commit(next, replacing: old, clearsSelectionAttentionOnStart: true) { try driver.startFocus(fresh) }
+                try commit(next, replacing: old, clearsSelectionAttentionOnStart: true, schedules: true) { try driver.startFocus(fresh) }
             } else if minute == nil {
                 let deadline = RestrictionDeadline(endsAt: Date(timeIntervalSince1970: ceil(now().timeIntervalSince1970 + Double(snapshot.restDurationMinutes) * 60)))
                 next.cooldown = deadline; next.legacyCooldown = nil; next.checkpoint = nil
-                var phase: MonitoringFailureCode = .selectionUnavailable
+                var phase: MonitoringFailureCode = .runtimePersistence
                 do {
-                    try commit(next, replacing: old) {
+                    try commit(next, replacing: old, schedules: true) {
                         phase = .cooldownScheduling
                         try driver.startDeadline(MonitoringRuntime.cooldownName(deadline.id), deadline.endsAt)
                         phase = .runtimePersistence
                     }
                     report("cooldown_started", "Cooldown publication completed.", metadata: ["activity": MonitoringRuntime.cooldownName(deadline.id), "endsAt": deadline.endsAt.ISO8601Format()])
                 } catch {
+                    if error as? LifecycleError == .transitionCancelled { throw error }
                     let original = (error as? MonitoringRecoveryError)?.original ?? error
-                    let code = phase == .selectionUnavailable ? SelectionFailure.classify(original) : phase
+                    let code = SelectionFailure.isSelectionError(original) ? SelectionFailure.classify(original) : phase
                     try interrupt(old, error: error, code: code)
                 }
             } else {
@@ -332,10 +522,12 @@ final class MonitoringLifecycle {
     }
 }
 
-enum LifecycleError: LocalizedError {
-    case invalidDuration, invalidSchedule, storageUnavailable, monitorUnavailable
+enum LifecycleError: LocalizedError, Equatable {
+    case invalidDuration, invalidSchedule, storageUnavailable, monitorUnavailable, transitionInProgress, transitionCancelled
     var errorDescription: String? {
         switch self {
+        case .transitionInProgress: return "A monitoring change is already in progress. Refresh status before trying again."
+        case .transitionCancelled: return "The monitoring change was superseded. Refresh status before trying again."
         case .invalidDuration: return "The monitoring duration is not supported."
         case .invalidSchedule: return "The system could not schedule the requested monitoring interval."
         case .monitorUnavailable: return "The previous monitoring activity is no longer running. Start BreakLoop again."

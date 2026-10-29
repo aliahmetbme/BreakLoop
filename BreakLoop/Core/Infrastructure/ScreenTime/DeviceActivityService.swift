@@ -12,7 +12,9 @@ protocol DeviceActivityServiceProtocol {
 
 final class DeviceActivityService: DeviceActivityServiceProtocol {
     private let center = DeviceActivityCenter()
-    var activityNames: [String] { center.activities.map(\.rawValue) }
+    var activityNames: [String] {
+        AppLogger.shared.timed("device_inventory") { center.activities.map(\.rawValue) }
+    }
 
     static func makeDailySchedule() -> DeviceActivitySchedule {
         DeviceActivitySchedule(intervalStart: DateComponents(hour: 0, minute: 0),
@@ -49,19 +51,25 @@ final class DeviceActivityService: DeviceActivityServiceProtocol {
 
     func startDeadline(name: String, end: Date) throws {
         let schedule = try Self.deadlineSchedule(end: end)
-        try center.startMonitoring(DeviceActivityName(name), during: schedule)
+        try AppLogger.shared.timed("device_start", metadata: ["activity": name]) {
+            try center.startMonitoring(DeviceActivityName(name), during: schedule)
+        }
     }
 
     func startMonitoring(selection: FamilyActivitySelection, snapshot: CycleSnapshot) throws {
         let schedule = Self.makeDailySchedule()
         guard schedule.nextInterval != nil else { throw LifecycleError.invalidSchedule }
-        try center.startMonitoring(DeviceActivityName(MonitoringRuntime.focusName(snapshot.id)), during: schedule,
-            events: Self.makeFocusEvents(selection: selection, limitMinutes: snapshot.usageLimitMinutes))
+        try AppLogger.shared.timed("device_start", metadata: ["activity": MonitoringRuntime.focusName(snapshot.id)]) {
+            try center.startMonitoring(DeviceActivityName(MonitoringRuntime.focusName(snapshot.id)), during: schedule,
+                events: Self.makeFocusEvents(selection: selection, limitMinutes: snapshot.usageLimitMinutes))
+        }
     }
 
     func stopActivities(_ names: [String]) {
         guard !names.isEmpty else { return }
-        center.stopMonitoring(names.map { DeviceActivityName($0) })
+        AppLogger.shared.timed("device_stop", metadata: ["activityCount": "\(names.count)"]) {
+            center.stopMonitoring(names.map { DeviceActivityName($0) })
+        }
     }
     func stopMonitoring() { stopActivities(activityNames.filter { $0.hasPrefix("breakloop.") }) }
 }
