@@ -13,9 +13,17 @@ struct LegalPublicationTests {
         func publication(_ english: String = "", _ turkish: String = "", version: String = "test-reviewed", approved: Bool = true) -> ReviewedLegalPublication {
             ReviewedLegalPublication(englishURL: english, turkishURL: turkish, reviewedVersion: version, reviewApproved: approved)
         }
+        check(LegalPublicationConfiguration.current.destination(for: .privacy, language: "en")?.absoluteString == "https://breakloopfocusandrest.netlify.app/en/privacy", "privacy EN destination")
+        check(LegalPublicationConfiguration.current.destination(for: .privacy, language: "tr")?.absoluteString == "https://breakloopfocusandrest.netlify.app/tr/privacy", "privacy TR destination")
+        check(LegalPublicationConfiguration.current.destination(for: .terms, language: "en")?.absoluteString == "https://breakloopfocusandrest.netlify.app/en/terms", "terms EN destination")
+        check(LegalPublicationConfiguration.current.destination(for: .terms, language: "tr")?.absoluteString == "https://breakloopfocusandrest.netlify.app/tr/terms", "terms TR destination")
+        check(LegalPublicationConfiguration.current.destination(for: .kvkk, language: "en")?.absoluteString == "https://breakloopfocusandrest.netlify.app/tr/kvkk", "kvkk EN routes to TR document")
+        check(LegalPublicationConfiguration.current.destination(for: .kvkk, language: "tr")?.absoluteString == "https://breakloopfocusandrest.netlify.app/tr/kvkk", "kvkk TR destination")
+
+        let empty = LegalPublicationConfiguration(privacy: nil, terms: nil, kvkk: nil)
         for document in LegalDocument.allCases {
-            check(LegalPublicationConfiguration.current.destination(for: document, language: "en") == nil, "production URLs stay blank")
-            check(LegalPublicationConfiguration.current.destination(for: document, language: "tr") == nil, "Turkish production URLs stay blank")
+            check(empty.destination(for: document, language: "en") == nil, "unconfigured URLs stay blank")
+            check(empty.destination(for: document, language: "tr") == nil, "unconfigured Turkish URLs stay blank")
         }
         for url in ["", "http://www.apple.com/legal", "javascript:alert(1)", "file:///tmp/legal", "https://example.com/privacy", "https://legal.example/privacy", "https://draft.test/privacy", "https://www.apple.com:443/legal", "https://user:password@www.apple.com/legal", "https://www.apple.com/legal#draft"] {
             check(publication(url, url).destination(language: "en") == nil, "unsafe or placeholder link rejected: \(url)")

@@ -53,10 +53,14 @@ import Foundation
         check(!corrupted.hasAcceptedCurrentTerms && !corrupted.isChecked, "corrupt receipt never grants access")
         let normal = TermsAcceptanceModel(defaults: defaults, configuration: empty)
         #if DEBUG
-        check(normal.isDevelopmentPreview, "Debug enables explicit development preview")
+        check(normal.isDevelopmentPreview, "Debug enables explicit development preview when publications are empty")
         #else
-        check(!normal.isDevelopmentPreview && normal.currentVersion == nil, "Release has no development bypass by default")
+        check(!normal.isDevelopmentPreview && normal.currentVersion == nil, "Release has no development bypass by default when publications are empty")
         #endif
+        let liveModel = TermsAcceptanceModel(defaults: defaults)
+        check(liveModel.publicationsReady, "current configuration publications are ready")
+        check(!liveModel.isDevelopmentPreview, "current configuration is not a development preview")
+        check(liveModel.currentVersion == "2026-10-30", "current terms version is 2026-10-30")
         print("Terms acceptance: \(checks) checks passed")
     }
 }

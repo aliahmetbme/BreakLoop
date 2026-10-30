@@ -34,7 +34,18 @@ final class AppGroupStorage {
         }
         
         self.defaults = defaults
-        if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Self.suiteName) {
+        var directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Self.suiteName)
+        #if targetEnvironment(simulator)
+        if directory == nil {
+            let simDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
+                .appendingPathComponent("BreakLoopSimAppGroup", isDirectory: true)
+            if let simDir {
+                try? FileManager.default.createDirectory(at: simDir, withIntermediateDirectories: true)
+                directory = simDir
+            }
+        }
+        #endif
+        if let directory {
             self.runtimeStore = RuntimeFileStore(directory: directory,
                 migrate: { try Self.migrateRuntime(defaults: defaults) },
                 didChange: {

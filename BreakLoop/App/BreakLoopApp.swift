@@ -6,6 +6,13 @@
 //
 
 import SwiftUI
+#if DEBUG
+import FamilyControls
+final class MockAuthorizedService: ScreenTimeAuthorizationServiceProtocol {
+    var authorizationStatus: AuthorizationStatus = .approved
+    func requestAuthorization() async throws {}
+}
+#endif
 
 @main
 struct BreakLoopApp: App {
@@ -14,7 +21,16 @@ struct BreakLoopApp: App {
 
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            if CommandLine.arguments.contains("-testDashboard") {
+                DashboardView()
+                    .environmentObject(AppearanceController.shared)
+            } else {
+                AppRootView()
+            }
+            #else
             AppRootView()
+            #endif
         }
     }
 }

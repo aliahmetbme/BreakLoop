@@ -267,6 +267,8 @@ struct DashboardView: View {
             return String(localized: "Updating status…")
         } else if viewModel.state.mode == .monitoring {
             return String(localized: "Your cycle is running.")
+        } else if !viewModel.hasSelection {
+            return String(localized: "Ready to begin?")
         } else {
             return String(localized: "BreakLoop Off")
         }
@@ -462,12 +464,18 @@ struct DashboardView: View {
                 // Off State Rule Card (matching design Screen 3)
                 VStack(alignment: .leading, spacing: BLSpacing.sm) {
                     HStack {
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(BLColor.brandInteractive)
-                                .frame(width: 7, height: 7)
+                        if viewModel.hasSelection {
+                            HStack(spacing: 6) {
+                                Circle()
+                                    .fill(BLColor.brandInteractive)
+                                    .frame(width: 7, height: 7)
 
-                            Text("Your BreakLoop")
+                                Text("Your BreakLoop")
+                                    .font(BLTypography.headline)
+                                    .foregroundStyle(BLColor.textPrimary)
+                            }
+                        } else {
+                            Text("Suggested Schedule")
                                 .font(BLTypography.headline)
                                 .foregroundStyle(BLColor.textPrimary)
                         }
@@ -477,7 +485,7 @@ struct DashboardView: View {
                         Button {
                             isRuleSheetPresented = true
                         } label: {
-                            Text("Edit")
+                            Text(viewModel.hasSelection ? String(localized: "Edit") : String(localized: "Customize"))
                                 .font(BLTypography.secondarySemibold)
                                 .foregroundStyle(BLColor.brandPrimary)
                                 .frame(minHeight: 44)
@@ -490,7 +498,9 @@ struct DashboardView: View {
                             .font(BLTypography.headlineBold)
                             .foregroundStyle(BLColor.textPrimary)
 
-                        Text("Shared Usage Budget")
+                        Text(viewModel.hasSelection
+                            ? String(localized: "Shared Usage Budget")
+                            : String(localized: "Suggested default · customizable"))
                             .font(BLTypography.caption)
                             .foregroundStyle(BLColor.textSecondary)
                     }
@@ -499,22 +509,18 @@ struct DashboardView: View {
                     .background(BLColor.surfaceSubtle)
                     .clipShape(RoundedRectangle(cornerRadius: BLRadius.small, style: .continuous))
 
-                    HStack(spacing: BLSpacing.xs) {
-                        Image(systemName: "app.badge.checkmark")
-                            .font(.caption)
-                            .foregroundStyle(BLColor.textSecondary)
-
-                        if viewModel.selectionState == .empty {
-                            Text("Choose the apps you want to take a break from.")
-                                .font(BLTypography.caption)
+                    if viewModel.hasSelection {
+                        HStack(spacing: BLSpacing.xs) {
+                            Image(systemName: "app.badge.checkmark")
+                                .font(.caption)
                                 .foregroundStyle(BLColor.textSecondary)
-                        } else {
+
                             Text(String(localized: "dashboard.selectionSelected", defaultValue: "\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories · \(viewModel.selectedWebsitesCount) websites selected"))
                                 .font(BLTypography.caption)
                                 .foregroundStyle(BLColor.textSecondary)
-                        }
 
-                        Spacer()
+                            Spacer()
+                        }
                     }
 
                     HStack(alignment: .top, spacing: 6) {

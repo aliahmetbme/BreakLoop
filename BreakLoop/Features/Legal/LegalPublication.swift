@@ -30,8 +30,27 @@ struct LegalPublicationConfiguration {
     let terms: ReviewedLegalPublication?
     let kvkk: ReviewedLegalPublication?
 
-    // Intentionally blank at the owner's request. Final reviewed publication URLs are a release blocker.
-    static let current = LegalPublicationConfiguration(privacy: nil, terms: nil, kvkk: nil)
+    // Official Netlify legal endpoints verified live on October 30, 2026.
+    static let current = LegalPublicationConfiguration(
+        privacy: ReviewedLegalPublication(
+            englishURL: "https://breakloopfocusandrest.netlify.app/en/privacy",
+            turkishURL: "https://breakloopfocusandrest.netlify.app/tr/privacy",
+            reviewedVersion: "2026-10-30",
+            reviewApproved: true
+        ),
+        terms: ReviewedLegalPublication(
+            englishURL: "https://breakloopfocusandrest.netlify.app/en/terms",
+            turkishURL: "https://breakloopfocusandrest.netlify.app/tr/terms",
+            reviewedVersion: "2026-10-30",
+            reviewApproved: true
+        ),
+        kvkk: ReviewedLegalPublication(
+            englishURL: "https://breakloopfocusandrest.netlify.app/tr/kvkk",
+            turkishURL: "https://breakloopfocusandrest.netlify.app/tr/kvkk",
+            reviewedVersion: "2026-10-30",
+            reviewApproved: true
+        )
+    )
 
     func destination(for document: LegalDocument, language: String) -> URL? {
         switch document {
