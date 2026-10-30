@@ -153,7 +153,7 @@ struct OnboardingView: View {
                 icon: "timer",
                 accentColor: BLColor.brandPrimary,
                 outcomeTag: String(localized: "One shared allowance"),
-                title: String(localized: "Shared Usage Budget"),
+                title: String(localized: "Usage Cycle"),
                 subtitle: String(localized: "A repeating cycle of shared app usage and rest, rather than a daily limit.")
             )
 

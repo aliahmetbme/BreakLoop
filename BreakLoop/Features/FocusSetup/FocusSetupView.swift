@@ -37,7 +37,7 @@ struct FocusSetupView: View {
         if isModal {
             NavigationStack {
                 configurationContent
-                    .navigationTitle(String(localized: "BreakLoop Rule"))
+                    .navigationTitle(String(localized: "Usage Cycle Setup"))
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {

@@ -108,16 +108,19 @@ final class DashboardViewModel: ObservableObject {
             selectionReadError = nil
         } catch {
             selectionReadError = error.localizedDescription
-            errorMessage = error.localizedDescription
             AppLogger.shared.failure("dashboard_selection_read_failed", error: error, category: .monitoring)
         }
     }
 
     var isCooldownActive: Bool { state.mode == .cooldown }
-    var displayedError: String? { state.errorMessage ?? errorMessage }
+    var displayedError: String? { state.errorMessage ?? selectionReadError ?? errorMessage }
 
     var selectionState: DashboardSelectionState {
         DashboardSelectionState(counts: selection.breakLoopTokenCounts, readError: selectionReadError)
+    }
+
+    var experiencePresentation: DashboardExperiencePresentation {
+        DashboardExperiencePresentation(mode: state.mode, selection: selectionState)
     }
 
     var hasSelection: Bool { selectionState.isSupported }
@@ -125,7 +128,11 @@ final class DashboardViewModel: ObservableObject {
     var selectionIssue: String? { selectionState.validationOrReadErrorMessage }
     var selectedWebsitesCount: Int { selection.webDomainTokens.count }
 
+    var canOfferDeepFocus: Bool { state.canConfigureDeepFocus && hasSelection }
+    var focusCompanionState: DashboardFocusCompanionState { DashboardFocusCompanionState(state: state) }
+
     func presentDeepFocusSheet() {
+        guard canOfferDeepFocus, !isStartingDeepFocus, !isDeepFocusSheetPresented else { return }
         deepFocusLauncher.presentSheet()
         deepFocusErrorMessage = deepFocusLauncher.errorMessage
         isDeepFocusSheetPresented = deepFocusLauncher.isSheetPresented

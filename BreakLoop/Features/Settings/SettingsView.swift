@@ -98,7 +98,7 @@ struct SettingsView: View {
                     .padding(.vertical, 2)
                 }
             } header: {
-                Text("BreakLoop Rules")
+                Text("Usage Cycle")
             } footer: {
                 if let snapshot = viewModel.activeSnapshot {
                     Text(String(localized: "settings.activeCycle", defaultValue: "An active cycle is in progress (\(snapshot.usageLimitMinutes)m limit / \(snapshot.restDurationMinutes)m rest). Changes will take effect on your next fresh cycle."))

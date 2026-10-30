@@ -27,24 +27,30 @@ struct DashboardView: View {
                     // Header Bar
                     dashboardHeader
 
-                    // 1. Primary Status Surface Container
-                    primaryStatusSurface
-
-                    // 2. Rule & Target Summary Container
-                    ruleSummaryCard
-
-                    // 3. Secondary Deep Focus Entry (visible during active monitoring when not in Deep Focus or forced cooldown)
-                    if viewModel.state.canConfigureDeepFocus && !viewModel.state.canOfferInactiveStarts {
-                        deepFocusEntryCard
+                    switch viewModel.experiencePresentation {
+                    case .needsSelection:
+                        selectionSetupCard
+                        experiencePreviews
+                    case .ready:
+                        experienceEntries
+                        configurationSummary
+                    case .repairSelection, .selectionUnavailable:
+                        selectionRepairCard
+                        experiencePreviews
+                    case .runtime(let mode):
+                        primaryStatusSurface
+                        if mode == .monitoring || mode == .cooldown || mode == .deepFocus {
+                            ruleSummaryCard
+                        }
+                        if let issue = viewModel.selectionIssue {
+                            Text(issue)
+                                .font(BLTypography.caption)
+                                .foregroundStyle(BLColor.destructive)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
 
-                    if let issue = viewModel.selectionIssue {
-                        Text(issue)
-                            .font(BLTypography.caption)
-                            .foregroundStyle(BLColor.destructive)
-                            .multilineTextAlignment(.center)
-                    }
-                    if let errorMessage = viewModel.displayedError {
+                    if let errorMessage = viewModel.displayedError, errorMessage != viewModel.selectionIssue {
                         Text(errorMessage)
                             .font(BLTypography.caption)
                             .foregroundStyle(BLColor.destructive)
@@ -185,12 +191,30 @@ struct DashboardView: View {
                     BLStatusBadge(state: .active)
                 }
 
+                if viewModel.state.mode == .monitoring && viewModel.canOfferDeepFocus {
+                    VStack(spacing: BLSpacing.xxs) {
+                        BLPrimaryButton(title: String(localized: "Start Deep Focus"), icon: "scope") {
+                            viewModel.presentDeepFocusSheet()
+                        }
+                        .disabled(viewModel.isStartingDeepFocus || viewModel.isDeepFocusSheetPresented)
+                        .accessibilityHint(String(localized: "Opens duration options without stopping Usage Cycle."))
+                        Text("Focus without stopping Usage Cycle.")
+                            .fixedSize(horizontal: false, vertical: true)
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.textSecondary)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+                if viewModel.isDeepFocusActive {
+                    focusCompanionNote
+                }
+
                 // Central Status Ring
                 statusRingView
                     .padding(.vertical, 2)
 
                 if viewModel.state.mode == .monitoring {
-                    Label(String(localized: "MONITORING IS ON"), systemImage: "waveform")
+                    Label(String(localized: "USAGE CYCLE IS ON"), systemImage: "waveform")
                         .font(BLTypography.captionBold)
                         .foregroundStyle(BLColor.brandPrimary)
                         .accessibilityHidden(true)
@@ -228,6 +252,41 @@ struct DashboardView: View {
                     .padding(.top, BLSpacing.xs)
             }
             .frame(maxWidth: .infinity)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    @ViewBuilder
+    private var focusCompanionNote: some View {
+        if viewModel.focusCompanionState != .none {
+            VStack(spacing: BLSpacing.xxs) {
+                Label(focusCompanionTitle, systemImage: "clock.arrow.circlepath")
+                    .font(BLTypography.captionBold)
+                Text(focusCompanionDescription).font(BLTypography.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .foregroundStyle(BLColor.textSecondary)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityElement(children: .combine)
+        }
+    }
+
+    private var focusCompanionTitle: String {
+        switch viewModel.focusCompanionState {
+        case .usageCycle: return String(localized: "Usage Cycle remains active in the background.")
+        case .cooldown: return String(localized: "Your existing break is preserved.")
+        case .needsAttention: return String(localized: "Usage Cycle needs attention")
+        case .none: return ""
+        }
+    }
+
+    private var focusCompanionDescription: String {
+        switch viewModel.focusCompanionState {
+        case .usageCycle: return String(localized: "Its existing usage and rest rules still apply.")
+        case .cooldown: return String(localized: "Ending Deep Focus will not end this break.")
+        case .needsAttention: return String(localized: "Review its status after your focus session.")
+        case .none: return ""
         }
     }
 
@@ -237,6 +296,8 @@ struct DashboardView: View {
             BLCountdownStatusView(endsAt: session.endsAt, startedAt: session.startedAt, isDeepFocus: true)
         } else if viewModel.isCooldownActive, let end = viewModel.cooldownEndDate {
             BLCountdownStatusView(endsAt: end, isDeepFocus: false)
+        } else if viewModel.state.mode == .loading {
+            ProgressView().controlSize(.large).frame(width: 200, height: 200)
         } else if viewModel.state.mode == .failure {
             BLStatusRing(icon: "exclamationmark.triangle", statusColor: BLColor.destructive)
         } else if viewModel.state.mode == .monitoring {
@@ -262,7 +323,7 @@ struct DashboardView: View {
         } else if viewModel.isCooldownActive {
             return String(localized: "Time for a break.")
         } else if viewModel.state.mode == .failure {
-            return String(localized: "Monitoring needs attention")
+            return String(localized: "Usage Cycle needs attention")
         } else if viewModel.state.mode == .loading {
             return String(localized: "Updating status…")
         } else if viewModel.state.mode == .monitoring {
@@ -270,7 +331,7 @@ struct DashboardView: View {
         } else if !viewModel.hasSelection {
             return String(localized: "Ready to begin?")
         } else {
-            return String(localized: "BreakLoop Off")
+            return String(localized: "Usage Cycle Inactive")
         }
     }
 
@@ -280,7 +341,7 @@ struct DashboardView: View {
         } else if viewModel.state.mode == .failure {
             return String(localized: "Reopen BreakLoop or retry after resolving the error below.")
         } else if viewModel.state.mode == .loading {
-            return String(localized: "Reading the latest monitoring state")
+            return String(localized: "Reading the latest session state")
         } else if viewModel.state.mode == .monitoring {
             return String(localized: "Selected apps are being monitored. A break begins at your shared usage limit.")
         } else if viewModel.selectionState == .empty {
@@ -303,8 +364,11 @@ struct DashboardView: View {
         } else if viewModel.isCooldownActive {
             EmptyView()
         } else if viewModel.canStopBreakLoop {
-            BLSecondaryButton(title: String(localized: "Stop BreakLoop"), icon: "stop.circle") {
-                viewModel.stopBreakLoop()
+            VStack(spacing: BLSpacing.sm) {
+                BLSecondaryButton(title: String(localized: "Stop Usage Cycle"), icon: "stop.circle") {
+                    viewModel.stopBreakLoop()
+                }
+
             }
         } else if viewModel.state.mode == .failure {
             VStack(spacing: BLSpacing.sm) {
@@ -319,38 +383,15 @@ struct DashboardView: View {
                     viewModel.recoverSynchronization()
                 }
                 if viewModel.state.canStopRecordedBreakLoop {
-                    BLSecondaryButton(title: String(localized: "Stop Recorded BreakLoop"), icon: "stop.circle") {
+                    BLSecondaryButton(title: String(localized: "Stop Recorded Usage Cycle"), icon: "stop.circle") {
                         viewModel.stopBreakLoop()
                     }
                 }
                 if viewModel.state.canRetryBreakLoop {
-                    BLPrimaryButton(title: String(localized: "Retry BreakLoop"), icon: "arrow.clockwise.circle") {
+                    BLPrimaryButton(title: String(localized: "Retry Usage Cycle"), icon: "arrow.clockwise.circle") {
                         viewModel.startBreakLoop()
                     }
                     .disabled(!viewModel.hasSelection)
-                }
-            }
-        } else if viewModel.state.canOfferInactiveStarts {
-            if !viewModel.hasSelection {
-                BLPrimaryButton(title: String(localized: "Select Apps & Categories"), icon: "apps.iphone") {
-                    isRuleSheetPresented = true
-                }
-            } else {
-                VStack(spacing: BLSpacing.sm) {
-                    BLPrimaryButton(title: String(localized: "Start BreakLoop"), icon: "play.fill") {
-                        viewModel.startBreakLoop()
-                    }
-
-                    VStack(spacing: 4) {
-                        BLSecondaryButton(title: String(localized: "Start Deep Focus"), icon: "scope") {
-                            viewModel.presentDeepFocusSheet()
-                        }
-
-                        Text("Pause selected distractions for a focus session you choose.")
-                            .font(BLTypography.caption)
-                            .foregroundStyle(BLColor.textSecondary)
-                            .multilineTextAlignment(.center)
-                    }
                 }
             }
         }
@@ -419,7 +460,7 @@ struct DashboardView: View {
 
                         Spacer()
 
-                        Text("BreakLoop Active")
+                        Text("Usage Cycle Active")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(BLColor.brandPrimary)
                             .padding(.horizontal, 8)
@@ -446,139 +487,154 @@ struct DashboardView: View {
 
                         Spacer()
 
-                        Button {
+                        BLTertiaryButton(title: String(localized: "Edit")) {
                             isRuleSheetPresented = true
-                        } label: {
-                            HStack(spacing: 2) {
-                                Text("Edit")
-                                Image(systemName: "chevron.right")
-                                    .font(.caption2.bold())
-                            }
-                            .font(BLTypography.secondarySemibold)
-                            .foregroundStyle(BLColor.brandPrimary)
-                            .frame(minHeight: 44)
                         }
-                    }
-                }
-            } else {
-                // Off State Rule Card (matching design Screen 3)
-                VStack(alignment: .leading, spacing: BLSpacing.sm) {
-                    HStack {
-                        if viewModel.hasSelection {
-                            HStack(spacing: 6) {
-                                Circle()
-                                    .fill(BLColor.brandInteractive)
-                                    .frame(width: 7, height: 7)
-
-                                Text("Your BreakLoop")
-                                    .font(BLTypography.headline)
-                                    .foregroundStyle(BLColor.textPrimary)
-                            }
-                        } else {
-                            Text("Suggested Schedule")
-                                .font(BLTypography.headline)
-                                .foregroundStyle(BLColor.textPrimary)
-                        }
-
-                        Spacer()
-
-                        Button {
-                            isRuleSheetPresented = true
-                        } label: {
-                            Text(viewModel.hasSelection ? String(localized: "Edit") : String(localized: "Customize"))
-                                .font(BLTypography.secondarySemibold)
-                                .foregroundStyle(BLColor.brandPrimary)
-                                .frame(minHeight: 44)
-                        }
-                    }
-
-                    // Inner Interval Box
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(String(localized: "dashboard.defaultRule", defaultValue: "\(viewModel.effectiveLimitMinutes) min usage   \(viewModel.effectiveRestMinutes) min break"))
-                            .font(BLTypography.headlineBold)
-                            .foregroundStyle(BLColor.textPrimary)
-
-                        Text(viewModel.hasSelection
-                            ? String(localized: "Shared Usage Budget")
-                            : String(localized: "Suggested default · customizable"))
-                            .font(BLTypography.caption)
-                            .foregroundStyle(BLColor.textSecondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(BLSpacing.sm)
-                    .background(BLColor.surfaceSubtle)
-                    .clipShape(RoundedRectangle(cornerRadius: BLRadius.small, style: .continuous))
-
-                    if viewModel.hasSelection {
-                        HStack(spacing: BLSpacing.xs) {
-                            Image(systemName: "app.badge.checkmark")
-                                .font(.caption)
-                                .foregroundStyle(BLColor.textSecondary)
-
-                            Text(String(localized: "dashboard.selectionSelected", defaultValue: "\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories · \(viewModel.selectedWebsitesCount) websites selected"))
-                                .font(BLTypography.caption)
-                                .foregroundStyle(BLColor.textSecondary)
-
-                            Spacer()
-                        }
-                    }
-
-                    HStack(alignment: .top, spacing: 6) {
-                        Image(systemName: "info.circle")
-                            .font(.caption)
-                            .foregroundStyle(BLColor.textTertiary)
-
-                        Text("Timer accumulates combined usage across selected apps.")
-                            .font(BLTypography.caption)
-                            .foregroundStyle(BLColor.textTertiary)
                     }
                 }
             }
         }
     }
 
-    // MARK: - 3. Secondary Deep Focus Entry
-    private var deepFocusEntryCard: some View {
-        Button {
-            viewModel.presentDeepFocusSheet()
-        } label: {
-            BLCard(padding: BLSpacing.sm) {
-                HStack(spacing: BLSpacing.sm) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: BLRadius.small, style: .continuous)
-                            .fill(BLColor.surfaceSubtle)
-                            .frame(width: 38, height: 38)
-
-                        Image(systemName: "sparkle")
-                            .font(.subheadline)
-                            .foregroundStyle(BLColor.brandPrimary)
+    // MARK: - Selection setup and equal experience entries
+    private var selectionSetupCard: some View {
+        BLCard {
+            VStack(spacing: BLSpacing.sm) {
+                HStack(alignment: .center, spacing: BLSpacing.sm) {
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        BLStatusRing(icon: "infinity", isOffState: true, size: 64)
+                            .accessibilityHidden(true)
                     }
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Deep Focus")
-                            .font(BLTypography.bodyMedium)
+                    VStack(alignment: .leading, spacing: BLSpacing.xxs) {
+                        Text("Ready to begin?")
+                            .font(BLTypography.title2)
                             .foregroundStyle(BLColor.textPrimary)
-
-                        Text("Pause selected distractions for a focus session you choose.")
-                            .font(BLTypography.caption)
+                            .accessibilityAddTraits(.isHeader)
+                        Text("First, choose the apps and categories you want to take a break from.")
+                            .font(BLTypography.secondary)
                             .foregroundStyle(BLColor.textSecondary)
                     }
-
-                    Spacer()
-
-                    Text("Configure")
-                        .font(BLTypography.captionBold)
-                        .foregroundStyle(BLColor.brandPrimary)
-
-                    Image(systemName: "chevron.right")
-                        .font(.caption2.bold())
-                        .foregroundStyle(BLColor.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+                }
+                BLPrimaryButton(title: String(localized: "Select Apps & Categories"), icon: "apps.iphone") {
+                    isRuleSheetPresented = true
                 }
             }
         }
-        .buttonStyle(BLPressableScaleStyle())
-        .accessibilityLabel(String(localized: "Configure Deep Focus"))
-        .disabled(!viewModel.hasSelection)
+    }
+
+    private var selectionRepairCard: some View {
+        BLCard {
+            VStack(alignment: .leading, spacing: BLSpacing.sm) {
+                Label(viewModel.experiencePresentation == .selectionUnavailable
+                    ? String(localized: "Saved selection unavailable")
+                    : String(localized: "Review your selection"), systemImage: "exclamationmark.circle")
+                    .font(BLTypography.headline)
+                    .foregroundStyle(BLColor.textPrimary)
+                    .accessibilityAddTraits(.isHeader)
+                Text(viewModel.selectionIssue ?? String(localized: "Review your selected apps and categories before starting."))
+                    .font(BLTypography.secondary)
+                    .foregroundStyle(BLColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if viewModel.experiencePresentation == .selectionUnavailable {
+                    BLSecondaryButton(title: String(localized: "Refresh Status"), icon: "arrow.clockwise") {
+                        viewModel.refresh()
+                    }
+                }
+                BLPrimaryButton(title: String(localized: "Review Selected Apps"), icon: "apps.iphone") {
+                    isRuleSheetPresented = true
+                }
+            }
+        }
+    }
+
+    private var experiencePreviews: some View {
+        VStack(spacing: BLSpacing.sm) {
+            experiencePreview(title: String(localized: "Usage Cycle"),
+                description: String(localized: "Shared usage, followed by automatic breaks."), icon: "clock.arrow.circlepath")
+            experiencePreview(title: String(localized: "Deep Focus"),
+                description: String(localized: "A focus session you choose."), icon: "sparkle")
+        }
+    }
+
+    // No Button or disabled CTA: these are informational previews until setup is valid.
+    private func experiencePreview(title: String, description: String, icon: String) -> some View {
+        BLCard(padding: BLSpacing.sm) {
+            HStack(alignment: .top, spacing: BLSpacing.sm) {
+                Image(systemName: icon)
+                    .font(.title3)
+                    .frame(width: 28)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: BLSpacing.xxs) {
+                    Text(title).font(BLTypography.headline)
+                    Text(description).font(BLTypography.caption)
+                    Text(viewModel.experiencePresentation == .needsSelection
+                        ? String(localized: "Select apps first")
+                        : String(localized: "Available after selection is verified"))
+                        .font(BLTypography.captionBold)
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            .foregroundStyle(BLColor.textSecondary)
+            .accessibilityElement(children: .combine)
+        }
+    }
+
+    private var experienceEntries: some View {
+        VStack(spacing: BLSpacing.md) {
+            experienceEntry(title: String(localized: "Usage Cycle"),
+                description: String(localized: "Use selected apps within a shared allowance, then take a break."),
+                actionTitle: String(localized: "Start Usage Cycle"), icon: "clock.arrow.circlepath") {
+                    viewModel.startBreakLoop()
+                }
+            experienceEntry(title: String(localized: "Deep Focus"),
+                description: String(localized: "Pause selected apps for a focus session you choose."),
+                actionTitle: String(localized: "Start Deep Focus"), icon: "sparkle") {
+                    viewModel.presentDeepFocusSheet()
+                }
+        }
+    }
+
+    private func experienceEntry(title: String, description: String, actionTitle: String,
+                                 icon: String, action: @escaping () -> Void) -> some View {
+        BLCard {
+            VStack(alignment: .leading, spacing: BLSpacing.sm) {
+                Label(title, systemImage: icon)
+                    .font(BLTypography.title3)
+                    .foregroundStyle(BLColor.textPrimary)
+                    .accessibilityAddTraits(.isHeader)
+                Text(description)
+                    .font(BLTypography.secondary)
+                    .foregroundStyle(BLColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                BLPrimaryButton(title: actionTitle, icon: "play.fill", action: action)
+            }
+        }
+    }
+
+    private var configurationSummary: some View {
+        BLCard(padding: BLSpacing.sm) {
+            VStack(alignment: .leading, spacing: BLSpacing.xs) {
+                (dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: BLSpacing.xxs))
+                    : AnyLayout(HStackLayout())) {
+                    Text("Selected Apps")
+                        .font(BLTypography.headline)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: BLSpacing.xs) }
+                    BLTertiaryButton(title: String(localized: "Edit")) {
+                        isRuleSheetPresented = true
+                    }
+                    .fixedSize(horizontal: true, vertical: false)
+                }
+                Text(String(localized: "dashboard.selectionSelected", defaultValue: "\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories · \(viewModel.selectedWebsitesCount) websites selected"))
+                    .font(BLTypography.caption)
+                Text(String(localized: "dashboard.rule", defaultValue: "\(viewModel.effectiveLimitMinutes) min usage · \(viewModel.effectiveRestMinutes) min break"))
+                    .font(BLTypography.caption)
+            }
+            .foregroundStyle(BLColor.textSecondary)
+            .fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
 
@@ -650,7 +706,7 @@ struct DeepFocusSheet: View {
                     }
 
                     BLPrimaryButton(
-                        title: String(localized: "focus.launch", defaultValue: "Launch Deep Focus (\(selectedDuration >= 60 ? String(localized: "duration.hours", defaultValue: "\(selectedDuration / 60)h") : String(localized: "duration.minutes", defaultValue: "\(selectedDuration)m")))"),
+                        title: String(localized: "focus.launch", defaultValue: "Start Deep Focus (\(selectedDuration >= 60 ? String(localized: "duration.hours", defaultValue: "\(selectedDuration / 60)h") : String(localized: "duration.minutes", defaultValue: "\(selectedDuration)m")))"),
                         icon: "sparkle",
                         isLoading: isLoading
                     ) {

@@ -331,6 +331,9 @@ func fails(_ action: () throws -> Void) { do { try action(); preconditionFailure
         let beforeSelectionTests = count
         try runCooldownSelectionRegressionTests()
         print("Cooldown/selection regressions: \(count - beforeSelectionTests) checks passed")
+        let beforeCoexistence = count
+        try runDeepFocusCoexistenceTests()
+        print("Deep Focus / Usage Cycle coexistence: \(count - beforeCoexistence) checks passed")
         let beforeContention = count
         try runLockContentionTests()
         print("Lock contention / termination / authorization: \(count - beforeContention) checks passed")

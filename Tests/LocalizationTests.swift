@@ -18,7 +18,7 @@ let shieldEN = localizedBundle("Shield", "en")
 check(String(localized: "Start BreakLoop", bundle: tr) == "BreakLoop’u Başlat", "custom button call-site lookup")
 check(String(localized: "Start BreakLoop", bundle: en) == "Start BreakLoop", "English preserved")
 check(String(localized: "setup.formula", defaultValue: "\(20) min use → \(15) min break", bundle: tr) == "20 dk kullanım → 15 dk mola", "two integer parameters")
-check(String(localized: "focus.launch", defaultValue: "Launch Deep Focus (\("2 sa"))", bundle: tr) == "Derin Odağı Başlat (2 sa)", "duration in full sentence")
+check(String(localized: "focus.launch", defaultValue: "Start Deep Focus (\("2 sa"))", bundle: tr) == "Derin Odağı Başlat (2 sa)", "duration in full sentence")
 check(String(localized: "Focus when you choose. Pause when you need.", bundle: tr) == "İstediğinde odaklan. Gerektiğinde mola ver.", "website hero slogan in Turkish")
 check(String(localized: "Focus when you choose. Pause when you need.", bundle: en) == "Focus when you choose. Pause when you need.", "website hero slogan in English")
 check(String(localized: "Pause the distractions. Make room for what matters.", bundle: tr) == "Dikkatini dağıtanlara ara ver. Önemli olana yer aç.", "brand philosophy in Turkish")
@@ -75,6 +75,24 @@ check(String(localized: "Apps pause at your limit. Estimated time away may allow
 for (key, expected) in [("Privacy Policy", "Gizlilik Politikası"), ("Terms of Use", "Kullanım Koşulları"), ("KVKK Notice (Turkish)", "KVKK Aydınlatma Metni"), ("Could not open link", "Bağlantı açılamadı")] {
     check(String(localized: String.LocalizationValue(key), bundle: tr) == expected, "legal label: \(key)")
     check(String(localized: String.LocalizationValue(key), bundle: en) == key, "English legal label: \(key)")
+}
+
+check(String(localized: "focus.launch", defaultValue: "Start Deep Focus (\("1h"))", bundle: en) == "Start Deep Focus (1h)", "canonical English Deep Focus sheet action")
+
+// Canonical feature hierarchy and first-use guidance.
+for (key, expected) in [
+    ("Usage Cycle", "Kullanım Döngüsü"),
+    ("Start Usage Cycle", "Kullanım Döngüsünü Başlat"),
+    ("Stop Usage Cycle", "Kullanım Döngüsünü Durdur"),
+    ("Deep Focus", "Derin Odak"),
+    ("Start Deep Focus", "Derin Odağı Başlat"),
+    ("First, choose the apps and categories you want to take a break from.", "Önce kullanımını sınırlandırmak istediğin uygulamaları ve kategorileri seç."),
+    ("Select apps first", "Önce uygulama seç"),
+    ("Use selected apps within a shared allowance, then take a break.", "Seçtiğin uygulamaları ortak kullanım süresi içinde kullan, ardından mola ver."),
+    ("Pause selected apps for a focus session you choose.", "Seçtiğin uygulamaları belirlediğin odak oturumu boyunca engelle.")
+] {
+    check(String(localized: String.LocalizationValue(key), bundle: tr) == expected, "first-use/experience Turkish: \(key)")
+    check(String(localized: String.LocalizationValue(key), bundle: en) == key, "first-use/experience English: \(key)")
 }
 
 // Every catalog entry must have approved English and Turkish text, including plural leaves.

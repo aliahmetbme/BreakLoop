@@ -15,6 +15,7 @@ swiftc -module-cache-path "$build_dir/module-cache" \
   BreakLoop/Core/Infrastructure/Logging/PersistentLogStore.swift \
   BreakLoop/Core/Infrastructure/Logging/AppLogger.swift \
   Tests/LockContentionTests.swift \
+  Tests/DeepFocusCoexistenceTests.swift \
   Tests/TimePresentationTests.swift \
   Tests/DiagnosticArchiveTests.swift \
   Tests/DashboardSynchronizationTests.swift \

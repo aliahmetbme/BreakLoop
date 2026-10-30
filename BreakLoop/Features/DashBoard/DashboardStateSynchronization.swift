@@ -21,13 +21,13 @@ struct DashboardState: Equatable {
     }
     var recoveryDescription: String {
         guard synchronizationError == nil, let runtime else {
-            return String(localized: "Current monitoring state could not be verified. Refresh status before starting another session.")
+            return String(localized: "Current session state could not be verified. Refresh status before starting another session.")
         }
         if runtime.deepFocus != nil || runtime.cooldown != nil {
             return String(localized: "A restriction is still recorded. Refresh status; recovery will preserve existing ownership.")
         }
-        if runtime.snapshot != nil { return String(localized: "Monitoring is still recorded. Review apps and refresh status, or stop the recorded session before retrying.") }
-        return String(localized: "Monitoring is interrupted. Review the saved apps, refresh status, then retry BreakLoop.")
+        if runtime.snapshot != nil { return String(localized: "A Usage Cycle is still recorded. Review apps and refresh status, or stop the recorded session before retrying.") }
+        return String(localized: "The Usage Cycle was interrupted. Review the saved apps, refresh status, then retry.")
     }
 
     init(runtime: MonitoringRuntime?, synchronizationError: String? = nil) {
@@ -223,6 +223,35 @@ enum DashboardSelectionState: Equatable {
         case .unsupportedWebsites(_, let message), .invalidLimits(_, let message), .readFailure(let message):
             return message
         }
+    }
+}
+
+// Read-only UI composition: active/recovering runtime always outranks selection setup.
+enum DashboardExperiencePresentation: Equatable {
+    case needsSelection, ready, repairSelection, selectionUnavailable
+    case runtime(DashboardState.Mode)
+
+    init(mode: DashboardState.Mode, selection: DashboardSelectionState) {
+        guard mode == .inactive else { self = .runtime(mode); return }
+        switch selection {
+        case .empty: self = .needsSelection
+        case .valid: self = .ready
+        case .unsupportedWebsites, .invalidLimits: self = .repairSelection
+        case .readFailure: self = .selectionUnavailable
+        }
+    }
+}
+
+// A companion status, not another timer or a pause/freeze state.
+enum DashboardFocusCompanionState: Equatable {
+    case none, usageCycle, cooldown, needsAttention
+
+    init(state: DashboardState) {
+        guard state.mode == .deepFocus, let runtime = state.runtime else { self = .none; return }
+        if runtime.cooldown != nil { self = .cooldown }
+        else if runtime.snapshot != nil {
+            self = runtime.attention?.resolvedAt == nil && runtime.attention != nil ? .needsAttention : .usageCycle
+        } else { self = .none }
     }
 }
 

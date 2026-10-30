@@ -17,10 +17,10 @@ struct BLStatusBadge: View {
 
         var title: String {
             switch self {
-            case .active: return String(localized: "BreakLoop Active")
+            case .active: return String(localized: "Usage Cycle Active")
             case .breakActive: return String(localized: "Mindful Pause Active")
             case .deepFocus: return String(localized: "Deep Focus Active")
-            case .inactive: return String(localized: "BreakLoop Off")
+            case .inactive: return String(localized: "Usage Cycle Inactive")
             case .permissionRequired: return String(localized: "Permission Required")
             }
         }
@@ -48,7 +48,7 @@ struct BLStatusBadge: View {
             Text(state.title)
                 .font(BLTypography.badge)
                 .fixedSize(horizontal: false, vertical: true)
-                .foregroundStyle(state == .deepFocus ? BLColor.brandPrimary : state.color)
+                .foregroundStyle(state == .deepFocus || state == .active ? BLColor.brandPrimary : state.color)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)

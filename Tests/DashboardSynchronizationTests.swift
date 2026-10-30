@@ -259,6 +259,24 @@ func runDashboardSynchronizationTests() throws {
         check(readFailure == .readFailure(message: "Storage corrupted") && !readFailure.isSupported && readFailure.validationOrReadErrorMessage == "Storage corrupted", "Selection read error takes precedence over cached counts")
     }
     do {
+        let empty = DashboardSelectionState(counts: nil)
+        let valid = DashboardSelectionState(counts: SelectionTokenCounts(applicationTokens: 4, categoryTokens: 0, webDomainTokens: 0))
+        let websites = DashboardSelectionState(counts: SelectionTokenCounts(applicationTokens: 4, categoryTokens: 0, webDomainTokens: 1))
+        let overLimit = DashboardSelectionState(counts: SelectionTokenCounts(applicationTokens: 51, categoryTokens: 0, webDomainTokens: 0))
+        let failedRead = DashboardSelectionState(counts: nil, readError: "read failed")
+        check(DashboardExperiencePresentation(mode: .inactive, selection: empty) == .needsSelection, "Only an inactive empty selection needs first-use setup")
+        check(DashboardExperiencePresentation(mode: .inactive, selection: valid) == .ready, "Supported saved selection offers both equal experiences")
+        check(DashboardExperiencePresentation(mode: .inactive, selection: websites) == .repairSelection, "Websites need repair, not first-use or start cards")
+        check(DashboardExperiencePresentation(mode: .inactive, selection: overLimit) == .repairSelection, "Over-limit selections need repair")
+        check(DashboardExperiencePresentation(mode: .inactive, selection: failedRead) == .selectionUnavailable, "Read failure does not pretend no apps were selected")
+        for mode: DashboardState.Mode in [.loading, .monitoring, .cooldown, .deepFocus, .failure] {
+            for selection in [empty, valid, websites, overLimit, failedRead] {
+                check(DashboardExperiencePresentation(mode: mode, selection: selection) == .runtime(mode),
+                      "Authoritative \(mode.rawValue) outranks selection setup and inactive start cards")
+            }
+        }
+    }
+    do {
         // DeepFocusLaunchController sheet presentation, error retention on failure, and dismissal only on success
         let launcher = DeepFocusLaunchController()
         launcher.presentSheet()

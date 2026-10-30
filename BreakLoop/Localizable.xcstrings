@@ -1051,7 +1051,8 @@
             "value": "Özelleştir"
           }
         }
-      }
+      },
+      "extractionState": "stale"
     },
     "Dark": {
       "extractionState": "manual",
@@ -2475,7 +2476,8 @@
             "value": "Başlamaya hazır mısın?"
           }
         }
-      }
+      },
+      "extractionState": "manual"
     },
     "Ready when you are": {
       "extractionState": "manual",
@@ -3236,7 +3238,8 @@
             "value": "Önerilen Plan"
           }
         }
-      }
+      },
+      "extractionState": "stale"
     },
     "Suggested default · customizable": {
       "localizations": {
@@ -3252,7 +3255,8 @@
             "value": "Önerilen varsayılan · özelleştirilebilir"
           }
         }
-      }
+      },
+      "extractionState": "stale"
     },
     "System": {
       "extractionState": "manual",
@@ -4406,7 +4410,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Launch Deep Focus (%@)"
+            "value": "Start Deep Focus (%@)"
           }
         },
         "tr": {
@@ -4670,6 +4674,516 @@
           "stringUnit": {
             "state": "translated",
             "value": "bilinmiyor"
+          }
+        }
+      }
+    },
+    "A focus session you choose.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A focus session you choose."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Süresini senin belirlediğin odak oturumu."
+          }
+        }
+      }
+    },
+    "A Usage Cycle is still recorded. Review apps and refresh status, or stop the recorded session before retrying.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A Usage Cycle is still recorded. Review apps and refresh status, or stop the recorded session before retrying."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı bir Kullanım Döngüsü var. Uygulamaları gözden geçirip durumu yenile veya yeniden denemeden önce kayıtlı oturumu durdur."
+          }
+        }
+      }
+    },
+    "Available after selection is verified": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Available after selection is verified"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçim doğrulandıktan sonra kullanılabilir"
+          }
+        }
+      }
+    },
+    "Current session state could not be verified. Refresh status before starting another session.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current session state could not be verified. Refresh status before starting another session."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mevcut oturum durumu doğrulanamadı. Yeni bir oturum başlatmadan önce durumu yenile."
+          }
+        }
+      }
+    },
+    "First, choose the apps and categories you want to take a break from.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First, choose the apps and categories you want to take a break from."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önce kullanımını sınırlandırmak istediğin uygulamaları ve kategorileri seç."
+          }
+        }
+      }
+    },
+    "Pause selected apps for a focus session you choose.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause selected apps for a focus session you choose."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulamaları belirlediğin odak oturumu boyunca engelle."
+          }
+        }
+      }
+    },
+    "Reading the latest session state": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading the latest session state"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Güncel oturum durumu okunuyor"
+          }
+        }
+      }
+    },
+    "Retry Usage Cycle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry Usage Cycle"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsünü Yeniden Dene"
+          }
+        }
+      }
+    },
+    "Review your selection": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review your selection"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçimini gözden geçir"
+          }
+        }
+      }
+    },
+    "Saved selection unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved selection unavailable"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı seçime erişilemiyor"
+          }
+        }
+      }
+    },
+    "Select apps first": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select apps first"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önce uygulama seç"
+          }
+        }
+      }
+    },
+    "Shared usage, followed by automatic breaks.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shared usage, followed by automatic breaks."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ortak kullanım süresi, ardından otomatik molalar."
+          }
+        }
+      }
+    },
+    "Start Usage Cycle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Usage Cycle"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsünü Başlat"
+          }
+        }
+      }
+    },
+    "Stop Recorded Usage Cycle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop Recorded Usage Cycle"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı Kullanım Döngüsünü Durdur"
+          }
+        }
+      }
+    },
+    "Stop Usage Cycle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop Usage Cycle"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsünü Durdur"
+          }
+        }
+      }
+    },
+    "The Usage Cycle was interrupted. Review the saved apps, refresh status, then retry.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Usage Cycle was interrupted. Review the saved apps, refresh status, then retry."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsü kesintiye uğradı. Kayıtlı uygulamaları gözden geçir, durumu yenile ve yeniden dene."
+          }
+        }
+      }
+    },
+    "Usage Cycle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Cycle"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsü"
+          }
+        }
+      }
+    },
+    "Usage Cycle Active": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Cycle Active"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsü Aktif"
+          }
+        }
+      }
+    },
+    "Usage Cycle Inactive": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Cycle Inactive"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsü Kapalı"
+          }
+        }
+      }
+    },
+    "USAGE CYCLE IS ON": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "USAGE CYCLE IS ON"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KULLANIM DÖNGÜSÜ AÇIK"
+          }
+        }
+      }
+    },
+    "Usage Cycle needs attention": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Cycle needs attention"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsünün kontrol edilmesi gerekiyor"
+          }
+        }
+      }
+    },
+    "Usage Cycle Setup": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Cycle Setup"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsü Ayarları"
+          }
+        }
+      }
+    },
+    "Use selected apps within a shared allowance, then take a break.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use selected apps within a shared allowance, then take a break."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulamaları ortak kullanım süresi içinde kullan, ardından mola ver."
+          }
+        }
+      }
+    },
+    "Opens duration options without stopping Usage Cycle.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opens duration options without stopping Usage Cycle."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsünü durdurmadan süre seçeneklerini açar."
+          }
+        }
+      }
+    },
+    "Focus without stopping Usage Cycle.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus without stopping Usage Cycle."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsünü durdurmadan odaklan."
+          }
+        }
+      }
+    },
+    "Usage Cycle remains active in the background.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Cycle remains active in the background."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsü arka planda etkin kalır."
+          }
+        }
+      }
+    },
+    "Its existing usage and rest rules still apply.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Its existing usage and rest rules still apply."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mevcut kullanım ve mola kuralları geçerli olmaya devam eder."
+          }
+        }
+      }
+    },
+    "Your existing break is preserved.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your existing break is preserved."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mevcut molan korunuyor."
+          }
+        }
+      }
+    },
+    "Ending Deep Focus will not end this break.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ending Deep Focus will not end this break."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Odak bitse de bu mola sona ermez."
+          }
+        }
+      }
+    },
+    "Review its status after your focus session.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review its status after your focus session."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odak oturumundan sonra durumunu gözden geçir."
           }
         }
       }
