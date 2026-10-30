@@ -69,8 +69,14 @@ struct FocusSetupView: View {
                 .navigationTitle(String(localized: "Manage Apps"))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(.visible, for: .navigationBar)
-                .onDisappear {
-                    viewModel.saveConfiguration()
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(String(localized: "Save")) {
+                            if viewModel.saveConfiguration() { dismiss() }
+                        }
+                        .fontWeight(.semibold)
+                        .disabled(!viewModel.hasSelection)
+                    }
                 }
                 .familyActivityPicker(
                     headerText: String(localized: "Choose apps or categories"),
@@ -111,7 +117,14 @@ struct FocusSetupView: View {
                         .multilineTextAlignment(.center)
                 }
 
-                // Disclaimer caption (one primary Save action in toolbar)
+                BLPrimaryButton(title: String(localized: "Save"), icon: "checkmark.circle.fill") {
+                    if viewModel.saveConfiguration() {
+                        dismiss()
+                    }
+                }
+                .disabled(!viewModel.hasSelection)
+
+                // Disclaimer caption
                 Text("Enforcement uses Apple Screen Time and requires authorization.")
                     .font(BLTypography.caption)
                     .foregroundStyle(BLColor.textTertiary)
@@ -164,7 +177,7 @@ struct FocusSetupView: View {
 
                     Spacer()
 
-                    Text("Combined allowance")
+                    Text("Shared Usage Budget")
                         .font(BLTypography.caption)
                         .foregroundStyle(BLColor.textSecondary)
                 }
@@ -194,7 +207,7 @@ struct FocusSetupView: View {
 
                     Spacer()
 
-                    Text("Recovery pause")
+                    Text("Automatic Cooldown")
                         .font(BLTypography.caption)
                         .foregroundStyle(BLColor.textSecondary)
                 }
@@ -231,7 +244,7 @@ struct FocusSetupView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Managed Apps")
+                        Text("Selected Apps")
                             .font(BLTypography.bodyMedium)
                             .foregroundStyle(BLColor.textPrimary)
 
@@ -240,7 +253,7 @@ struct FocusSetupView: View {
                                 .font(BLTypography.caption)
                                 .foregroundStyle(BLColor.textSecondary)
                         } else {
-                            Text("Tap to select monitored apps")
+                            Text("Choose your apps")
                                 .font(BLTypography.caption)
                                 .foregroundStyle(BLColor.brandPrimary)
                         }
@@ -255,7 +268,7 @@ struct FocusSetupView: View {
             }
         }
         .buttonStyle(BLPressableScaleStyle())
-        .accessibilityLabel(String(localized: "Select Managed Apps"))
+        .accessibilityLabel(String(localized: "Select Apps & Categories"))
     }
 }
 

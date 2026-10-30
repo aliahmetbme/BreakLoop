@@ -710,7 +710,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanmayı Ayarla"
+            "value": "Derin Odağı Ayarla"
           }
         }
       }
@@ -846,7 +846,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanma"
+            "value": "Derin Odak"
           }
         }
       }
@@ -863,7 +863,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanma Aktif"
+            "value": "Derin Odak Aktif"
           }
         }
       }
@@ -880,7 +880,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanma Modu"
+            "value": "Derin Odak"
           }
         }
       }
@@ -897,7 +897,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanma Ayarları"
+            "value": "Derin Odak Ayarları"
           }
         }
       }
@@ -914,7 +914,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanma oturumu"
+            "value": "Derin Odak oturumu"
           }
         }
       }
@@ -1067,7 +1067,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanmayı Erken Bitir"
+            "value": "Derin Odağı Erken Bitir"
           }
         }
       }
@@ -1917,7 +1917,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanmayı başlatmadan önce izleme durumunu yenile."
+            "value": "Derin Odağı başlatmadan önce izleme durumunu yenile."
           }
         }
       }
@@ -2308,7 +2308,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanmayı Başlat"
+            "value": "Derin Odağı Başlat"
           }
         }
       }
@@ -3455,7 +3455,7 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Derin Odaklanmayı Başlat (%@)"
+            "value": "Derin Odağı Başlat (%@)"
           }
         }
       }
@@ -3747,6 +3747,278 @@
           "stringUnit": {
             "state": "translated",
             "value": "Merhaba dünya!"
+          }
+        }
+      }
+    },
+    "Focus when you choose. Pause when you need.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus when you choose. Pause when you need."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İstediğinde odaklan. Gerektiğinde mola ver."
+          }
+        }
+      }
+    },
+    "Give selected apps and categories one shared usage allowance. Their usage adds up together.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Give selected apps and categories one shared usage allowance. Their usage adds up together."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulama ve kategorilere ortak bir kullanım süresi belirle. Kullanım süreleri birlikte hesaplanır."
+          }
+        }
+      }
+    },
+    "Cooldown & Natural Rest": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cooldown & Natural Rest"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otomatik Mola ve Doğal Mola"
+          }
+        }
+      }
+    },
+    "When your shared allowance runs out, selected apps pause for your chosen break. Time away may also count toward an estimated natural rest.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When your shared allowance runs out, selected apps pause for your chosen break. Time away may also count toward an estimated natural rest."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ortak kullanım süren dolduğunda seçtiğin uygulamalar molaya girer. Kullanımdan uzak kaldığın süre, Doğal Mola kapsamında da tahmin edilebilir."
+          }
+        }
+      }
+    },
+    "Start a fixed focus session when you want selected apps paused right away.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a fixed focus session when you want selected apps paused right away."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulamalara hemen ara vermek istediğinde belirli süreli bir odak oturumu başlat."
+          }
+        }
+      }
+    },
+    "Choose the apps you want to take a break from.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose the apps you want to take a break from."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mola vermek istediğin uygulamaları seç."
+          }
+        }
+      }
+    },
+    "Select Apps & Categories": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select Apps & Categories"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulama ve Kategorileri Seç"
+          }
+        }
+      }
+    },
+    "BreakLoop v1.0 supports apps and categories only. Remove selected websites to continue.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop v1.0 supports apps and categories only. Remove selected websites to continue."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop v1.0 yalnızca uygulama ve kategorileri destekler. Devam etmek için seçilen web sitelerini kaldır."
+          }
+        }
+      }
+    },
+    "Review your selected apps and categories before starting.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review your selected apps and categories before starting."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlatmadan önce seçtiğin uygulama ve kategorileri gözden geçir."
+          }
+        }
+      }
+    },
+    "Share one usage allowance across your selected apps. A break begins when it runs out.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share one usage allowance across your selected apps. A break begins when it runs out."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulamalar için ortak bir kullanım süresi belirle. Süre dolduğunda mola başlar."
+          }
+        }
+      }
+    },
+    "Pause selected distractions for a focus session you choose.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause selected distractions for a focus session you choose."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulamalara belirlediğin odak süresi boyunca ara ver."
+          }
+        }
+      }
+    },
+    "accessibility.themeButton": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change appearance. Current theme: %@."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görünümü değiştir. Geçerli tema: %@."
+          }
+        }
+      }
+    },
+    "Pause your selected apps and categories for a focus session. You can end the session early if needed.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause your selected apps and categories for a focus session. You can end the session early if needed."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulama ve kategorilere odak oturumu boyunca ara ver. Gerektiğinde oturumu erken bitirebilirsin."
+          }
+        }
+      }
+    },
+    "Automatic Cooldown": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic Cooldown"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otomatik Mola"
+          }
+        }
+      }
+    },
+    "Selected Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected Apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçilen Uygulamalar"
+          }
+        }
+      }
+    },
+    "Choose your apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose your apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamalarını seç"
           }
         }
       }

@@ -240,5 +240,92 @@ func runDashboardSynchronizationTests() throws {
         check(receipt.received > 0, "Production Darwin observer receives another process's signal")
         observation.cancel(); observation.cancel()
     }
+    do {
+        // First-run selection state and validation differentiation
+        let empty = DashboardSelectionState(counts: SelectionTokenCounts(applicationTokens: 0, categoryTokens: 0, webDomainTokens: 0))
+        check(empty == .empty && empty.isEmpty && !empty.isSupported, "Empty selection maps to first-run empty state")
+        check(empty.validationOrReadErrorMessage == nil, "First-run empty selection does not emit a destructive error message")
+
+        let valid = DashboardSelectionState(counts: SelectionTokenCounts(applicationTokens: 3, categoryTokens: 1, webDomainTokens: 0))
+        check(valid.isSupported && !valid.isEmpty && valid.validationOrReadErrorMessage == nil, "Supported selection is valid with no error")
+
+        let websites = DashboardSelectionState(counts: SelectionTokenCounts(applicationTokens: 2, categoryTokens: 0, webDomainTokens: 1))
+        check(websites.hasUnsupportedWebsites && !websites.isSupported && websites.validationOrReadErrorMessage != nil, "Website selection is flagged as unsupported with localized repair guidance")
+
+        let overLimit = DashboardSelectionState(counts: SelectionTokenCounts(applicationTokens: 51, categoryTokens: 0, webDomainTokens: 0))
+        check(!overLimit.isSupported && !overLimit.hasUnsupportedWebsites && overLimit.validationOrReadErrorMessage != nil, "Over-limit selection reports limit error")
+
+        let readFailure = DashboardSelectionState(counts: valid == .empty ? nil : SelectionTokenCounts(applicationTokens: 1, categoryTokens: 0, webDomainTokens: 0), readError: "Storage corrupted")
+        check(readFailure == .readFailure(message: "Storage corrupted") && !readFailure.isSupported && readFailure.validationOrReadErrorMessage == "Storage corrupted", "Selection read error takes precedence over cached counts")
+    }
+    do {
+        // DeepFocusLaunchController sheet presentation, error retention on failure, and dismissal only on success
+        let launcher = DeepFocusLaunchController()
+        launcher.presentSheet()
+        check(launcher.isSheetPresented && launcher.errorMessage == nil && !launcher.isStarting, "Presenting Deep Focus sheet clears prior error")
+
+        let blockedByMode = launcher.start(durationMinutes: 60, canConfigure: false) { _ in }
+        check(!blockedByMode && launcher.isSheetPresented && launcher.errorMessage != nil, "Blocked Deep Focus launch keeps sheet open with localized error")
+
+        let invalidDuration = launcher.start(durationMinutes: 5, canConfigure: true) { _ in }
+        check(!invalidDuration && launcher.isSheetPresented && launcher.errorMessage == LifecycleError.invalidDuration.localizedDescription, "Invalid Deep Focus duration keeps sheet open with duration error")
+
+        let failedSchedule = launcher.start(durationMinutes: 60, canConfigure: true) { _ in
+            throw LifecycleError.invalidSchedule
+        }
+        check(!failedSchedule && launcher.isSheetPresented && launcher.errorMessage == LifecycleError.invalidSchedule.localizedDescription, "Failed Deep Focus start keeps sheet open and surfaces thrown error")
+
+        var nestedDuplicateResult = true
+        var startInvocations = 0
+        let succeeded = launcher.start(durationMinutes: 60, canConfigure: true) { minutes in
+            startInvocations += 1
+            check(minutes == 60 && launcher.isStarting, "Launcher marks in-flight start while executing")
+            nestedDuplicateResult = launcher.start(durationMinutes: 60, canConfigure: true) { _ in
+                startInvocations += 1
+            }
+        }
+        check(succeeded && startInvocations == 1 && !nestedDuplicateResult, "Duplicate rapid tap while starting is rejected without re-running start")
+        check(!launcher.isSheetPresented && launcher.errorMessage == nil && !launcher.isStarting, "Successful Deep Focus start dismisses sheet and clears error")
+    }
+    do {
+        // ConfigurationSaveController explicit save, clamping, validation, and rollback on failure
+        let initial = CycleConfiguration(usageLimitMinutes: 20, restDurationMinutes: 15)
+        var controller = ConfigurationSaveController(committed: initial)
+        check(!controller.hasUnsavedChanges && controller.committed == initial, "Initial save controller has no unsaved changes")
+
+        controller.setUsageLimit(30)
+        controller.setRestDuration(25)
+        check(controller.hasUnsavedChanges && controller.pending == CycleConfiguration(usageLimitMinutes: 30, restDurationMinutes: 25), "Pending edits are tracked separately from committed configuration")
+
+        let rejectedSelection = controller.save(
+            selectionCounts: SelectionTokenCounts(applicationTokens: 1, categoryTokens: 0, webDomainTokens: 2)
+        ) { _ in
+            fatalError("Persist must not be called when selection is invalid")
+        }
+        check(!rejectedSelection && controller.committed == initial && controller.errorMessage != nil, "Invalid selection rejects save, preserves committed config, and surfaces validation error")
+
+        struct RawStorageFailure: Error {}
+        let failedWrite = controller.save(
+            selectionCounts: SelectionTokenCounts(applicationTokens: 2, categoryTokens: 0, webDomainTokens: 0)
+        ) { _ in
+            throw RawStorageFailure()
+        }
+        check(!failedWrite && controller.committed == initial && controller.pending.usageLimitMinutes == 30, "Failed persistence preserves last valid committed configuration and retains pending edits for retry")
+        check(controller.errorMessage == ConfigurationPersistenceError.writeFailed(reason: "").localizedDescription, "Failed persistence surfaces localized shared storage error")
+
+        var persisted: CycleConfiguration?
+        let saved = controller.save(
+            selectionCounts: SelectionTokenCounts(applicationTokens: 2, categoryTokens: 0, webDomainTokens: 0)
+        ) { config in
+            persisted = config
+        }
+        check(saved && persisted == CycleConfiguration(usageLimitMinutes: 30, restDurationMinutes: 25), "Retry save persists pending configuration")
+        check(controller.committed == persisted && !controller.hasUnsavedChanges && controller.errorMessage == nil, "Successful save updates committed configuration and clears error")
+
+        controller.setUsageLimit(45)
+        check(controller.hasUnsavedChanges, "Subsequent edit marks unsaved changes")
+        controller.revertPendingToCommitted()
+        check(!controller.hasUnsavedChanges && controller.pending == controller.committed && controller.errorMessage == nil, "Reverting unsaved changes restores committed configuration")
+    }
 
 }

@@ -176,3 +176,184 @@ final class DashboardStateSynchronizer {
         }
     }
 }
+
+enum DashboardSelectionState: Equatable {
+    case empty
+    case valid(SelectionTokenCounts)
+    case unsupportedWebsites(SelectionTokenCounts, message: String)
+    case invalidLimits(SelectionTokenCounts, message: String)
+    case readFailure(message: String)
+
+    init(counts: SelectionTokenCounts?, readError: String? = nil) {
+        if let readError {
+            self = .readFailure(message: readError)
+            return
+        }
+        guard let counts, counts.hasAny else {
+            self = .empty
+            return
+        }
+        if counts.isSupported {
+            self = .valid(counts)
+        } else if counts.webDomainTokens > 0 {
+            self = .unsupportedWebsites(counts, message: counts.validationMessage ?? SelectionFailure.unsupported.localizedDescription)
+        } else {
+            self = .invalidLimits(counts, message: counts.validationMessage ?? SelectionFailure.unsupported.localizedDescription)
+        }
+    }
+
+    var isSupported: Bool {
+        if case .valid = self { return true }
+        return false
+    }
+
+    var isEmpty: Bool {
+        self == .empty
+    }
+
+    var hasUnsupportedWebsites: Bool {
+        if case .unsupportedWebsites = self { return true }
+        return false
+    }
+
+    var validationOrReadErrorMessage: String? {
+        switch self {
+        case .empty, .valid:
+            return nil
+        case .unsupportedWebsites(_, let message), .invalidLimits(_, let message), .readFailure(let message):
+            return message
+        }
+    }
+}
+
+final class DeepFocusLaunchController {
+    static let supportedRange = 15...(24 * 60)
+
+    private(set) var isSheetPresented: Bool = false
+    private(set) var isStarting: Bool = false
+    private(set) var errorMessage: String?
+
+    func presentSheet() {
+        guard !isStarting else { return }
+        errorMessage = nil
+        isSheetPresented = true
+    }
+
+    func dismissSheet() {
+        guard !isStarting else { return }
+        isSheetPresented = false
+        errorMessage = nil
+    }
+
+    func clearError() {
+        errorMessage = nil
+    }
+
+    @discardableResult
+    func start(
+        durationMinutes: Int,
+        canConfigure: Bool,
+        performStart: (Int) throws -> Void
+    ) -> Bool {
+        guard !isStarting else { return false }
+        guard canConfigure else {
+            errorMessage = String(localized: "Refresh monitoring status before starting Deep Focus.")
+            return false
+        }
+        guard Self.supportedRange.contains(durationMinutes) else {
+            errorMessage = LifecycleError.invalidDuration.localizedDescription
+            return false
+        }
+        isStarting = true
+        defer { isStarting = false }
+        do {
+            try performStart(durationMinutes)
+            errorMessage = nil
+            isSheetPresented = false
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
+        }
+    }
+}
+
+enum ConfigurationPersistenceError: LocalizedError, Equatable {
+    case writeFailed(reason: String)
+
+    var errorDescription: String? {
+        String(
+            localized: "Settings could not be saved to shared storage. Try again.",
+            table: "SharedErrors"
+        )
+    }
+}
+
+struct ConfigurationSaveController: Equatable {
+    private(set) var committed: CycleConfiguration
+    var pending: CycleConfiguration
+    private(set) var errorMessage: String?
+
+    init(committed: CycleConfiguration = .default) {
+        self.committed = committed
+        self.pending = committed
+        self.errorMessage = nil
+    }
+
+    var hasUnsavedChanges: Bool {
+        pending != committed
+    }
+
+    mutating func reload(committed: CycleConfiguration) {
+        self.committed = committed
+        self.pending = committed
+        self.errorMessage = nil
+    }
+
+    mutating func setUsageLimit(_ minutes: Int) {
+        pending = CycleConfiguration(
+            usageLimitMinutes: minutes,
+            restDurationMinutes: pending.restDurationMinutes
+        )
+    }
+
+    mutating func setRestDuration(_ minutes: Int) {
+        pending = CycleConfiguration(
+            usageLimitMinutes: pending.usageLimitMinutes,
+            restDurationMinutes: minutes
+        )
+    }
+
+    mutating func revertPendingToCommitted() {
+        pending = committed
+        errorMessage = nil
+    }
+
+    @discardableResult
+    mutating func save(
+        selectionCounts: SelectionTokenCounts? = nil,
+        persist: (CycleConfiguration) throws -> Void
+    ) -> Bool {
+        if let selectionCounts, !selectionCounts.isSupported {
+            errorMessage = selectionCounts.validationMessage ?? SelectionFailure.unsupported.localizedDescription
+            return false
+        }
+        let candidate = CycleConfiguration(
+            usageLimitMinutes: pending.usageLimitMinutes,
+            restDurationMinutes: pending.restDurationMinutes
+        )
+        do {
+            try persist(candidate)
+            committed = candidate
+            pending = candidate
+            errorMessage = nil
+            return true
+        } catch let error as LocalizedError where error.errorDescription != nil {
+            errorMessage = error.localizedDescription
+            return false
+        } catch {
+            errorMessage = ConfigurationPersistenceError.writeFailed(reason: error.localizedDescription).localizedDescription
+            return false
+        }
+    }
+}

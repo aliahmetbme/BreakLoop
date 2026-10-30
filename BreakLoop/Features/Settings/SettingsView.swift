@@ -83,6 +83,20 @@ struct SettingsView: View {
                     }
                 }
                 .padding(.vertical, 4)
+
+                if let errorMessage = viewModel.errorMessage {
+                    VStack(alignment: .leading, spacing: BLSpacing.xs) {
+                        Text(errorMessage)
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.destructive)
+                        Button(String(localized: "Save")) {
+                            viewModel.saveConfiguration()
+                        }
+                        .font(BLTypography.secondarySemibold)
+                        .foregroundStyle(BLColor.brandPrimary)
+                    }
+                    .padding(.vertical, 2)
+                }
             } header: {
                 Text("BreakLoop Rules")
             } footer: {

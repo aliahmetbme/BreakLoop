@@ -154,6 +154,23 @@
         }
       }
     },
+    "Settings could not be saved to shared storage. Try again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings could not be saved to shared storage. Try again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ayarlar ortak depolama alanına kaydedilemedi. Tekrar dene."
+          }
+        }
+      }
+    },
     "Shared monitoring storage is unavailable.": {
       "extractionState": "manual",
       "localizations": {

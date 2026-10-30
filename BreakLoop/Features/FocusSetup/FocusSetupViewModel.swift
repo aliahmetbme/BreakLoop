@@ -13,14 +13,22 @@ import Combine
 final class FocusSetupViewModel: ObservableObject {
 
     @Published var selection = FamilyActivitySelection()
-    @Published var usageLimitMinutes: Int = 20
-    @Published var restDurationMinutes: Int = 15
+    @Published var usageLimitMinutes: Int = 20 {
+        didSet { saveController.setUsageLimit(usageLimitMinutes) }
+    }
+    @Published var restDurationMinutes: Int = 15 {
+        didSet { saveController.setRestDuration(restDurationMinutes) }
+    }
     @Published var isPickerPresented = false
     @Published var errorMessage: String?
 
     private let storage: AppGroupStorage
     private let managedSettingsService: ManagedSettingsServiceProtocol
     private let deviceActivityService: DeviceActivityServiceProtocol
+    private var saveController = ConfigurationSaveController()
+
+    var committedConfiguration: CycleConfiguration { saveController.committed }
+    var hasUnsavedConfigurationChanges: Bool { saveController.hasUnsavedChanges }
 
     init(
         storage: AppGroupStorage,
@@ -48,17 +56,20 @@ final class FocusSetupViewModel: ObservableObject {
 
     @discardableResult
     func saveConfiguration() -> Bool {
-        guard hasSelection else { errorMessage = selectionIssue; return false }
-        do {
+        saveController.setUsageLimit(usageLimitMinutes)
+        saveController.setRestDuration(restDurationMinutes)
+        let saved = saveController.save(selectionCounts: selection.breakLoopTokenCounts) { [storage, selection] config in
             try storage.saveActivitySelection(selection)
-            try storage.saveCycleConfiguration(CycleConfiguration(
-                usageLimitMinutes: usageLimitMinutes, restDurationMinutes: restDurationMinutes))
-            errorMessage = nil
-            return true
-        } catch {
-            errorMessage = error.localizedDescription
-            return false
+            try storage.saveCycleConfiguration(config)
         }
+        errorMessage = saveController.errorMessage
+        if saved {
+            usageLimitMinutes = saveController.committed.usageLimitMinutes
+            restDurationMinutes = saveController.committed.restDurationMinutes
+        } else if let err = errorMessage {
+            AppLogger.shared.info("setup_save_rejected", message: "FocusSetup save failed: \(err)", category: .selection)
+        }
+        return saved
     }
 
     @discardableResult
@@ -68,7 +79,11 @@ final class FocusSetupViewModel: ObservableObject {
             try storage.saveActivitySelection(selection)
             errorMessage = nil
             return true
-        } catch { errorMessage = error.localizedDescription; return false }
+        } catch {
+            errorMessage = error.localizedDescription
+            AppLogger.shared.failure("setup_selection_save_failed", error: error, category: .selection)
+            return false
+        }
     }
 
     func blockSelection() {
@@ -105,6 +120,7 @@ final class FocusSetupViewModel: ObservableObject {
 
     private func loadSelection() {
         let config = storage.loadCycleConfiguration()
+        saveController.reload(committed: config)
         usageLimitMinutes = config.usageLimitMinutes
         restDurationMinutes = config.restDurationMinutes
 

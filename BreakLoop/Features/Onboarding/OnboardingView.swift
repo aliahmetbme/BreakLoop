@@ -49,7 +49,7 @@ struct OnboardingView: View {
                             .font(BLTypography.largeTitle)
                             .foregroundStyle(BLColor.textPrimary)
 
-                        Text("Set your limits. Take a break. Break the loop.")
+                        Text("Focus when you choose. Pause when you need.")
                             .font(BLTypography.secondary)
                             .multilineTextAlignment(.center)
                             .foregroundStyle(BLColor.textSecondary)
@@ -63,21 +63,21 @@ struct OnboardingView: View {
                         FeatureRow(
                             icon: "timer",
                             title: String(localized: "Shared Usage Budget"),
-                            subtitle: String(localized: "Track multiple distracting apps under one combined limit.")
+                            subtitle: String(localized: "Give selected apps and categories one shared usage allowance. Their usage adds up together.")
                         )
                         Divider()
                             .background(BLColor.divider)
                         FeatureRow(
                             icon: "leaf.fill",
-                            title: String(localized: "Natural Rest & Cooldown"),
-                            subtitle: String(localized: "Healthy 15-minute breaks automatically reset your cycle without shields.")
+                            title: String(localized: "Cooldown & Natural Rest"),
+                            subtitle: String(localized: "When your shared allowance runs out, selected apps pause for your chosen break. Time away may also count toward an estimated natural rest.")
                         )
                         Divider()
                             .background(BLColor.divider)
                         FeatureRow(
                             icon: "flame.fill",
-                            title: String(localized: "Deep Focus Mode"),
-                            subtitle: String(localized: "Zero-tolerance complete shielding for hours of distraction-free work.")
+                            title: String(localized: "Deep Focus"),
+                            subtitle: String(localized: "Start a focus session and pause selected distracting apps and categories for the duration you choose.")
                         )
                     }
                 }

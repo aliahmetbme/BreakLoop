@@ -22,7 +22,11 @@ final class DashboardViewModel: ObservableObject {
     var canStopBreakLoop: Bool { state.canStopBreakLoop }
     @Published var selection = FamilyActivitySelection()
     @Published var isDeepFocusSheetPresented: Bool = false
+    @Published var deepFocusErrorMessage: String?
+    @Published private(set) var isStartingDeepFocus: Bool = false
     @Published var errorMessage: String?
+    private var selectionReadError: String?
+    private let deepFocusLauncher = DeepFocusLaunchController()
 
     private let storage: AppGroupStorage
     private let deviceActivityService: DeviceActivityServiceProtocol
@@ -98,8 +102,12 @@ final class DashboardViewModel: ObservableObject {
             if let savedSelection = try storage.loadActivitySelection() {
                 selection = savedSelection
                 savedSelection.logBreakLoopCounts(stage: "dashboard_read")
+            } else {
+                selection = FamilyActivitySelection()
             }
+            selectionReadError = nil
         } catch {
+            selectionReadError = error.localizedDescription
             errorMessage = error.localizedDescription
             AppLogger.shared.failure("dashboard_selection_read_failed", error: error, category: .monitoring)
         }
@@ -108,9 +116,26 @@ final class DashboardViewModel: ObservableObject {
     var isCooldownActive: Bool { state.mode == .cooldown }
     var displayedError: String? { state.errorMessage ?? errorMessage }
 
-    var hasSelection: Bool { selection.breakLoopTokenCounts.isSupported }
-    var selectionIssue: String? { selection.breakLoopTokenCounts.validationMessage }
+    var selectionState: DashboardSelectionState {
+        DashboardSelectionState(counts: selection.breakLoopTokenCounts, readError: selectionReadError)
+    }
+
+    var hasSelection: Bool { selectionState.isSupported }
+    var hasAnySelection: Bool { selection.breakLoopTokenCounts.hasAny }
+    var selectionIssue: String? { selectionState.validationOrReadErrorMessage }
     var selectedWebsitesCount: Int { selection.webDomainTokens.count }
+
+    func presentDeepFocusSheet() {
+        deepFocusLauncher.presentSheet()
+        deepFocusErrorMessage = deepFocusLauncher.errorMessage
+        isDeepFocusSheetPresented = deepFocusLauncher.isSheetPresented
+    }
+
+    func dismissDeepFocusSheet() {
+        deepFocusLauncher.dismissSheet()
+        deepFocusErrorMessage = deepFocusLauncher.errorMessage
+        isDeepFocusSheetPresented = deepFocusLauncher.isSheetPresented
+    }
 
     func recoverSynchronization() {
         refreshConfiguration()
@@ -157,17 +182,34 @@ final class DashboardViewModel: ObservableObject {
         refresh()
     }
 
-    func startDeepFocus(durationMinutes: Int) {
-        guard state.canConfigureDeepFocus else {
-            errorMessage = String(localized: "Refresh monitoring status before starting Deep Focus."); return
-        }
+    @discardableResult
+    func startDeepFocus(durationMinutes: Int) -> Bool {
+        guard !isStartingDeepFocus else { return false }
+        isStartingDeepFocus = true
+        defer { isStartingDeepFocus = false }
         errorMessage = nil
-        perform {
-            try loadSupportedSelection()
-            try lifecycle.startDeepFocus(minutes: durationMinutes)
+        let started = deepFocusLauncher.start(
+            durationMinutes: durationMinutes,
+            canConfigure: state.canConfigureDeepFocus
+        ) { [weak self] minutes in
+            guard let self else { throw LifecycleError.transitionCancelled }
+            do {
+                try AppLogger.shared.withOperation("dashboard_action") {
+                    try self.loadSupportedSelection()
+                    try self.lifecycle.startDeepFocus(minutes: minutes)
+                }
+            } catch {
+                AppLogger.shared.failure("dashboard_transition_failed", error: error, category: .monitoring)
+                throw error
+            }
+        }
+        deepFocusErrorMessage = deepFocusLauncher.errorMessage
+        if started {
             isDeepFocusSheetPresented = false
+            synchronizer.actionCompleted()
         }
         refresh()
+        return started
     }
 
     func stopDeepFocus() {

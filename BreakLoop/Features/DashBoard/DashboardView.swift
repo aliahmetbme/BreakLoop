@@ -33,8 +33,8 @@ struct DashboardView: View {
                     // 2. Rule & Target Summary Container
                     ruleSummaryCard
 
-                    // 3. Secondary Deep Focus Entry (visible when not in Deep Focus and not in forced cooldown)
-                    if viewModel.state.canConfigureDeepFocus {
+                    // 3. Secondary Deep Focus Entry (visible during active monitoring when not in Deep Focus or forced cooldown)
+                    if viewModel.state.canConfigureDeepFocus && !viewModel.state.canOfferInactiveStarts {
                         deepFocusEntryCard
                     }
 
@@ -58,10 +58,16 @@ struct DashboardView: View {
             }
             .background(BLColor.background.ignoresSafeArea())
             .toolbar(.hidden, for: .navigationBar)
-            .sheet(isPresented: $viewModel.isDeepFocusSheetPresented) {
-                DeepFocusSheet(onStart: { minutes in
-                    viewModel.startDeepFocus(durationMinutes: minutes)
-                })
+            .sheet(isPresented: $viewModel.isDeepFocusSheetPresented, onDismiss: {
+                viewModel.dismissDeepFocusSheet()
+            }) {
+                DeepFocusSheet(
+                    errorMessage: viewModel.deepFocusErrorMessage,
+                    isLoading: viewModel.isStartingDeepFocus,
+                    onStart: { minutes in
+                        viewModel.startDeepFocus(durationMinutes: minutes)
+                    }
+                )
             }
             .sheet(isPresented: $isRuleSheetPresented, onDismiss: {
                 viewModel.refresh()
@@ -106,12 +112,12 @@ struct DashboardView: View {
 
     private var headerControls: some View {
         HStack(spacing: BLSpacing.xs) {
-                // Quick Mode Toggle
+                // Quick Theme Toggle
                 Button {
                     cycleAppearance()
                 } label: {
                     HStack(spacing: 4) {
-                        Text("Mode")
+                        Text("Theme")
                             .font(BLTypography.caption)
                         Image(systemName: appearanceIcon)
                             .font(.system(size: 12))
@@ -123,7 +129,7 @@ struct DashboardView: View {
                     .clipShape(Capsule())
                 }
                 .frame(minWidth: 44, minHeight: 44)
-                .accessibilityLabel(String(localized: "Toggle Appearance Mode"))
+                .accessibilityLabel(String(localized: "accessibility.themeButton", defaultValue: "Change appearance. Current theme: \(appearanceController.appearance.localizedTitle)."))
 
                 // Settings Navigation Button
                 NavigationLink {
@@ -275,8 +281,14 @@ struct DashboardView: View {
             return String(localized: "Reading the latest monitoring state")
         } else if viewModel.state.mode == .monitoring {
             return String(localized: "Selected apps are being monitored. A break begins at your shared usage limit.")
+        } else if viewModel.selectionState == .empty {
+            return String(localized: "Choose the apps you want to take a break from.")
+        } else if viewModel.selectionState.hasUnsupportedWebsites {
+            return String(localized: "BreakLoop v1.0 supports apps and categories only. Remove selected websites to continue.")
+        } else if !viewModel.hasSelection {
+            return String(localized: "Review your selected apps and categories before starting.")
         } else {
-            return String(localized: "Ready when you are")
+            return String(localized: "Share one usage allowance across your selected apps. A break begins when it runs out.")
         }
     }
 
@@ -317,16 +329,27 @@ struct DashboardView: View {
                 }
             }
         } else if viewModel.state.canOfferInactiveStarts {
-            VStack(spacing: BLSpacing.sm) {
-                BLPrimaryButton(title: String(localized: "Start BreakLoop"), icon: "play.fill") {
-                    viewModel.startBreakLoop()
+            if !viewModel.hasSelection {
+                BLPrimaryButton(title: String(localized: "Select Apps & Categories"), icon: "apps.iphone") {
+                    isRuleSheetPresented = true
                 }
-                .disabled(!viewModel.hasSelection)
+            } else {
+                VStack(spacing: BLSpacing.sm) {
+                    BLPrimaryButton(title: String(localized: "Start BreakLoop"), icon: "play.fill") {
+                        viewModel.startBreakLoop()
+                    }
 
-                BLSecondaryButton(title: String(localized: "Start Deep Focus"), icon: "scope") {
-                    viewModel.isDeepFocusSheetPresented = true
+                    VStack(spacing: 4) {
+                        BLSecondaryButton(title: String(localized: "Start Deep Focus"), icon: "scope") {
+                            viewModel.presentDeepFocusSheet()
+                        }
+
+                        Text("Pause selected distractions for a focus session you choose.")
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.textSecondary)
+                            .multilineTextAlignment(.center)
+                    }
                 }
-                .disabled(!viewModel.hasSelection)
             }
         }
     }
@@ -394,7 +417,7 @@ struct DashboardView: View {
 
                         Spacer()
 
-                        Text("Looping")
+                        Text("BreakLoop Active")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(BLColor.brandPrimary)
                             .padding(.horizontal, 8)
@@ -467,7 +490,7 @@ struct DashboardView: View {
                             .font(BLTypography.headlineBold)
                             .foregroundStyle(BLColor.textPrimary)
 
-                        Text("Default rhythm interval")
+                        Text("Shared Usage Budget")
                             .font(BLTypography.caption)
                             .foregroundStyle(BLColor.textSecondary)
                     }
@@ -481,9 +504,15 @@ struct DashboardView: View {
                             .font(.caption)
                             .foregroundStyle(BLColor.textSecondary)
 
-                        Text(String(localized: "dashboard.selectionSelected", defaultValue: "\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories · \(viewModel.selectedWebsitesCount) websites selected"))
-                            .font(BLTypography.caption)
-                            .foregroundStyle(BLColor.textSecondary)
+                        if viewModel.selectionState == .empty {
+                            Text("Choose the apps you want to take a break from.")
+                                .font(BLTypography.caption)
+                                .foregroundStyle(BLColor.textSecondary)
+                        } else {
+                            Text(String(localized: "dashboard.selectionSelected", defaultValue: "\(viewModel.selectedAppsCount) apps · \(viewModel.selectedCategoriesCount) categories · \(viewModel.selectedWebsitesCount) websites selected"))
+                                .font(BLTypography.caption)
+                                .foregroundStyle(BLColor.textSecondary)
+                        }
 
                         Spacer()
                     }
@@ -505,7 +534,7 @@ struct DashboardView: View {
     // MARK: - 3. Secondary Deep Focus Entry
     private var deepFocusEntryCard: some View {
         Button {
-            viewModel.isDeepFocusSheetPresented = true
+            viewModel.presentDeepFocusSheet()
         } label: {
             BLCard(padding: BLSpacing.sm) {
                 HStack(spacing: BLSpacing.sm) {
@@ -524,7 +553,7 @@ struct DashboardView: View {
                             .font(BLTypography.bodyMedium)
                             .foregroundStyle(BLColor.textPrimary)
 
-                        Text("Block selected apps completely for a set period")
+                        Text("Pause selected distractions for a focus session you choose.")
                             .font(BLTypography.caption)
                             .foregroundStyle(BLColor.textSecondary)
                     }
@@ -550,7 +579,9 @@ struct DashboardView: View {
 // MARK: - Deep Focus Duration Sheet
 struct DeepFocusSheet: View {
     @Environment(\.dismiss) private var dismiss
-    let onStart: (Int) -> Void
+    var errorMessage: String? = nil
+    var isLoading: Bool = false
+    let onStart: (Int) -> Bool
 
     @State private var selectedDuration = 60
 
@@ -582,7 +613,7 @@ struct DeepFocusSheet: View {
                             .font(BLTypography.title2)
                             .foregroundStyle(BLColor.textPrimary)
 
-                        Text("Completely lock all selected apps for the chosen duration without pause intervals.")
+                        Text("Pause your selected apps and categories for a focus session. You can end the session early if needed.")
                             .font(BLTypography.secondary)
                             .foregroundStyle(BLColor.textSecondary)
                             .multilineTextAlignment(.center)
@@ -604,12 +635,22 @@ struct DeepFocusSheet: View {
                         }
                     }
 
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.destructive)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, BLSpacing.md)
+                    }
+
                     BLPrimaryButton(
                         title: String(localized: "focus.launch", defaultValue: "Launch Deep Focus (\(selectedDuration >= 60 ? String(localized: "duration.hours", defaultValue: "\(selectedDuration / 60)h") : String(localized: "duration.minutes", defaultValue: "\(selectedDuration)m")))"),
-                        icon: "sparkle"
+                        icon: "sparkle",
+                        isLoading: isLoading
                     ) {
-                        onStart(selectedDuration)
-                        dismiss()
+                        if onStart(selectedDuration) {
+                            dismiss()
+                        }
                     }
 
                     Spacer()
@@ -624,6 +665,7 @@ struct DeepFocusSheet: View {
                     Button(String(localized: "Cancel")) {
                         dismiss()
                     }
+                    .disabled(isLoading)
                 }
             }
         }
