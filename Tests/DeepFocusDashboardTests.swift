@@ -52,6 +52,12 @@ import Foundation
         check(store.runtime.deepFocus == focus && store.runtime.snapshot == snapshot && store.runtime.checkpoint == checkpoint, "read-only refresh does not reset either activity")
         relaunched.stopDeepFocus()
         check(relaunched.state.mode == .monitoring && relaunched.canOfferDeepFocus && store.runtime.snapshot == snapshot && store.runtime.checkpoint == checkpoint, "ending focus restores the same normal cycle and action")
+        relaunched.stopBreakLoop()
+        check(relaunched.state.mode == .inactive && store.runtime.snapshot == nil && store.runtime.checkpoint == nil,
+              "quiet Stop Usage Cycle action still ends the normal cycle")
+        check(activity.activityNames.isEmpty, "Stop removes the existing normal monitoring schedule")
+        check(store.selected == selection && store.configuration == config, "Stop preserves saved selection and configuration")
+        relaunched.startBreakLoop()
         for invalid in [FamilyActivitySelection(), FamilyActivitySelection(applicationTokens: [1], webDomainTokens: [2])] {
             store.selected = invalid; relaunched.refresh()
             check(!relaunched.canOfferDeepFocus, "empty/unsupported selection hides focus entry during monitoring")

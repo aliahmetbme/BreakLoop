@@ -10,13 +10,19 @@ import XCTest
         app.launch()
         return app
     }
-    func testMonitoringOffersOneFocusActionAboveRingAndOpensSheet() throws {
+    func testMonitoringOffersOneContextRowBelowExplanationAndOpensSheet() throws {
         let app = launch("active")
-        let focus = app.buttons["Start Deep Focus"]
-        XCTAssertTrue(focus.waitForExistence(timeout: 8))
-        XCTAssertEqual(app.buttons.matching(identifier: "Start Deep Focus").count, 1)
+        let focus = app.buttons["dashboard.deepFocusContextAction"]
+        XCTAssertTrue(focus.waitForExistence(timeout: 8), app.debugDescription)
+        let title = app.staticTexts["Your cycle is running."]
+        XCTAssertTrue(title.exists)
+        XCTAssertGreaterThan(focus.frame.minY, title.frame.maxY)
+        XCTAssertEqual(app.buttons.matching(identifier: "dashboard.deepFocusContextAction").count, 1)
+        for _ in 0..<6 where !focus.isHittable { app.swipeUp() }
         XCTAssertTrue(focus.isHittable)
         try app.performAccessibilityAudit(for: [.contrast, .hitRegion, .sufficientElementDescription, .textClipped])
+        XCTAssertEqual(focus.value as? String, "Your Usage Cycle keeps running.")
+        XCTAssertTrue(app.buttons["Stop Usage Cycle"].exists)
         focus.tap()
         XCTAssertTrue(app.navigationBars["Deep Focus Setup"].waitForExistence(timeout: 5))
         app.buttons["Cancel"].tap()
@@ -24,8 +30,9 @@ import XCTest
     }
     func testMonitoringTurkishAccessibilityTextStillOffersFocus() throws {
         let app = launch("active", turkish: true, large: true)
-        let focus = app.buttons["Derin Odağı Başlat"]
-        XCTAssertTrue(focus.waitForExistence(timeout: 8))
+        let focus = app.buttons["dashboard.deepFocusContextAction"]
+        XCTAssertTrue(focus.waitForExistence(timeout: 8), app.debugDescription)
+        for _ in 0..<6 where !focus.isHittable { app.swipeUp() }
         XCTAssertTrue(focus.isHittable)
         try app.performAccessibilityAudit(for: [.contrast, .hitRegion, .sufficientElementDescription, .textClipped])
     }

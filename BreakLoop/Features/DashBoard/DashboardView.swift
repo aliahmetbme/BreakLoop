@@ -191,20 +191,6 @@ struct DashboardView: View {
                     BLStatusBadge(state: .active)
                 }
 
-                if viewModel.state.mode == .monitoring && viewModel.canOfferDeepFocus {
-                    VStack(spacing: BLSpacing.xxs) {
-                        BLPrimaryButton(title: String(localized: "Start Deep Focus"), icon: "scope") {
-                            viewModel.presentDeepFocusSheet()
-                        }
-                        .disabled(viewModel.isStartingDeepFocus || viewModel.isDeepFocusSheetPresented)
-                        .accessibilityHint(String(localized: "Opens duration options without stopping Usage Cycle."))
-                        Text("Focus without stopping Usage Cycle.")
-                            .fixedSize(horizontal: false, vertical: true)
-                            .font(BLTypography.caption)
-                            .foregroundStyle(BLColor.textSecondary)
-                            .multilineTextAlignment(.center)
-                    }
-                }
                 if viewModel.isDeepFocusActive {
                     focusCompanionNote
                 }
@@ -212,13 +198,6 @@ struct DashboardView: View {
                 // Central Status Ring
                 statusRingView
                     .padding(.vertical, 2)
-
-                if viewModel.state.mode == .monitoring {
-                    Label(String(localized: "USAGE CYCLE IS ON"), systemImage: "waveform")
-                        .font(BLTypography.captionBold)
-                        .foregroundStyle(BLColor.brandPrimary)
-                        .accessibilityHidden(true)
-                }
 
                 // Title & Subtitles
                 VStack(spacing: 4) {
@@ -247,6 +226,10 @@ struct DashboardView: View {
                     }
                 }
 
+                if viewModel.state.mode == .monitoring && viewModel.canOfferDeepFocus {
+                    deepFocusContextAction
+                }
+
                 // Action Controls
                 actionButtons
                     .padding(.top, BLSpacing.xs)
@@ -254,6 +237,53 @@ struct DashboardView: View {
             .frame(maxWidth: .infinity)
             .fixedSize(horizontal: false, vertical: true)
         }
+    }
+
+    private var deepFocusContextAction: some View {
+        Button {
+            viewModel.presentDeepFocusSheet()
+        } label: {
+            (dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: BLSpacing.xs))
+                : AnyLayout(HStackLayout(spacing: BLSpacing.sm))) {
+                HStack(alignment: .center, spacing: BLSpacing.sm) {
+                    Image(systemName: "scope")
+                        .font(BLTypography.title3)
+                        .foregroundStyle(BLColor.brandPrimary)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: BLSpacing.xxs) {
+                        Text("Deep Focus")
+                            .font(BLTypography.secondarySemibold)
+                            .foregroundStyle(BLColor.textPrimary)
+                        Text("Your Usage Cycle keeps running.")
+                            .font(BLTypography.caption)
+                            .foregroundStyle(BLColor.textSecondary)
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                }
+                if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
+                HStack(spacing: BLSpacing.xxs) {
+                    Text("Start").font(BLTypography.secondarySemibold)
+                    Image(systemName: "chevron.right").font(BLTypography.captionBold)
+                }
+                .foregroundStyle(BLColor.brandPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            .padding(BLSpacing.sm)
+            .background(BLColor.brandPrimary.opacity(0.06), in: RoundedRectangle(cornerRadius: BLRadius.control))
+            .overlay(RoundedRectangle(cornerRadius: BLRadius.control).strokeBorder(BLColor.cardBorder))
+            .contentShape(RoundedRectangle(cornerRadius: BLRadius.control))
+        }
+        .buttonStyle(.plain)
+        .disabled(viewModel.isStartingDeepFocus || viewModel.isDeepFocusSheetPresented)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(String(localized: "Start Deep Focus"))
+        .accessibilityValue(String(localized: "Your Usage Cycle keeps running."))
+        .accessibilityHint(String(localized: "Opens duration options without stopping Usage Cycle."))
+        .accessibilityIdentifier("dashboard.deepFocusContextAction")
     }
 
     @ViewBuilder
@@ -364,11 +394,15 @@ struct DashboardView: View {
         } else if viewModel.isCooldownActive {
             EmptyView()
         } else if viewModel.canStopBreakLoop {
-            VStack(spacing: BLSpacing.sm) {
+            if viewModel.state.mode == .monitoring {
+                BLTertiaryButton(title: String(localized: "Stop Usage Cycle"), icon: "stop.circle",
+                                 foregroundColor: BLColor.textSecondary) {
+                    viewModel.stopBreakLoop()
+                }
+            } else {
                 BLSecondaryButton(title: String(localized: "Stop Usage Cycle"), icon: "stop.circle") {
                     viewModel.stopBreakLoop()
                 }
-
             }
         } else if viewModel.state.mode == .failure {
             VStack(spacing: BLSpacing.sm) {
