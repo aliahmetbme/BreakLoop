@@ -23,4 +23,7 @@ func runTimePresentationTests() {
     let extended = now.addingTimeInterval(522 + 900)
     check(BLTimePresentation.remaining(until: extended, at: now) == 1422,
           "Updated authoritative deadline immediately reflects extension")
+    for (seconds, label) in [(86400,"24:00:00"),(18000,"5:00:00"),(7200,"2:00:00"),(3601,"1:00:01"),(3600,"1:00:00"),(3599,"59:59"),(3598,"59:58"),(600,"10:00"),(599,"09:59"),(60,"01:00"),(59,"00:59"),(10,"00:10"),(9,"00:09"),(1,"00:01"),(0,"00:00")] {
+        check(BLTimePresentation.label(seconds: seconds) == label, "Stable-format boundary \(label)")
+    }
 }

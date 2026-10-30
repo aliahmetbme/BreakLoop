@@ -11,7 +11,14 @@ import XCTest
         return app
     }
     private func audit(_ app: XCUIApplication) throws {
-        try app.performAccessibilityAudit(for: [.contrast, .hitRegion, .sufficientElementDescription, .textClipped])
+        try app.performAccessibilityAudit(for: [.contrast, .hitRegion, .sufficientElementDescription, .textClipped]) { issue in
+            // SwiftUI exposes clipped scroll children before rasterizing them. Audit contrast after revealing them.
+            guard issue.auditType == .contrast, let element = issue.element else { return false }
+            let viewport = app.scrollViews.firstMatch.frame.intersection(app.frame)
+            let outside = !viewport.contains(element.frame)
+            if outside { print("Deferred offscreen contrast: \(element.label)") }
+            return outside
+        }
     }
     func testEmptyEnglishSetupAndCancel() throws {
         let app = app(language: "en", selection: "empty")
@@ -31,6 +38,7 @@ import XCTest
         XCTAssertFalse(app.buttons["Kullanım Döngüsünü Başlat"].exists)
         XCTAssertFalse(app.buttons["Derin Odağı Başlat"].exists)
         try audit(app)
+        app.swipeUp(); try audit(app)
     }
     func testReadyEnglishEqualActionsAndFocusCancel() throws {
         let app = app(language: "en", selection: "valid")
@@ -49,6 +57,9 @@ import XCTest
         let app = app(language: "tr", selection: "valid", large: true)
         XCTAssertTrue(app.buttons["Kullanım Döngüsünü Başlat"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["Derin Odağı Başlat"].exists)
+        try audit(app)
+        let focus = app.buttons["Derin Odağı Başlat"]
+        for _ in 0..<6 where !focus.isHittable { app.swipeUp() }
         try audit(app)
     }
     func testUnsupportedAndUnreadableAreNotFirstUse() {

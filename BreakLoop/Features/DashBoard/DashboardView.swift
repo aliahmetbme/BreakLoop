@@ -179,7 +179,7 @@ struct DashboardView: View {
 
     private var identityArtwork: some View {
         BLStatusRing(icon: "infinity", statusColor: BLColor.brandPrimary,
-                     size: dynamicTypeSize.isAccessibilitySize ? 120 : 190,
+                     size: dynamicTypeSize.isAccessibilitySize ? 120 : 180,
                      isMonitoring: cycleState.mode == .monitoring)
             .accessibilityHidden(true)
     }
@@ -219,14 +219,13 @@ struct DashboardView: View {
                 }
 
                 if cycleState.mode == .monitoring || cycleState.mode == .inactive || cycleState.mode == .cooldown {
-                    Text(String(localized: "setup.formula", defaultValue: "\(viewModel.effectiveLimitMinutes) min use → \(viewModel.effectiveRestMinutes) min break"))
-                        .font(BLTypography.captionBold).foregroundStyle(BLColor.textSecondary)
+                    cycleSummary
                 }
                 if cycleState.mode == .monitoring {
                     BLTertiaryButton(title: String(localized: "Stop Usage Cycle"), icon: "stop.circle",
                                      foregroundColor: BLColor.textSecondary) { viewModel.stopBreakLoop() }
                 } else if viewModel.state.mode == .inactive {
-                    BLPrimaryButton(title: String(localized: "Start Usage Cycle"), icon: "play.fill") {
+                    BLPrimaryButton(title: String(localized: "Start Usage Cycle"), icon: dynamicTypeSize.isAccessibilitySize ? nil : "play.fill") {
                         viewModel.startBreakLoop()
                     }.disabled(!viewModel.hasSelection)
                 }
@@ -238,6 +237,31 @@ struct DashboardView: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("dashboard.usageCycleCard")
+    }
+
+    private var cycleSummary: some View {
+        (dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(spacing: BLSpacing.sm))
+            : AnyLayout(HStackLayout(spacing: BLSpacing.md))) {
+            cycleMetric(title: String(localized: "summary.usage", defaultValue: "Usage"),
+                        minutes: viewModel.effectiveLimitMinutes, icon: "clock")
+            if !dynamicTypeSize.isAccessibilitySize { Divider().frame(height: 30) }
+            cycleMetric(title: String(localized: "summary.break", defaultValue: "Break"),
+                        minutes: viewModel.effectiveRestMinutes, icon: "pause.circle")
+        }
+        .padding(BLSpacing.sm)
+        .background(BLColor.surfaceSubtle.opacity(0.65), in: RoundedRectangle(cornerRadius: BLRadius.control))
+    }
+
+    private func cycleMetric(title: String, minutes: Int, icon: String) -> some View {
+        VStack(spacing: BLSpacing.xxs) {
+            Label(title, systemImage: icon).font(BLTypography.caption).foregroundStyle(BLColor.textSecondary)
+            Text(String(localized: "minutes.usage", defaultValue: "\(minutes) min"))
+                .font(BLTypography.title3).monospacedDigit().foregroundStyle(BLColor.textPrimary)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
     }
 
     private var deepFocusEntry: some View {
@@ -275,14 +299,12 @@ struct DashboardView: View {
             VStack(spacing: BLSpacing.md) {
                 if let session = viewModel.deepFocusSession {
                     BLStatusBadge(state: .deepFocus)
+                    BackgroundCycleIndicator(state: viewModel.focusCompanionState)
                     BLCountdownStatusView(endsAt: session.endsAt, startedAt: session.startedAt, isDeepFocus: true)
                     Text("Protect your focus.").font(BLTypography.title2)
                     Text(String(localized: "dashboard.focusEnds", defaultValue: "Selected apps stay paused for this session. Focus ends at \(session.endsAt.formatted(date: .omitted, time: .shortened))"))
                         .font(BLTypography.secondary).foregroundStyle(BLColor.textSecondary)
-                    if cycleState.mode == .monitoring {
-                        Text("Usage Cycle continues in the background.")
-                            .font(BLTypography.caption).foregroundStyle(BLColor.textSecondary)
-                    } else if cycleState.mode == .cooldown, let end = viewModel.cooldownEndDate {
+                    if cycleState.mode == .cooldown, let end = viewModel.cooldownEndDate {
                         Text(String(localized: "dashboard.availableAt", defaultValue: "Apps available again at \(end.formatted(date: .omitted, time: .shortened))"))
                             .font(BLTypography.caption).foregroundStyle(BLColor.textSecondary)
                         BLTertiaryButton(title: String(localized: "Extend by 15 min"), icon: "plus") {
@@ -335,9 +357,10 @@ struct DashboardView: View {
                 Text("First, choose the apps and categories you want to take a break from.")
                     .font(BLTypography.secondary).foregroundStyle(BLColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
-                BLPrimaryButton(title: String(localized: "Select Apps & Categories"), icon: "apps.iphone") {
+                BLPrimaryButton(title: dynamicTypeSize.isAccessibilitySize ? String(localized: "Select Apps") : String(localized: "Select Apps & Categories"), icon: dynamicTypeSize.isAccessibilitySize ? nil : "apps.iphone") {
                     isRuleSheetPresented = true
                 }
+                .accessibilityLabel(String(localized: "Select Apps & Categories"))
             }
             .multilineTextAlignment(.center)
             .fixedSize(horizontal: false, vertical: true)

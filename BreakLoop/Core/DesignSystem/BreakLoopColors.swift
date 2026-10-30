@@ -65,6 +65,7 @@ enum BLColor {
 
     // Structural & Semantic States
     static let divider = Color.blDynamic(lightHex: "#E4E7F0", darkHex: "#262A38")
+    static let statusActive = Color(uiColor: .systemGreen)
     static let statusBreak = Color.blDynamic(lightHex: "#5E6AD2", darkHex: "#7B88D6")
     static let statusDeepFocus = Color.blDynamic(lightHex: "#3843C7", darkHex: "#5E6AD2")
     static let destructive = Color.blDynamic(lightHex: "#BA1A1A", darkHex: "#FFB4AB")

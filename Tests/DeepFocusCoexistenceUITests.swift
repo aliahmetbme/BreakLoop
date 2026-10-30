@@ -44,7 +44,7 @@ import XCTest
         XCTAssertTrue(app.staticTexts["Protect your focus."].waitForExistence(timeout: 8))
         XCTAssertFalse(app.otherElements["dashboard.usageCycleCard"].exists)
         XCTAssertFalse(app.staticTexts["Your cycle is running."].exists)
-        XCTAssertTrue(app.staticTexts["Usage Cycle continues in the background."].exists)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "dashboard.backgroundCycle").firstMatch.label == "Usage Cycle active in background.")
         XCTAssertFalse(app.buttons["Stop Usage Cycle"].exists)
         XCTAssertTrue(app.buttons["End Deep Focus Early"].exists)
         XCTAssertFalse(app.buttons["dashboard.startDeepFocus"].exists)
