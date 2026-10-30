@@ -91,9 +91,11 @@
 		FE3DE77E30744D680038A0B4 /* Exceptions for "BreakLoop" folder in "DeviceActivityMonitorExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				SharedErrors.xcstrings,
 				Core/Domain/Models/BreakLoopDomainModels.swift,
 				Core/Domain/Services/UsageCycleCalculators.swift,
+				Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift,
+				Core/Infrastructure/Lifecycle/MonitoringLifecycleFactory.swift,
+				Core/Infrastructure/Lifecycle/RuntimeFileStore.swift,
 				Core/Infrastructure/Logging/AppLogger.swift,
 				Core/Infrastructure/Logging/LogCatagory.swift,
 				Core/Infrastructure/Logging/PersistentLogStore.swift,
@@ -101,42 +103,40 @@
 				Core/Infrastructure/Persistence/RuntimeChangeSignal.swift,
 				Core/Infrastructure/ScreenTime/DeviceActivityService.swift,
 				Core/Infrastructure/ScreenTime/ManagedSettingsService.swift,
-				Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift,
-				Core/Infrastructure/Lifecycle/RuntimeFileStore.swift,
-				Core/Infrastructure/Lifecycle/MonitoringLifecycleFactory.swift,
 				Core/Shared/DeviceActivityConstants.swift,
+				SharedErrors.xcstrings,
 			);
 			target = FE3DE73E30744B460038A0B4 /* DeviceActivityMonitorExtension */;
 		};
 		FE3DE77F30744D680038A0B4 /* Exceptions for "BreakLoop" folder in "ShieldConfigurationExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				SharedErrors.xcstrings,
 				Core/Domain/Models/BreakLoopDomainModels.swift,
+				Core/Domain/Services/UsageCycleCalculators.swift,
+				Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift,
+				Core/Infrastructure/Lifecycle/RuntimeFileStore.swift,
 				Core/Infrastructure/Logging/AppLogger.swift,
 				Core/Infrastructure/Logging/LogCatagory.swift,
 				Core/Infrastructure/Logging/PersistentLogStore.swift,
 				Core/Infrastructure/Persistence/AppGroupStorage.swift,
 				Core/Infrastructure/Persistence/RuntimeChangeSignal.swift,
-				Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift,
-				Core/Infrastructure/Lifecycle/RuntimeFileStore.swift,
-				Core/Domain/Services/UsageCycleCalculators.swift,
+				SharedErrors.xcstrings,
 			);
 			target = FE3DE75330744B6E0038A0B4 /* ShieldConfigurationExtension */;
 		};
 		FE3DE78030744D680038A0B4 /* Exceptions for "BreakLoop" folder in "ShieldActionExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				SharedErrors.xcstrings,
 				Core/Domain/Models/BreakLoopDomainModels.swift,
+				Core/Domain/Services/UsageCycleCalculators.swift,
+				Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift,
+				Core/Infrastructure/Lifecycle/RuntimeFileStore.swift,
 				Core/Infrastructure/Logging/AppLogger.swift,
 				Core/Infrastructure/Logging/LogCatagory.swift,
 				Core/Infrastructure/Logging/PersistentLogStore.swift,
 				Core/Infrastructure/Persistence/AppGroupStorage.swift,
 				Core/Infrastructure/Persistence/RuntimeChangeSignal.swift,
-				Core/Infrastructure/Lifecycle/MonitoringLifecycle.swift,
-				Core/Infrastructure/Lifecycle/RuntimeFileStore.swift,
-				Core/Domain/Services/UsageCycleCalculators.swift,
+				SharedErrors.xcstrings,
 			);
 			target = FE3DE76830744BA20038A0B4 /* ShieldActionExtension */;
 		};
@@ -597,17 +597,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = BreakLoop/BreakLoop.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = RZG5C6GQ54;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BreakLoop;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -630,17 +635,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = BreakLoop/BreakLoop.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = RZG5C6GQ54;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = BreakLoop;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -669,6 +679,7 @@
 				INFOPLIST_FILE = DeviceActivityMonitorExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DeviceActivityMonitorExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -698,6 +709,7 @@
 				INFOPLIST_FILE = DeviceActivityMonitorExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DeviceActivityMonitorExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -727,6 +739,7 @@
 				INFOPLIST_FILE = ShieldConfigurationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldConfigurationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -756,6 +769,7 @@
 				INFOPLIST_FILE = ShieldConfigurationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldConfigurationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -785,6 +799,7 @@
 				INFOPLIST_FILE = ShieldActionExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldActionExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -814,6 +829,7 @@
 				INFOPLIST_FILE = ShieldActionExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldActionExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

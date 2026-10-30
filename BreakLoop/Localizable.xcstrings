@@ -1,36 +1,19 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "10m": {
+    "1.0.0": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "10m"
+            "value": "1.0.0"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "10 dk"
-          }
-        }
-      }
-    },
-    "15m": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "15m"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "15 dk"
+            "value": "1.0.0"
           }
         }
       }
@@ -52,23 +35,6 @@
         }
       }
     },
-    "20m": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "20m"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "20 dk"
-          }
-        }
-      }
-    },
     "2h": {
       "extractionState": "manual",
       "localizations": {
@@ -86,23 +52,6 @@
         }
       }
     },
-    "30m": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "30m"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "30 dk"
-          }
-        }
-      }
-    },
     "3h": {
       "extractionState": "manual",
       "localizations": {
@@ -116,23 +65,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "3 sa"
-          }
-        }
-      }
-    },
-    "45m": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "45m"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "45 dk"
           }
         }
       }
@@ -171,6 +103,91 @@
         }
       }
     },
+    "10m": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "10m"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "10 dk"
+          }
+        }
+      }
+    },
+    "15m": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15m"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 dk"
+          }
+        }
+      }
+    },
+    "20m": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "20m"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "20 dk"
+          }
+        }
+      }
+    },
+    "30m": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30m"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30 dk"
+          }
+        }
+      }
+    },
+    "45m": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "45m"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "45 dk"
+          }
+        }
+      }
+    },
     "60m": {
       "extractionState": "manual",
       "localizations": {
@@ -184,6 +201,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "60 dk"
+          }
+        }
+      }
+    },
+    "A repeating cycle of shared app usage and rest, rather than a daily limit.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A repeating cycle of shared app usage and rest, rather than a daily limit."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Günlük bir sınır değil; ortak uygulama kullanımı ve moladan oluşan, tekrarlayan bir döngü."
           }
         }
       }
@@ -205,19 +239,19 @@
         }
       }
     },
-    "ACTIVE": {
+    "A reviewed publication link is not available yet.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "ACTIVE"
+            "value": "A reviewed publication link is not available yet."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "AKTİF"
+            "value": "İncelemesi tamamlanmış bir yayın bağlantısı henüz yok."
           }
         }
       }
@@ -252,6 +286,74 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kabul Edildi"
+          }
+        }
+      }
+    },
+    "accessibility.finishing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finishing"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamamlanıyor"
+          }
+        }
+      }
+    },
+    "accessibility.status": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Durum: %@"
+          }
+        }
+      }
+    },
+    "accessibility.themeButton": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change appearance. Current theme: %@."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görünümü değiştir. Geçerli tema: %@."
+          }
+        }
+      }
+    },
+    "ACTIVE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ACTIVE"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AKTİF"
           }
         }
       }
@@ -392,6 +494,23 @@
         }
       }
     },
+    "Apps pause at your limit. Estimated time away may allow a new cycle to begin.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apps pause at your limit. Estimated time away may allow a new cycle to begin."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınırın dolduğunda uygulamalar engellenir. Tahmini dinlenme süresi, yeni bir döngünün başlamasını sağlayabilir."
+          }
+        }
+      }
+    },
     "Attempted": {
       "extractionState": "manual",
       "localizations": {
@@ -422,6 +541,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Yetkilendirme"
+          }
+        }
+      }
+    },
+    "Automatic Cooldown": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic Cooldown"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otomatik Mola"
           }
         }
       }
@@ -494,6 +630,23 @@
         }
       }
     },
+    "BreakLoop": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop"
+          }
+        }
+      }
+    },
     "BreakLoop Active": {
       "extractionState": "manual",
       "localizations": {
@@ -507,6 +660,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "BreakLoop Aktif"
+          }
+        }
+      }
+    },
+    "BreakLoop needs Apple Screen Time access to monitor usage limits and shield your selected apps.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop needs Apple Screen Time access to monitor usage limits and shield your selected apps."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop’un kullanım sınırlarını izlemesi ve seçtiğin uygulamaları kısıtlaması için Apple Ekran Süresi izni gerekir."
+          }
+        }
+      }
+    },
+    "BreakLoop needs Screen Time access to monitor and block your selected apps.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop needs Screen Time access to monitor and block your selected apps."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop’un seçtiğin uygulamaları izlemesi ve engellemesi için Ekran Süresi erişimi gerekiyor."
           }
         }
       }
@@ -562,19 +748,19 @@
         }
       }
     },
-    "BreakLoop needs Screen Time access to monitor and block your selected apps.": {
+    "BreakLoop v1.0 supports apps and categories only. Remove selected websites to continue.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "BreakLoop needs Screen Time access to monitor and block your selected apps."
+            "value": "BreakLoop v1.0 supports apps and categories only. Remove selected websites to continue."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "BreakLoop’un seçtiğin uygulamaları izlemesi ve engellemesi için Ekran Süresi erişimi gerekiyor."
+            "value": "BreakLoop v1.0 yalnızca uygulama ve kategorileri destekler. Devam etmek için seçilen web sitelerini kaldır."
           }
         }
       }
@@ -643,6 +829,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Uygulama veya kategori seç"
+          }
+        }
+      }
+    },
+    "Choose the apps you want to take a break from.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose the apps you want to take a break from."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mola vermek istediğin uygulamaları seç."
+          }
+        }
+      }
+    },
+    "Choose your apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose your apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamalarını seç"
           }
         }
       }
@@ -766,6 +986,23 @@
         }
       }
     },
+    "Cooldown & Natural Rest": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cooldown & Natural Rest"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otomatik Mola ve Doğal Mola"
+          }
+        }
+      }
+    },
     "Cooldown or natural pause length": {
       "extractionState": "manual",
       "localizations": {
@@ -779,6 +1016,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Otomatik veya doğal molanın süresi"
+          }
+        }
+      }
+    },
+    "Could not open link": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not open link"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağlantı açılamadı"
           }
         }
       }
@@ -813,2046 +1067,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Koyu"
-          }
-        }
-      }
-    },
-    "Debug": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Debug"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hata Ayıklama"
-          }
-        }
-      }
-    },
-    "Deep Focus": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deep Focus"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Derin Odak"
-          }
-        }
-      }
-    },
-    "Deep Focus Active": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deep Focus Active"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Derin Odak Aktif"
-          }
-        }
-      }
-    },
-    "Deep Focus Mode": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deep Focus Mode"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Derin Odak"
-          }
-        }
-      }
-    },
-    "Deep Focus Setup": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deep Focus Setup"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Derin Odak Ayarları"
-          }
-        }
-      }
-    },
-    "Deep Focus session": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deep Focus session"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Derin Odak oturumu"
-          }
-        }
-      }
-    },
-    "Default rhythm interval": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Default rhythm interval"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Varsayılan kullanım ve mola düzeni"
-          }
-        }
-      }
-    },
-    "Delete Diagnostic History": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete Diagnostic History"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tanılama Geçmişini Sil"
-          }
-        }
-      }
-    },
-    "Delete History": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete History"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geçmişi Sil"
-          }
-        }
-      }
-    },
-    "Deletes only diagnostics. Monitoring, selected apps and cycle configuration are preserved.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Deletes only diagnostics. Monitoring, selected apps and cycle configuration are preserved."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yalnızca tanılama kayıtları silinir. İzleme, seçilen uygulamalar ve döngü ayarları korunur."
-          }
-        }
-      }
-    },
-    "Diagnostic Event": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diagnostic Event"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tanılama Olayı"
-          }
-        }
-      }
-    },
-    "Diagnostics": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diagnostics"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tanılama"
-          }
-        }
-      }
-    },
-    "Edit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Edit"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Düzenle"
-          }
-        }
-      }
-    },
-    "Enable Screen Time Access": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enable Screen Time Access"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ekran Süresi Erişimini Aç"
-          }
-        }
-      }
-    },
-    "End Deep Focus Early": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "End Deep Focus Early"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Derin Odağı Erken Bitir"
-          }
-        }
-      }
-    },
-    "Enforcement uses Apple Screen Time and requires authorization.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enforcement uses Apple Screen Time and requires authorization."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Engelleme, Apple Ekran Süresi’ni kullanır ve erişim izni gerektirir."
-          }
-        }
-      }
-    },
-    "Engine": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Engine"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Altyapı"
-          }
-        }
-      }
-    },
-    "Enter a complete operation UUID or leave it empty.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enter a complete operation UUID or leave it empty."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İşlemin tam UUID değerini gir veya alanı boş bırak."
-          }
-        }
-      }
-    },
-    "Error": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hata"
-          }
-        }
-      }
-    },
-    "Event Code": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Event Code"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Olay Kodu"
-          }
-        }
-      }
-    },
-    "Event History & Export": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Event History & Export"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kayıt Geçmişi ve Dışa Aktarma"
-          }
-        }
-      }
-    },
-    "Export Logs": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Export Logs"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kayıtları Dışa Aktar"
-          }
-        }
-      }
-    },
-    "Export includes all matching retained events, not just the timeline's latest 300. Save the JSONL file to Files or iCloud Drive using the Share Sheet to keep it after uninstalling BreakLoop.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Export includes all matching retained events, not just the timeline's latest 300. Save the JSONL file to Files or iCloud Drive using the Share Sheet to keep it after uninstalling BreakLoop."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dışa aktarılan dosya, yalnızca son 300 olayı değil, filtreye uyan tüm saklanmış olayları içerir. BreakLoop silindiğinde de korumak için JSONL dosyasını paylaşım menüsünden Dosyalar’a veya iCloud Drive’a kaydet."
-          }
-        }
-      }
-    },
-    "Export to inspect full sanitized deadlines and ownership snapshots.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Export to inspect full sanitized deadlines and ownership snapshots."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kimlik bilgileri ayıklanmış bitiş zamanlarını ve kısıtlama kayıtlarını incelemek için dışa aktar."
-          }
-        }
-      }
-    },
-    "Extend by 15 min": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Extend by 15 min"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "15 dakika uzat"
-          }
-        }
-      }
-    },
-    "FOCUS TIME LEFT": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "FOCUS TIME LEFT"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "KALAN ODAKLANMA SÜRESİ"
-          }
-        }
-      }
-    },
-    "Failed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Failed"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Başarısız"
-          }
-        }
-      }
-    },
-    "Filter Events": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Filter Events"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Olayları Filtrele"
-          }
-        }
-      }
-    },
-    "Finishing…": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Finishing…"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tamamlanıyor…"
-          }
-        }
-      }
-    },
-    "Focus time remaining": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Focus time remaining"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kalan odaklanma süresi"
-          }
-        }
-      }
-    },
-    "From": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "From"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Başlangıç"
-          }
-        }
-      }
-    },
-    "Healthy 15-minute breaks automatically reset your cycle without shields.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Healthy 15-minute breaks automatically reset your cycle without shields."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "15 dakikalık doğal molalar, engelleme gerektirmeden döngünü otomatik olarak sıfırlar."
-          }
-        }
-      }
-    },
-    "Information": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Information"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bilgi"
-          }
-        }
-      }
-    },
-    "Lifecycle": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lifecycle"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yaşam Döngüsü"
-          }
-        }
-      }
-    },
-    "Light": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Light"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Açık"
-          }
-        }
-      }
-    },
-    "Local only. Shield API attempts do not prove iOS enforcement.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Local only. Shield API attempts do not prove iOS enforcement."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yalnızca bu cihazda saklanır. Shield API çağrıları, iOS’un engellemeyi uyguladığını kanıtlamaz."
-          }
-        }
-      }
-    },
-    "Looping": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Looping"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Döngü Sürüyor"
-          }
-        }
-      }
-    },
-    "MONITORING IS ON": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MONITORING IS ON"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İZLEME AÇIK"
-          }
-        }
-      }
-    },
-    "Manage Apps": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Manage Apps"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uygulamaları Yönet"
-          }
-        }
-      }
-    },
-    "Manage Monitored Apps": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Manage Monitored Apps"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzlenen Uygulamaları Yönet"
-          }
-        }
-      }
-    },
-    "Managed Apps": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Managed Apps"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçilen Uygulamalar"
-          }
-        }
-      }
-    },
-    "Mindful Pause Active": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mindful Pause Active"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mola Devam Ediyor"
-          }
-        }
-      }
-    },
-    "Mode": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mode"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Görünüm"
-          }
-        }
-      }
-    },
-    "Monitoring": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Monitoring"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzleme"
-          }
-        }
-      }
-    },
-    "Monitoring is interrupted. Review the saved apps, refresh status, then retry BreakLoop.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Monitoring is interrupted. Review the saved apps, refresh status, then retry BreakLoop."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzleme kesintiye uğradı. Kayıtlı uygulamaları gözden geçir, durumu yenile ve BreakLoop’u yeniden dene."
-          }
-        }
-      }
-    },
-    "Monitoring is still recorded. Review apps and refresh status, or stop the recorded session before retrying.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Monitoring is still recorded. Review apps and refresh status, or stop the recorded session before retrying."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzleme hâlâ kayıtlı. Uygulamaları gözden geçirip durumu yenile veya yeniden denemeden önce kayıtlı oturumu durdur."
-          }
-        }
-      }
-    },
-    "Monitoring needs attention": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Monitoring needs attention"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzlemenin kontrol edilmesi gerekiyor"
-          }
-        }
-      }
-    },
-    "Natural Rest & Cooldown": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Natural Rest & Cooldown"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Doğal ve Otomatik Mola"
-          }
-        }
-      }
-    },
-    "Needed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Needed"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzin Gerekli"
-          }
-        }
-      }
-    },
-    "No archived events available.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No archived events available."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Arşivlenmiş olay yok."
-          }
-        }
-      }
-    },
-    "Observed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Observed"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gözlemlendi"
-          }
-        }
-      }
-    },
-    "Once re-enabled, return to BreakLoop to resume.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Once re-enabled, return to BreakLoop to resume."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzni yeniden açtıktan sonra devam etmek için BreakLoop’a dön."
-          }
-        }
-      }
-    },
-    "Open iOS Settings": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open iOS Settings"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iOS Ayarlarını Aç"
-          }
-        }
-      }
-    },
-    "Operation UUID (optional)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Operation UUID (optional)"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İşlem UUID’si (isteğe bağlı)"
-          }
-        }
-      }
-    },
-    "Permanently delete local diagnostic history?": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Permanently delete local diagnostic history?"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cihazdaki tanılama geçmişi kalıcı olarak silinsin mi?"
-          }
-        }
-      }
-    },
-    "Permission Required": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Permission Required"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzin Gerekli"
-          }
-        }
-      }
-    },
-    "Permission was disabled in iOS Settings. Tap below to re-enable it.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Permission was disabled in iOS Settings. Tap below to re-enable it."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzin, iOS Ayarları’ndan kapatılmış. Yeniden açmak için aşağıya dokun."
-          }
-        }
-      }
-    },
-    "Permissions": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Permissions"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzinler"
-          }
-        }
-      }
-    },
-    "Protect your focus.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protect your focus."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Odağını koru."
-          }
-        }
-      }
-    },
-    "Reading the latest monitoring state": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reading the latest monitoring state"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Güncel izleme durumu okunuyor"
-          }
-        }
-      }
-    },
-    "Ready when you are": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ready when you are"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hazır olduğunda başlayabilirsin"
-          }
-        }
-      }
-    },
-    "Recent Matching Events (up to 300)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recent Matching Events (up to 300)"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Filtreye Uyan Son Olaylar (en fazla 300)"
-          }
-        }
-      }
-    },
-    "Recovery pause": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recovery pause"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dinlenme molası"
-          }
-        }
-      }
-    },
-    "Refresh Status": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refresh Status"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Durumu Yenile"
-          }
-        }
-      }
-    },
-    "Refresh monitoring status before starting Deep Focus.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refresh monitoring status before starting Deep Focus."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Derin Odağı başlatmadan önce izleme durumunu yenile."
-          }
-        }
-      }
-    },
-    "Rejected": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rejected"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reddedildi"
-          }
-        }
-      }
-    },
-    "Reopen BreakLoop or retry after resolving the error below.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reopen BreakLoop or retry after resolving the error below."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BreakLoop’u yeniden aç veya aşağıdaki sorunu giderdikten sonra tekrar dene."
-          }
-        }
-      }
-    },
-    "Rest Duration": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rest Duration"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mola Süresi"
-          }
-        }
-      }
-    },
-    "Rest. Breathe. Return.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rest. Breathe. Return."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dinlen. Nefes al. Geri dön."
-          }
-        }
-      }
-    },
-    "Retry BreakLoop": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Retry BreakLoop"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BreakLoop’u Yeniden Dene"
-          }
-        }
-      }
-    },
-    "Review Selected Apps": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Review Selected Apps"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçilen Uygulamaları Gözden Geçir"
-          }
-        }
-      }
-    },
-    "Save": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kaydet"
-          }
-        }
-      }
-    },
-    "Screen Time Access": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Screen Time Access"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ekran Süresi Erişimi"
-          }
-        }
-      }
-    },
-    "Screen Time access needed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Screen Time access needed"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ekran Süresi erişimi gerekli"
-          }
-        }
-      }
-    },
-    "Select Duration": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select Duration"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Süre Seç"
-          }
-        }
-      }
-    },
-    "Select Managed Apps": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select Managed Apps"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzlenecek Uygulamaları Seç"
-          }
-        }
-      }
-    },
-    "Selected apps are being monitored. A break begins at your shared usage limit.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Selected apps are being monitored. A break begins at your shared usage limit."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçilen uygulamalar izleniyor. Ortak kullanım sınırına ulaştığında mola başlar."
-          }
-        }
-      }
-    },
-    "Selection": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Selection"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçim"
-          }
-        }
-      }
-    },
-    "Selections that include websites cannot be saved or started. Remove websites explicitly in the picker.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Selections that include websites cannot be saved or started. Remove websites explicitly in the picker."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Web sitesi içeren seçimler kaydedilemez veya başlatılamaz. Seçim ekranından web sitelerini kaldır."
-          }
-        }
-      }
-    },
-    "Session": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Session"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Oturum"
-          }
-        }
-      }
-    },
-    "Set your limits. Take a break. Break the loop.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Set your limits. Take a break. Break the loop."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sınırını belirle. Mola ver. Döngüyü kır."
-          }
-        }
-      }
-    },
-    "Settings": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Settings"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ayarlar"
-          }
-        }
-      }
-    },
-    "Severity": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Severity"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Önem Düzeyi"
-          }
-        }
-      }
-    },
-    "Shared Usage Budget": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shared Usage Budget"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ortak Kullanım Süresi"
-          }
-        }
-      }
-    },
-    "Shared allowance across selected apps": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shared allowance across selected apps"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçilen uygulamalar için ortak süre"
-          }
-        }
-      }
-    },
-    "Shield": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shield"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Engelleme"
-          }
-        }
-      }
-    },
-    "Start BreakLoop": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start BreakLoop"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BreakLoop’u Başlat"
-          }
-        }
-      }
-    },
-    "Start Deep Focus": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start Deep Focus"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Derin Odağı Başlat"
-          }
-        }
-      }
-    },
-    "Start date must precede end date.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start date must precede end date."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Başlangıç tarihi bitiş tarihinden sonra olamaz."
-          }
-        }
-      }
-    },
-    "Stay in the flow.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stay in the flow."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Akışta kal."
-          }
-        }
-      }
-    },
-    "Stop BreakLoop": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stop BreakLoop"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BreakLoop’u Durdur"
-          }
-        }
-      }
-    },
-    "Stop Recorded BreakLoop": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stop Recorded BreakLoop"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kayıtlı BreakLoop Oturumunu Durdur"
-          }
-        }
-      }
-    },
-    "Storage": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Storage"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Depolama"
-          }
-        }
-      }
-    },
-    "Succeeded": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Succeeded"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Başarılı"
-          }
-        }
-      }
-    },
-    "System": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "System"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sistem"
-          }
-        }
-      }
-    },
-    "TIME REMAINING": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "TIME REMAINING"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "KALAN SÜRE"
-          }
-        }
-      }
-    },
-    "Tap to select monitored apps": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap to select monitored apps"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İzlenecek uygulamaları seçmek için dokun"
-          }
-        }
-      }
-    },
-    "Theme": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Theme"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tema"
-          }
-        }
-      }
-    },
-    "Threshold": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Threshold"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kullanım Sınırı"
-          }
-        }
-      }
-    },
-    "Through": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Through"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bitiş"
-          }
-        }
-      }
-    },
-    "Time for a break.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Time for a break."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mola zamanı."
-          }
-        }
-      }
-    },
-    "Timer accumulates across monitored apps during an active loop window.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Timer accumulates across monitored apps during an active loop window."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Etkin döngü boyunca izlenen uygulamalardaki kullanım süreleri birlikte hesaplanır."
-          }
-        }
-      }
-    },
-    "Timer accumulates combined usage across selected apps.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Timer accumulates combined usage across selected apps."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçilen uygulamalardaki kullanım süreleri birlikte hesaplanır."
-          }
-        }
-      }
-    },
-    "Timer runs when any monitored app is open. When depleted, a calming cooldown is enforced.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Timer runs when any monitored app is open. When depleted, a calming cooldown is enforced."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçilen uygulamalar açıkken süre birikir. Sınır dolduğunda otomatik mola başlar."
-          }
-        }
-      }
-    },
-    "Toggle Appearance Mode": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toggle Appearance Mode"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Görünüm Modunu Değiştir"
-          }
-        }
-      }
-    },
-    "Track multiple distracting apps under one combined limit.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Track multiple distracting apps under one combined limit."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dikkatini dağıtan uygulamaları tek bir ortak sınırla izle."
-          }
-        }
-      }
-    },
-    "Updating status…": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Updating status…"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Durum güncelleniyor…"
-          }
-        }
-      }
-    },
-    "Usage Limit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Usage Limit"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kullanım Sınırı"
-          }
-        }
-      }
-    },
-    "Version": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Version"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sürüm"
-          }
-        }
-      }
-    },
-    "Warning": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Warning"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uyarı"
-          }
-        }
-      }
-    },
-    "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BreakLoop v1.0 web sitelerini desteklemiyor. Kaydetmeden önce seçili web sitelerini kaldır."
-          }
-        }
-      }
-    },
-    "Your BreakLoop": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your BreakLoop"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BreakLoop Düzenin"
-          }
-        }
-      }
-    },
-    "Your apps are paused. Take a moment away from the screen.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your apps are paused. Take a moment away from the screen."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uygulamalarına ara verildi. Ekrandan biraz uzaklaş."
-          }
-        }
-      }
-    },
-    "Your break ends at the verified cooldown deadline.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your break ends at the verified cooldown deadline."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Molan, doğrulanmış mola bitiş zamanında sona erer."
-          }
-        }
-      }
-    },
-    "Your cycle is running.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your cycle is running."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Döngün devam ediyor."
-          }
-        }
-      }
-    },
-    "Your recovery break": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your recovery break"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dinlenme molan"
-          }
-        }
-      }
-    },
-    "Your selected apps and categories are still saved.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your selected apps and categories are still saved."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçtiğin uygulama ve kategoriler kayıtlı duruyor."
-          }
-        }
-      }
-    },
-    "Your usage budget and cooldown settings are preserved.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your usage budget and cooldown settings are preserved."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kullanım süren ve mola ayarların korundu."
-          }
-        }
-      }
-    },
-    "Zero-tolerance complete shielding for hours of distraction-free work.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zero-tolerance complete shielding for hours of distraction-free work."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dikkatin dağılmadan çalışmak için seçilen uygulamaları saatlerce engelle."
-          }
-        }
-      }
-    },
-    "accessibility.status": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Status: %@"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Durum: %@"
           }
         }
       }
@@ -3195,6 +1409,210 @@
         }
       }
     },
+    "Debug": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Debug"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hata Ayıklama"
+          }
+        }
+      }
+    },
+    "Deep Focus": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deep Focus"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Odak"
+          }
+        }
+      }
+    },
+    "Deep Focus Active": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deep Focus Active"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Odak Aktif"
+          }
+        }
+      }
+    },
+    "Deep Focus Mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deep Focus Mode"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Odak"
+          }
+        }
+      }
+    },
+    "Deep Focus session": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deep Focus session"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Odak oturumu"
+          }
+        }
+      }
+    },
+    "Deep Focus Setup": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deep Focus Setup"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Odak Ayarları"
+          }
+        }
+      }
+    },
+    "Default rhythm interval": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default rhythm interval"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varsayılan kullanım ve mola düzeni"
+          }
+        }
+      }
+    },
+    "Delete Diagnostic History": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Diagnostic History"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanılama Geçmişini Sil"
+          }
+        }
+      }
+    },
+    "Delete History": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete History"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geçmişi Sil"
+          }
+        }
+      }
+    },
+    "Deletes only diagnostics. Monitoring, selected apps and cycle configuration are preserved.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deletes only diagnostics. Monitoring, selected apps and cycle configuration are preserved."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yalnızca tanılama kayıtları silinir. İzleme, seçilen uygulamalar ve döngü ayarları korunur."
+          }
+        }
+      }
+    },
+    "Diagnostic Event": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostic Event"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanılama Olayı"
+          }
+        }
+      }
+    },
+    "Diagnostics": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostics"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tanılama"
+          }
+        }
+      }
+    },
     "diagnostics.beforeAfter": {
       "extractionState": "manual",
       "localizations": {
@@ -3443,6 +1861,329 @@
         }
       }
     },
+    "Edit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Düzenle"
+          }
+        }
+      }
+    },
+    "Enable Screen Time Access": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable Screen Time Access"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekran Süresi Erişimini Aç"
+          }
+        }
+      }
+    },
+    "End Deep Focus Early": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Deep Focus Early"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Odağı Erken Bitir"
+          }
+        }
+      }
+    },
+    "Enforcement uses Apple Screen Time and requires authorization.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enforcement uses Apple Screen Time and requires authorization."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Engelleme, Apple Ekran Süresi’ni kullanır ve erişim izni gerektirir."
+          }
+        }
+      }
+    },
+    "Engine": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Engine"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altyapı"
+          }
+        }
+      }
+    },
+    "Enter a complete operation UUID or leave it empty.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a complete operation UUID or leave it empty."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İşlemin tam UUID değerini gir veya alanı boş bırak."
+          }
+        }
+      }
+    },
+    "Error": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hata"
+          }
+        }
+      }
+    },
+    "Event Code": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Event Code"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Olay Kodu"
+          }
+        }
+      }
+    },
+    "Event History & Export": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Event History & Export"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıt Geçmişi ve Dışa Aktarma"
+          }
+        }
+      }
+    },
+    "Export includes all matching retained events, not just the timeline's latest 300. Save the JSONL file to Files or iCloud Drive using the Share Sheet to keep it after uninstalling BreakLoop.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export includes all matching retained events, not just the timeline's latest 300. Save the JSONL file to Files or iCloud Drive using the Share Sheet to keep it after uninstalling BreakLoop."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dışa aktarılan dosya, yalnızca son 300 olayı değil, filtreye uyan tüm saklanmış olayları içerir. BreakLoop silindiğinde de korumak için JSONL dosyasını paylaşım menüsünden Dosyalar’a veya iCloud Drive’a kaydet."
+          }
+        }
+      }
+    },
+    "Export Logs": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export Logs"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtları Dışa Aktar"
+          }
+        }
+      }
+    },
+    "Export to inspect full sanitized deadlines and ownership snapshots.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export to inspect full sanitized deadlines and ownership snapshots."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kimlik bilgileri ayıklanmış bitiş zamanlarını ve kısıtlama kayıtlarını incelemek için dışa aktar."
+          }
+        }
+      }
+    },
+    "Extend by 15 min": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extend by 15 min"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 dakika uzat"
+          }
+        }
+      }
+    },
+    "Failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başarısız"
+          }
+        }
+      }
+    },
+    "Filter Events": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter Events"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Olayları Filtrele"
+          }
+        }
+      }
+    },
+    "Finishing…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finishing…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamamlanıyor…"
+          }
+        }
+      }
+    },
+    "FOCUS TIME LEFT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FOCUS TIME LEFT"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KALAN ODAKLANMA SÜRESİ"
+          }
+        }
+      }
+    },
+    "Focus time remaining": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus time remaining"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kalan odaklanma süresi"
+          }
+        }
+      }
+    },
+    "Focus when you choose. Pause when you need.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus when you choose. Pause when you need."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İstediğinde odaklan. Gerektiğinde mola ver."
+          }
+        }
+      }
+    },
     "focus.launch": {
       "extractionState": "manual",
       "localizations": {
@@ -3456,6 +2197,261 @@
           "stringUnit": {
             "state": "translated",
             "value": "Derin Odağı Başlat (%@)"
+          }
+        }
+      }
+    },
+    "From": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlangıç"
+          }
+        }
+      }
+    },
+    "Healthy 15-minute breaks automatically reset your cycle without shields.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Healthy 15-minute breaks automatically reset your cycle without shields."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15 dakikalık doğal molalar, engelleme gerektirmeden döngünü otomatik olarak sıfırlar."
+          }
+        }
+      }
+    },
+    "Hello, world!": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hello, world!"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merhaba dünya!"
+          }
+        }
+      }
+    },
+    "Information": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Information"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilgi"
+          }
+        }
+      }
+    },
+    "KVKK Notice (Turkish)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KVKK Notice (Turkish)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KVKK Aydınlatma Metni"
+          }
+        }
+      }
+    },
+    "Legal documents will be available once reviewed publication links are configured.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legal documents will be available once reviewed publication links are configured."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hukuki belgeler, incelemesi tamamlanan yayın bağlantıları eklendiğinde erişilebilir olacak."
+          }
+        }
+      }
+    },
+    "Legal Information": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legal Information"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hukuki Bilgiler"
+          }
+        }
+      }
+    },
+    "Lifecycle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lifecycle"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yaşam Döngüsü"
+          }
+        }
+      }
+    },
+    "Light": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açık"
+          }
+        }
+      }
+    },
+    "Local only. Shield API attempts do not prove iOS enforcement.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local only. Shield API attempts do not prove iOS enforcement."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yalnızca bu cihazda saklanır. Shield API çağrıları, iOS’un engellemeyi uyguladığını kanıtlamaz."
+          }
+        }
+      }
+    },
+    "Looping": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Looping"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Döngü Sürüyor"
+          }
+        }
+      }
+    },
+    "Manage Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage Apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamaları Yönet"
+          }
+        }
+      }
+    },
+    "Manage Monitored Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage Monitored Apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzlenen Uygulamaları Yönet"
+          }
+        }
+      }
+    },
+    "Managed Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Managed Apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçilen Uygulamalar"
+          }
+        }
+      }
+    },
+    "Mindful Pause Active": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mindful Pause Active"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mola Devam Ediyor"
           }
         }
       }
@@ -3494,6 +2490,175 @@
         }
       }
     },
+    "Mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görünüm"
+          }
+        }
+      }
+    },
+    "Monitoring": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitoring"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzleme"
+          }
+        }
+      }
+    },
+    "Monitoring and shielding run on your iPhone, and you can manage access anytime in Settings.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitoring and shielding run on your iPhone, and you can manage access anytime in Settings."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzleme ve kısıtlama işlemleri iPhone’unda çalışır; erişimi Ayarlar’dan istediğin zaman yönetebilirsin."
+          }
+        }
+      }
+    },
+    "Monitoring is interrupted. Review the saved apps, refresh status, then retry BreakLoop.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitoring is interrupted. Review the saved apps, refresh status, then retry BreakLoop."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzleme kesintiye uğradı. Kayıtlı uygulamaları gözden geçir, durumu yenile ve BreakLoop’u yeniden dene."
+          }
+        }
+      }
+    },
+    "MONITORING IS ON": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MONITORING IS ON"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İZLEME AÇIK"
+          }
+        }
+      }
+    },
+    "Monitoring is still recorded. Review apps and refresh status, or stop the recorded session before retrying.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitoring is still recorded. Review apps and refresh status, or stop the recorded session before retrying."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzleme hâlâ kayıtlı. Uygulamaları gözden geçirip durumu yenile veya yeniden denemeden önce kayıtlı oturumu durdur."
+          }
+        }
+      }
+    },
+    "Monitoring needs attention": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitoring needs attention"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzlemenin kontrol edilmesi gerekiyor"
+          }
+        }
+      }
+    },
+    "Natural Rest & Cooldown": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Natural Rest & Cooldown"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doğal ve Otomatik Mola"
+          }
+        }
+      }
+    },
+    "Needed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzin Gerekli"
+          }
+        }
+      }
+    },
+    "No archived events available.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No archived events available."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arşivlenmiş olay yok."
+          }
+        }
+      }
+    },
     "none": {
       "extractionState": "manual",
       "localizations": {
@@ -3524,6 +2689,835 @@
           "stringUnit": {
             "state": "translated",
             "value": "belirtilmedi / doğrulanmadı"
+          }
+        }
+      }
+    },
+    "Observed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Observed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gözlemlendi"
+          }
+        }
+      }
+    },
+    "OK": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamam"
+          }
+        }
+      }
+    },
+    "Once re-enabled, return to BreakLoop to resume.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Once re-enabled, return to BreakLoop to resume."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzni yeniden açtıktan sonra devam etmek için BreakLoop’a dön."
+          }
+        }
+      }
+    },
+    "One shared allowance": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One shared allowance"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tek ortak süre"
+          }
+        }
+      }
+    },
+    "Open iOS Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open iOS Settings"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS Ayarlarını Aç"
+          }
+        }
+      }
+    },
+    "Opens in your web browser": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opens in your web browser"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Web tarayıcında açılır"
+          }
+        }
+      }
+    },
+    "Operation UUID (optional)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Operation UUID (optional)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İşlem UUID’si (isteğe bağlı)"
+          }
+        }
+      }
+    },
+    "Pause selected apps right away for a chosen duration.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause selected apps right away for a chosen duration."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulamalara belirlediğin süre boyunca hemen ara ver."
+          }
+        }
+      }
+    },
+    "Pause selected distractions for a focus session you choose.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause selected distractions for a focus session you choose."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulamalara belirlediğin odak süresi boyunca ara ver."
+          }
+        }
+      }
+    },
+    "Pause the distractions. Make room for what matters.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause the distractions. Make room for what matters."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dikkatini dağıtanlara ara ver. Önemli olana yer aç."
+          }
+        }
+      }
+    },
+    "Pause your selected apps and categories for a focus session. You can end the session early if needed.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause your selected apps and categories for a focus session. You can end the session early if needed."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulama ve kategorilere odak oturumu boyunca ara ver. Gerektiğinde oturumu erken bitirebilirsin."
+          }
+        }
+      }
+    },
+    "Permanently delete local diagnostic history?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permanently delete local diagnostic history?"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cihazdaki tanılama geçmişi kalıcı olarak silinsin mi?"
+          }
+        }
+      }
+    },
+    "Permission Required": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permission Required"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzin Gerekli"
+          }
+        }
+      }
+    },
+    "Permission was disabled in iOS Settings. Tap below to re-enable it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permission was disabled in iOS Settings. Tap below to re-enable it."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzin, iOS Ayarları’ndan kapatılmış. Yeniden açmak için aşağıya dokun."
+          }
+        }
+      }
+    },
+    "Permissions": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permissions"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzinler"
+          }
+        }
+      }
+    },
+    "Please try opening the document again from Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please try opening the document again from Settings."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belgeyi Ayarlar’dan yeniden açmayı dene."
+          }
+        }
+      }
+    },
+    "Privacy Policy": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy Policy"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gizlilik Politikası"
+          }
+        }
+      }
+    },
+    "Protect your focus.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protect your focus."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odağını koru."
+          }
+        }
+      }
+    },
+    "Reading the latest monitoring state": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading the latest monitoring state"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Güncel izleme durumu okunuyor"
+          }
+        }
+      }
+    },
+    "Ready when you are": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready when you are"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hazır olduğunda başlayabilirsin"
+          }
+        }
+      }
+    },
+    "Recent Matching Events (up to 300)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent Matching Events (up to 300)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filtreye Uyan Son Olaylar (en fazla 300)"
+          }
+        }
+      }
+    },
+    "Recovery pause": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recovery pause"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dinlenme molası"
+          }
+        }
+      }
+    },
+    "Refresh monitoring status before starting Deep Focus.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh monitoring status before starting Deep Focus."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Odağı başlatmadan önce izleme durumunu yenile."
+          }
+        }
+      }
+    },
+    "Refresh Status": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh Status"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Durumu Yenile"
+          }
+        }
+      }
+    },
+    "Rejected": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rejected"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reddedildi"
+          }
+        }
+      }
+    },
+    "Reopen BreakLoop or retry after resolving the error below.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reopen BreakLoop or retry after resolving the error below."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop’u yeniden aç veya aşağıdaki sorunu giderdikten sonra tekrar dene."
+          }
+        }
+      }
+    },
+    "Rest Duration": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest Duration"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mola Süresi"
+          }
+        }
+      }
+    },
+    "Rest. Breathe. Return.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest. Breathe. Return."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dinlen. Nefes al. Geri dön."
+          }
+        }
+      }
+    },
+    "Retry BreakLoop": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry BreakLoop"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop’u Yeniden Dene"
+          }
+        }
+      }
+    },
+    "Review Selected Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review Selected Apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçilen Uygulamaları Gözden Geçir"
+          }
+        }
+      }
+    },
+    "Review your selected apps and categories before starting.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review your selected apps and categories before starting."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başlatmadan önce seçtiğin uygulama ve kategorileri gözden geçir."
+          }
+        }
+      }
+    },
+    "Room to focus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Room to focus"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odaklanma alanı"
+          }
+        }
+      }
+    },
+    "Save": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaydet"
+          }
+        }
+      }
+    },
+    "Screen Time Access": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screen Time Access"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekran Süresi Erişimi"
+          }
+        }
+      }
+    },
+    "Screen Time access needed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screen Time access needed"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekran Süresi erişimi gerekli"
+          }
+        }
+      }
+    },
+    "Screen Time permission is separate from legal terms, privacy information and any personal-data consent.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screen Time permission is separate from legal terms, privacy information and any personal-data consent."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekran Süresi izni; kullanım koşullarından, gizlilik bilgilendirmesinden ve kişisel veri rızasından ayrıdır."
+          }
+        }
+      }
+    },
+    "Select Apps & Categories": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select Apps & Categories"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulama ve Kategorileri Seç"
+          }
+        }
+      }
+    },
+    "Select Duration": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select Duration"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Süre Seç"
+          }
+        }
+      }
+    },
+    "Select Managed Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select Managed Apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzlenecek Uygulamaları Seç"
+          }
+        }
+      }
+    },
+    "Selected Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected Apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçilen Uygulamalar"
+          }
+        }
+      }
+    },
+    "Selected apps and categories share one combined usage limit.": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected apps and categories share one combined usage limit."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulama ve kategoriler tek bir ortak kullanım süresini paylaşır."
+          }
+        }
+      }
+    },
+    "Selected apps are being monitored. A break begins at your shared usage limit.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected apps are being monitored. A break begins at your shared usage limit."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçilen uygulamalar izleniyor. Ortak kullanım sınırına ulaştığında mola başlar."
+          }
+        }
+      }
+    },
+    "Selected apps pause when your limit ends, or reset after estimated time away.": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selected apps pause when your limit ends, or reset after estimated time away."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Süren dolduğunda seçilen uygulamalar molaya girer veya tahmini dinlenmeyle sıfırlanır."
+          }
+        }
+      }
+    },
+    "Selection": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selection"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçim"
+          }
+        }
+      }
+    },
+    "Selections that include websites cannot be saved or started. Remove websites explicitly in the picker.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selections that include websites cannot be saved or started. Remove websites explicitly in the picker."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Web sitesi içeren seçimler kaydedilemez veya başlatılamaz. Seçim ekranından web sitelerini kaldır."
+          }
+        }
+      }
+    },
+    "Session": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oturum"
+          }
+        }
+      }
+    },
+    "Set shared usage limits and take intentional breaks from distracting apps.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set shared usage limits and take intentional breaks from distracting apps."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dikkat dağıtan uygulamalara ortak sınırlar koy ve bilinçli molalar ver."
+          }
+        }
+      }
+    },
+    "Set your limits. Take a break. Break the loop.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set your limits. Take a break. Break the loop."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sınırını belirle. Mola ver. Döngüyü kır."
+          }
+        }
+      }
+    },
+    "Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ayarlar"
           }
         }
       }
@@ -3600,6 +3594,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Toplam %lld dakika kullanımdan sonra seçilen uygulamalar %lld dakika engellenir. Değişiklikler bir sonraki döngüde uygulanır."
+          }
+        }
+      }
+    },
+    "setup.formula": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min use → %lld min break"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld dk kullanım → %lld dk mola"
           }
         }
       }
@@ -3683,223 +3694,19 @@
         }
       }
     },
-    "unknown": {
+    "Severity": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "unknown"
+            "value": "Severity"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "bilinmiyor"
-          }
-        }
-      }
-    },
-    "accessibility.finishing": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Finishing"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tamamlanıyor"
-          }
-        }
-      }
-    },
-    "setup.formula": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld min use → %lld min break"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld dk kullanım → %lld dk mola"
-          }
-        }
-      }
-    },
-    "Hello, world!": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hello, world!"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Merhaba dünya!"
-          }
-        }
-      }
-    },
-    "Focus when you choose. Pause when you need.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Focus when you choose. Pause when you need."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "İstediğinde odaklan. Gerektiğinde mola ver."
-          }
-        }
-      }
-    },
-    "Give selected apps and categories one shared usage allowance. Their usage adds up together.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Give selected apps and categories one shared usage allowance. Their usage adds up together."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçtiğin uygulama ve kategorilere ortak bir kullanım süresi belirle. Kullanım süreleri birlikte hesaplanır."
-          }
-        }
-      }
-    },
-    "Cooldown & Natural Rest": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cooldown & Natural Rest"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Otomatik Mola ve Doğal Mola"
-          }
-        }
-      }
-    },
-    "When your shared allowance runs out, selected apps pause for your chosen break. Time away may also count toward an estimated natural rest.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "When your shared allowance runs out, selected apps pause for your chosen break. Time away may also count toward an estimated natural rest."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ortak kullanım süren dolduğunda seçtiğin uygulamalar molaya girer. Kullanımdan uzak kaldığın süre, Doğal Mola kapsamında da tahmin edilebilir."
-          }
-        }
-      }
-    },
-    "Start a fixed focus session when you want selected apps paused right away.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start a fixed focus session when you want selected apps paused right away."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seçtiğin uygulamalara hemen ara vermek istediğinde belirli süreli bir odak oturumu başlat."
-          }
-        }
-      }
-    },
-    "Choose the apps you want to take a break from.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose the apps you want to take a break from."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mola vermek istediğin uygulamaları seç."
-          }
-        }
-      }
-    },
-    "Select Apps & Categories": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select Apps & Categories"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Uygulama ve Kategorileri Seç"
-          }
-        }
-      }
-    },
-    "BreakLoop v1.0 supports apps and categories only. Remove selected websites to continue.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BreakLoop v1.0 supports apps and categories only. Remove selected websites to continue."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BreakLoop v1.0 yalnızca uygulama ve kategorileri destekler. Devam etmek için seçilen web sitelerini kaldır."
-          }
-        }
-      }
-    },
-    "Review your selected apps and categories before starting.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Review your selected apps and categories before starting."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Başlatmadan önce seçtiğin uygulama ve kategorileri gözden geçir."
+            "value": "Önem Düzeyi"
           }
         }
       }
@@ -3921,104 +3728,884 @@
         }
       }
     },
-    "Pause selected distractions for a focus session you choose.": {
+    "Shared allowance across selected apps": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pause selected distractions for a focus session you choose."
+            "value": "Shared allowance across selected apps"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seçtiğin uygulamalara belirlediğin odak süresi boyunca ara ver."
+            "value": "Seçilen uygulamalar için ortak süre"
           }
         }
       }
     },
-    "accessibility.themeButton": {
+    "Shared Usage Budget": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Change appearance. Current theme: %@."
+            "value": "Shared Usage Budget"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Görünümü değiştir. Geçerli tema: %@."
+            "value": "Ortak Kullanım Süresi"
           }
         }
       }
     },
-    "Pause your selected apps and categories for a focus session. You can end the session early if needed.": {
+    "Shield": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pause your selected apps and categories for a focus session. You can end the session early if needed."
+            "value": "Shield"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seçtiğin uygulama ve kategorilere odak oturumu boyunca ara ver. Gerektiğinde oturumu erken bitirebilirsin."
+            "value": "Engelleme"
           }
         }
       }
     },
-    "Automatic Cooldown": {
-      "extractionState": "manual",
+    "Space to reset": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Automatic Cooldown"
+            "value": "Space to reset"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otomatik Mola"
+            "value": "Nefes alma alanı"
           }
         }
       }
     },
-    "Selected Apps": {
+    "Start BreakLoop": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Selected Apps"
+            "value": "Start BreakLoop"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Seçilen Uygulamalar"
+            "value": "BreakLoop’u Başlat"
           }
         }
       }
     },
-    "Choose your apps": {
+    "Start date must precede end date.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choose your apps"
+            "value": "Start date must precede end date."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uygulamalarını seç"
+            "value": "Başlangıç tarihi bitiş tarihinden sonra olamaz."
+          }
+        }
+      }
+    },
+    "Start Deep Focus": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Deep Focus"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derin Odağı Başlat"
+          }
+        }
+      }
+    },
+    "Stay in the flow.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stay in the flow."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akışta kal."
+          }
+        }
+      }
+    },
+    "Stop BreakLoop": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop BreakLoop"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop’u Durdur"
+          }
+        }
+      }
+    },
+    "Stop Recorded BreakLoop": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop Recorded BreakLoop"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kayıtlı BreakLoop Oturumunu Durdur"
+          }
+        }
+      }
+    },
+    "Storage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depolama"
+          }
+        }
+      }
+    },
+    "Succeeded": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Succeeded"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Başarılı"
+          }
+        }
+      }
+    },
+    "System": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sistem"
+          }
+        }
+      }
+    },
+    "Tap to select monitored apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to select monitored apps"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzlenecek uygulamaları seçmek için dokun"
+          }
+        }
+      }
+    },
+    "Terms of Use": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms of Use"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Koşulları"
+          }
+        }
+      }
+    },
+    "Theme": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theme"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tema"
+          }
+        }
+      }
+    },
+    "Threshold": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Threshold"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Sınırı"
+          }
+        }
+      }
+    },
+    "Through": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Through"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitiş"
+          }
+        }
+      }
+    },
+    "Time for a break.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time for a break."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mola zamanı."
+          }
+        }
+      }
+    },
+    "TIME REMAINING": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TIME REMAINING"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "KALAN SÜRE"
+          }
+        }
+      }
+    },
+    "Timer accumulates across monitored apps during an active loop window.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timer accumulates across monitored apps during an active loop window."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etkin döngü boyunca izlenen uygulamalardaki kullanım süreleri birlikte hesaplanır."
+          }
+        }
+      }
+    },
+    "Timer accumulates combined usage across selected apps.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timer accumulates combined usage across selected apps."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçilen uygulamalardaki kullanım süreleri birlikte hesaplanır."
+          }
+        }
+      }
+    },
+    "Timer runs when any monitored app is open. When depleted, a calming cooldown is enforced.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timer runs when any monitored app is open. When depleted, a calming cooldown is enforced."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçilen uygulamalar açıkken süre birikir. Sınır dolduğunda otomatik mola başlar."
+          }
+        }
+      }
+    },
+    "Toggle Appearance Mode": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toggle Appearance Mode"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Görünüm Modunu Değiştir"
+          }
+        }
+      }
+    },
+    "Track multiple distracting apps under one combined limit.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Track multiple distracting apps under one combined limit."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dikkatini dağıtan uygulamaları tek bir ortak sınırla izle."
+          }
+        }
+      }
+    },
+    "unknown": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "unknown"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "bilinmiyor"
+          }
+        }
+      }
+    },
+    "Updating status…": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updating status…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Durum güncelleniyor…"
+          }
+        }
+      }
+    },
+    "Usage Limit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Limit"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Sınırı"
+          }
+        }
+      }
+    },
+    "Uses Apple Screen Time on your iPhone to monitor usage limits and shield selected apps.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uses Apple Screen Time on your iPhone to monitor usage limits and shield selected apps."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım sürelerini izlemek ve seçilen uygulamaları kısıtlamak için Apple Ekran Süresi’ni kullanır."
+          }
+        }
+      }
+    },
+    "Version": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sürüm"
+          }
+        }
+      }
+    },
+    "Warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warning"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyarı"
+          }
+        }
+      }
+    },
+    "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Websites are not supported in BreakLoop v1.0. Remove any selected websites before saving."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop v1.0 web sitelerini desteklemiyor. Kaydetmeden önce seçili web sitelerini kaldır."
+          }
+        }
+      }
+    },
+    "Your apps are paused. Take a moment away from the screen.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your apps are paused. Take a moment away from the screen."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamalarına ara verildi. Ekrandan biraz uzaklaş."
+          }
+        }
+      }
+    },
+    "Your break ends at the verified cooldown deadline.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your break ends at the verified cooldown deadline."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Molan, doğrulanmış mola bitiş zamanında sona erer."
+          }
+        }
+      }
+    },
+    "Your BreakLoop": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your BreakLoop"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BreakLoop Düzenin"
+          }
+        }
+      }
+    },
+    "Your cycle is running.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your cycle is running."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Döngün devam ediyor."
+          }
+        }
+      }
+    },
+    "Your recovery break": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your recovery break"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dinlenme molan"
+          }
+        }
+      }
+    },
+    "Your selected apps and categories are still saved.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your selected apps and categories are still saved."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seçtiğin uygulama ve kategoriler kayıtlı duruyor."
+          }
+        }
+      }
+    },
+    "Your usage budget and cooldown settings are preserved.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your usage budget and cooldown settings are preserved."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım süren ve mola ayarların korundu."
+          }
+        }
+      }
+    },
+    "Zero-tolerance complete shielding for hours of distraction-free work.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zero-tolerance complete shielding for hours of distraction-free work."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dikkatin dağılmadan çalışmak için seçilen uygulamaları saatlerce engelle."
+          }
+        }
+      }
+    },
+    "I agree to the Terms of Use.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I agree to the Terms of Use."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Koşulları’nı kabul ediyorum."
+          }
+        }
+      }
+    },
+    "Checked": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checked"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İşaretli"
+          }
+        }
+      }
+    },
+    "Unchecked": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unchecked"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İşaretli değil"
+          }
+        }
+      }
+    },
+    "Development preview: this acceptance is for testing only. Final documents are pending.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Development preview: this acceptance is for testing only. Final documents are pending."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geliştirme önizlemesi: Bu kabul yalnızca test içindir. Son belgeler henüz eklenmedi."
+          }
+        }
+      }
+    },
+    "Continue will be available once the final legal documents are published.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue will be available once the final legal documents are published."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son hukuki belgeler yayımlandığında devam edebileceksin."
+          }
+        }
+      }
+    },
+    "Your acceptance could not be saved. Please try again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your acceptance could not be saved. Please try again."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kabulün kaydedilemedi. Lütfen yeniden dene."
+          }
+        }
+      }
+    },
+    "Development preview · final documents pending": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Development preview · final documents pending"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geliştirme önizlemesi · son belgeler bekleniyor"
+          }
+        }
+      }
+    },
+    "Development preview": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Development preview"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geliştirme önizlemesi"
+          }
+        }
+      }
+    },
+    "This is a development placeholder, not a published legal document. Final text will be added before release.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is a development placeholder, not a published legal document. Final text will be added before release."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu, yayımlanmış bir hukuki belge değil, geliştirme için hazırlanmış bir yer tutucudur. Son metin yayından önce eklenecek."
+          }
+        }
+      }
+    },
+    "Preview acceptance is only for testing and will not count as acceptance of the final terms.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview acceptance is only for testing and will not count as acceptance of the final terms."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Önizleme kabulü yalnızca test içindir; son koşulların kabulü olarak sayılmayacak."
+          }
+        }
+      }
+    },
+    "Done": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitti"
+          }
+        }
+      }
+    },
+    "Opens a development preview": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opens a development preview"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geliştirme önizlemesini açar"
           }
         }
       }

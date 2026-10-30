@@ -21,13 +21,22 @@ check(String(localized: "setup.formula", defaultValue: "\(20) min use → \(15) 
 check(String(localized: "focus.launch", defaultValue: "Launch Deep Focus (\("2 sa"))", bundle: tr) == "Derin Odağı Başlat (2 sa)", "duration in full sentence")
 check(String(localized: "Focus when you choose. Pause when you need.", bundle: tr) == "İstediğinde odaklan. Gerektiğinde mola ver.", "website hero slogan in Turkish")
 check(String(localized: "Focus when you choose. Pause when you need.", bundle: en) == "Focus when you choose. Pause when you need.", "website hero slogan in English")
-check(String(localized: "Give selected apps and categories one shared usage allowance. Their usage adds up together.", bundle: tr) == "Seçtiğin uygulama ve kategorilere ortak bir kullanım süresi belirle. Kullanım süreleri birlikte hesaplanır.", "onboarding shared usage budget description")
+check(String(localized: "Pause the distractions. Make room for what matters.", bundle: tr) == "Dikkatini dağıtanlara ara ver. Önemli olana yer aç.", "brand philosophy in Turkish")
+check(String(localized: "Pause the distractions. Make room for what matters.", bundle: en) == "Pause the distractions. Make room for what matters.", "brand philosophy in English")
+check(String(localized: "Set shared usage limits and take intentional breaks from distracting apps.", bundle: tr) == "Dikkat dağıtan uygulamalara ortak sınırlar koy ve bilinçli molalar ver.", "onboarding explanatory subheadline in Turkish")
+check(String(localized: "One shared allowance", bundle: tr) == "Tek ortak süre", "onboarding feature 1 outcome tag")
+check(String(localized: "Space to reset", bundle: tr) == "Nefes alma alanı", "onboarding feature 2 outcome tag")
+check(String(localized: "Room to focus", bundle: tr) == "Odaklanma alanı", "onboarding feature 3 outcome tag")
+check(String(localized: "Selected apps and categories share one combined usage limit.", bundle: tr) == "Seçtiğin uygulama ve kategoriler tek bir ortak kullanım süresini paylaşır.", "onboarding shared usage budget description")
 check(String(localized: "Cooldown & Natural Rest", bundle: tr) == "Otomatik Mola ve Doğal Mola", "onboarding cooldown & natural rest title")
-check(String(localized: "When your shared allowance runs out, selected apps pause for your chosen break. Time away may also count toward an estimated natural rest.", bundle: tr) == "Ortak kullanım süren dolduğunda seçtiğin uygulamalar molaya girer. Kullanımdan uzak kaldığın süre, Doğal Mola kapsamında da tahmin edilebilir.", "onboarding cooldown & natural rest description")
+check(String(localized: "Selected apps pause when your limit ends, or reset after estimated time away.", bundle: tr) == "Süren dolduğunda seçilen uygulamalar molaya girer veya tahmini dinlenmeyle sıfırlanır.", "onboarding cooldown & natural rest description")
 check(String(localized: "Deep Focus", bundle: tr) == "Derin Odak", "canonical Deep Focus term")
 check(String(localized: "Start Deep Focus", bundle: tr) == "Derin Odağı Başlat", "canonical Start Deep Focus term")
 check(String(localized: "End Deep Focus Early", bundle: tr) == "Derin Odağı Erken Bitir", "canonical End Deep Focus Early term")
-check(String(localized: "Start a fixed focus session when you want selected apps paused right away.", bundle: tr) == "Seçtiğin uygulamalara hemen ara vermek istediğinde belirli süreli bir odak oturumu başlat.", "onboarding Deep Focus description")
+check(String(localized: "Pause selected apps right away for a chosen duration.", bundle: tr) == "Seçtiğin uygulamalara belirlediğin süre boyunca hemen ara ver.", "onboarding Deep Focus description")
+check(String(localized: "Uses Apple Screen Time on your iPhone to monitor usage limits and shield selected apps.", bundle: tr) == "Kullanım sürelerini izlemek ve seçilen uygulamaları kısıtlamak için Apple Ekran Süresi’ni kullanır.", "onboarding simplified Screen Time explanation")
+check(String(localized: "BreakLoop needs Apple Screen Time access to monitor usage limits and shield your selected apps.", bundle: tr) == "BreakLoop’un kullanım sınırlarını izlemesi ve seçtiğin uygulamaları kısıtlaması için Apple Ekran Süresi izni gerekir.", "permission required subtitle")
+check(String(localized: "Monitoring and shielding run on your iPhone, and you can manage access anytime in Settings.", bundle: tr) == "İzleme ve kısıtlama işlemleri iPhone’unda çalışır; erişimi Ayarlar’dan istediğin zaman yönetebilirsin.", "permission required local operation & settings reassurance")
 check(String(localized: "Choose the apps you want to take a break from.", bundle: tr) == "Mola vermek istediğin uygulamaları seç.", "first-run empty selection prompt")
 check(String(localized: "Select Apps & Categories", bundle: tr) == "Uygulama ve Kategorileri Seç", "first-run select apps CTA")
 check(String(localized: "Share one usage allowance across your selected apps. A break begins when it runs out.", bundle: tr) == "Seçtiğin uygulamalar için ortak bir kullanım süresi belirle. Süre dolduğunda mola başlar.", "dashboard Start BreakLoop explanation")
@@ -51,6 +60,14 @@ for count in [0, 1, 4, 50] {
 check(String(localized: "error.websites", defaultValue: "This selection includes \(1) websites. BreakLoop v1.0 supports apps and categories only. Remove websites in the picker before saving or starting.", table: "SharedErrors", bundle: en).contains("1 website."), "shared validation singular")
 check(String(localized: "The monitoring duration is not supported.", table: "SharedErrors", bundle: shieldTR) == "Bu izleme süresi desteklenmiyor.", "shared errors in extension bundle")
 check(String(localized: "error.interrupted", defaultValue: "BreakLoop monitoring was interrupted. \("Sistem, istenen izleme aralığını planlayamadı.") Fix the problem and start BreakLoop again.", table: "SharedErrors", bundle: tr) == "BreakLoop izlemesi kesintiye uğradı. Sistem, istenen izleme aralığını planlayamadı. Sorunu giderip BreakLoop’u yeniden başlat.", "interrupted monitoring message in Turkish")
+
+// Onboarding clarity and legal disclosure use the same catalogs as the main UI.
+check(String(localized: "A repeating cycle of shared app usage and rest, rather than a daily limit.", bundle: tr) == "Günlük bir sınır değil; ortak uygulama kullanımı ve moladan oluşan, tekrarlayan bir döngü.", "repeating cycle in Turkish")
+check(String(localized: "Apps pause at your limit. Estimated time away may allow a new cycle to begin.", bundle: tr) == "Sınırın dolduğunda uygulamalar engellenir. Tahmini dinlenme süresi, yeni bir döngünün başlamasını sağlayabilir.", "natural rest describes a new cycle, not reset apps")
+for (key, expected) in [("Privacy Policy", "Gizlilik Politikası"), ("Terms of Use", "Kullanım Koşulları"), ("KVKK Notice (Turkish)", "KVKK Aydınlatma Metni"), ("Could not open link", "Bağlantı açılamadı")] {
+    check(String(localized: String.LocalizationValue(key), bundle: tr) == expected, "legal label: \(key)")
+    check(String(localized: String.LocalizationValue(key), bundle: en) == key, "English legal label: \(key)")
+}
 
 // Every catalog entry must have approved English and Turkish text, including plural leaves.
 func units(_ value: Any) -> [String] {

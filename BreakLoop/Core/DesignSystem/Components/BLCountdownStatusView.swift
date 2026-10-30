@@ -50,6 +50,8 @@ struct BLCountdownStatusView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .tracking(1.5)
                 .foregroundStyle(BLColor.textSecondary)
+                // Long localized labels wrap inside the dial; large text remains free-flowing.
+                .frame(maxWidth: compact ? .infinity : 160)
             if compact {
                 digits(seconds: seconds, font: .system(.title2, design: .rounded, weight: .bold))
                     .fixedSize(horizontal: false, vertical: true)

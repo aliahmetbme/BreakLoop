@@ -161,14 +161,6 @@ enum AppAppearance: String, Codable, CaseIterable {
     case system
     case light
     case dark
-
-    var localizedTitle: String {
-        switch self {
-        case .system: return String(localized: "System")
-        case .light: return String(localized: "Light")
-        case .dark: return String(localized: "Dark")
-        }
-    }
 }
 
 

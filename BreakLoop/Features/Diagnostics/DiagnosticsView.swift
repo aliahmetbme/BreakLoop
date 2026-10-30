@@ -73,7 +73,7 @@ struct DiagnosticsView: View {
             Section(String(localized: "Available History")) {
                 if let history = model.history {
                     if let oldest = history.oldest, let newest = history.newest {
-                        Text("\(oldest.formatted()) — \(newest.formatted())")
+                        Text(verbatim: "\(oldest.formatted()) — \(newest.formatted())")
                     } else { Text("No archived events available.") }
                     Text(String(localized: "diagnostics.storage", defaultValue: "\(ByteCountFormatter.string(fromByteCount: Int64(history.bytes), countStyle: .file)) of \(ByteCountFormatter.string(fromByteCount: Int64(history.maximumBytes), countStyle: .file)) · target: at least \(history.retentionDays) days"))
                     if let eviction = history.earlyEvictionAt {
@@ -110,7 +110,7 @@ struct DiagnosticsView: View {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 12) {
                                 LabeledContent(String(localized: "Event Code")) { Text(verbatim: entry.event) }.font(.headline)
-                                Text("\(entry.timestamp.formatted()) · \(entry.level.localizedTitle) · \(entry.category.localizedTitle)")
+                                Text(verbatim: "\(entry.timestamp.formatted()) · \(entry.level.localizedTitle) · \(entry.category.localizedTitle)")
                                 Text(String(localized: "diagnostics.process", defaultValue: "Process: \(entry.process ?? String(localized: "unknown"))"))
                                 Text(String(localized: "diagnostics.version", defaultValue: "Version: \(entry.appVersion ?? String(localized: "unknown")) (\(entry.appBuild ?? String(localized: "unknown")))"))
                                 Text(String(localized: "diagnostics.source", defaultValue: "Source: \(entry.sourceRevision ?? String(localized: "not supplied / unverified"))"))
@@ -125,7 +125,7 @@ struct DiagnosticsView: View {
                     } label: {
                         VStack(alignment: .leading) {
                             Text(verbatim: entry.event)
-                            Text("\(entry.timestamp.formatted()) · \(entry.level.localizedTitle)").font(.caption).foregroundStyle(.secondary)
+                            Text(verbatim: "\(entry.timestamp.formatted()) · \(entry.level.localizedTitle)").font(.caption).foregroundStyle(.secondary)
                         }
                     }
                 }

@@ -199,6 +199,10 @@ struct SettingsView: View {
                 NavigationLink(String(localized: "Event History & Export")) { DiagnosticsView() }
             }
 
+            Section(String(localized: "Legal Information")) {
+                LegalLinksView()
+            }
+
             // Section 5: About
             Section(String(localized: "About")) {
                 HStack {

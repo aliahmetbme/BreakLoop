@@ -13,6 +13,7 @@ struct AppRootView: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel: AppRootViewModel
+    @StateObject private var terms = TermsAcceptanceModel()
     @ObservedObject private var appearanceController = AppearanceController.shared
 
     init() {
@@ -37,7 +38,11 @@ struct AppRootView: View {
         Group {
             switch viewModel.uiState {
             case .authorized:
-                DashboardView(viewModel: viewModel.dashboardViewModel)
+                if terms.hasAcceptedCurrentTerms {
+                    DashboardView(viewModel: viewModel.dashboardViewModel)
+                } else {
+                    OnboardingView(terms: terms, onAuthorized: { viewModel.handleSceneActive() })
+                }
 
             case .checkingAuthorization:
                 VStack(spacing: BLSpacing.md) {
@@ -50,24 +55,28 @@ struct AppRootView: View {
                 .background(BLColor.background)
 
             case .firstTimeOnboarding:
-                OnboardingView(onAuthorized: {
+                OnboardingView(terms: terms, onAuthorized: {
                     viewModel.handleSceneActive()
                 })
 
             case .permissionRevoked(let isDeniedInSettings):
-                PermissionRequiredView(
-                    isDeniedInSettings: isDeniedInSettings,
-                    isRequesting: viewModel.isRequestingAuthorization,
-                    errorMessage: viewModel.errorMessage,
-                    onAllowAccess: {
-                        Task {
-                            await viewModel.requestAuthorization()
+                if !terms.hasAcceptedCurrentTerms {
+                    OnboardingView(terms: terms, onAuthorized: { viewModel.handleSceneActive() })
+                } else {
+                    PermissionRequiredView(
+                        isDeniedInSettings: isDeniedInSettings,
+                        isRequesting: viewModel.isRequestingAuthorization,
+                        errorMessage: viewModel.errorMessage,
+                        onAllowAccess: {
+                            Task {
+                                await viewModel.requestAuthorization()
+                            }
+                        },
+                        onOpenSettings: {
+                            viewModel.openSettings()
                         }
-                    },
-                    onOpenSettings: {
-                        viewModel.openSettings()
-                    }
-                )
+                    )
+                }
             }
         }
         .preferredColorScheme(appearanceController.appearance.colorScheme)
