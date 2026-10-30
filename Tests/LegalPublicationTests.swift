@@ -17,10 +17,9 @@ struct LegalPublicationTests {
         check(LegalPublicationConfiguration.current.destination(for: .privacy, language: "tr")?.absoluteString == "https://breakloopfocusandrest.netlify.app/tr/privacy", "privacy TR destination")
         check(LegalPublicationConfiguration.current.destination(for: .terms, language: "en")?.absoluteString == "https://breakloopfocusandrest.netlify.app/en/terms", "terms EN destination")
         check(LegalPublicationConfiguration.current.destination(for: .terms, language: "tr")?.absoluteString == "https://breakloopfocusandrest.netlify.app/tr/terms", "terms TR destination")
-        check(LegalPublicationConfiguration.current.destination(for: .kvkk, language: "en")?.absoluteString == "https://breakloopfocusandrest.netlify.app/tr/kvkk", "kvkk EN routes to TR document")
-        check(LegalPublicationConfiguration.current.destination(for: .kvkk, language: "tr")?.absoluteString == "https://breakloopfocusandrest.netlify.app/tr/kvkk", "kvkk TR destination")
 
-        let empty = LegalPublicationConfiguration(privacy: nil, terms: nil, kvkk: nil)
+        check(LegalDocument.allCases == [.privacy, .terms], "native EN/TR legal scope is Privacy and Terms only")
+        let empty = LegalPublicationConfiguration(privacy: nil, terms: nil)
         for document in LegalDocument.allCases {
             check(empty.destination(for: document, language: "en") == nil, "unconfigured URLs stay blank")
             check(empty.destination(for: document, language: "tr") == nil, "unconfigured Turkish URLs stay blank")
@@ -32,8 +31,7 @@ struct LegalPublicationTests {
         check(publication(verified, verified, version: " ").destination(language: "tr") == nil, "unversioned content blocked")
         check(publication(verified, "").destination(language: "tr") == nil, "no silent language fallback")
         check(publication(verified, verified).destination(language: "en")?.absoluteString == verified, "reviewed HTTPS document allowed")
-        let config = LegalPublicationConfiguration(privacy: publication(verified, ""), terms: nil, kvkk: publication("", verified))
-        check(config.destination(for: .kvkk, language: "en")?.absoluteString == verified, "KVKK explicitly refers to Turkish document")
+        let config = LegalPublicationConfiguration(privacy: publication(verified, ""), terms: nil)
         let model = LegalLinksViewModel(configuration: config)
         check(model.destination(for: .privacy, locale: Locale(identifier: "en_US")) != nil, "English routing")
         check(model.destination(for: .privacy, locale: Locale(identifier: "tr_TR")) == nil, "Turkish missing publication")

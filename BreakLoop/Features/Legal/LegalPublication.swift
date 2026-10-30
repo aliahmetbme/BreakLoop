@@ -21,14 +21,13 @@ struct ReviewedLegalPublication {
 }
 
 enum LegalDocument: CaseIterable, Identifiable {
-    case privacy, terms, kvkk
+    case privacy, terms
     var id: Self { self }
 }
 
 struct LegalPublicationConfiguration {
     let privacy: ReviewedLegalPublication?
     let terms: ReviewedLegalPublication?
-    let kvkk: ReviewedLegalPublication?
 
     // Official Netlify legal endpoints verified live on October 30, 2026.
     static let current = LegalPublicationConfiguration(
@@ -43,12 +42,6 @@ struct LegalPublicationConfiguration {
             turkishURL: "https://breakloopfocusandrest.netlify.app/tr/terms",
             reviewedVersion: "2026-10-30",
             reviewApproved: true
-        ),
-        kvkk: ReviewedLegalPublication(
-            englishURL: "https://breakloopfocusandrest.netlify.app/tr/kvkk",
-            turkishURL: "https://breakloopfocusandrest.netlify.app/tr/kvkk",
-            reviewedVersion: "2026-10-30",
-            reviewApproved: true
         )
     )
 
@@ -56,8 +49,7 @@ struct LegalPublicationConfiguration {
         switch document {
         case .privacy: return privacy?.destination(language: language)
         case .terms: return terms?.destination(language: language)
-        // The supplied KVKK notice is Turkish only. Its English UI label states this explicitly.
-        case .kvkk: return kvkk?.destination(language: "tr")
+
         }
     }
 }

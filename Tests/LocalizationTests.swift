@@ -72,13 +72,16 @@ check(String(localized: "error.interrupted", defaultValue: "BreakLoop monitoring
 // Onboarding clarity and legal disclosure use the same catalogs as the main UI.
 check(String(localized: "A repeating cycle of shared app usage and rest, rather than a daily limit.", bundle: tr) == "Günlük bir sınır değil; ortak uygulama kullanımı ve moladan oluşan, tekrarlayan bir döngü.", "repeating cycle in Turkish")
 check(String(localized: "Apps pause at your limit. Estimated time away may allow a new cycle to begin.", bundle: tr) == "Sınırın dolduğunda uygulamalar engellenir. Tahmini dinlenme süresi, yeni bir döngünün başlamasını sağlayabilir.", "natural rest describes a new cycle, not reset apps")
-for (key, expected) in [("Privacy Policy", "Gizlilik Politikası"), ("Terms of Use", "Kullanım Koşulları"), ("KVKK Notice (Turkish)", "KVKK Aydınlatma Metni"), ("Could not open link", "Bağlantı açılamadı")] {
+for (key, expected) in [("Privacy Policy", "Gizlilik Politikası"), ("Terms of Use", "Kullanım Koşulları"), ("Could not open link", "Bağlantı açılamadı")] {
     check(String(localized: String.LocalizationValue(key), bundle: tr) == expected, "legal label: \(key)")
     check(String(localized: String.LocalizationValue(key), bundle: en) == key, "English legal label: \(key)")
 }
 
 check(String(localized: "focus.launch", defaultValue: "Start Deep Focus (\("1h"))", bundle: en) == "Start Deep Focus (1h)", "canonical English Deep Focus sheet action")
 
+check(String(localized: "dashboard.status.active", defaultValue: "Active", bundle: tr) == "Aktif", "sibling card active status in Turkish")
+check(String(localized: "Usage Cycle Settings", bundle: tr) == "Kullanım Döngüsü Ayarları", "canonical settings route label")
+check(String(localized: "Available after your break.", bundle: tr) == "Molan bitince kullanılabilir.", "cooldown availability explanation")
 // Canonical feature hierarchy and first-use guidance.
 for (key, expected) in [
     ("Usage Cycle", "Kullanım Döngüsü"),

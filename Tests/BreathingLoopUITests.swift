@@ -33,7 +33,7 @@ import XCTest
         return image.cgImage!.cropping(to: rect)!.dataProvider!.data! as Data
     }
 
-    func testBreathingForegroundBackgroundAndSystemReduceMotion() {
+    func testStaticIdentityForegroundBackgroundAndSystemReduceMotion() {
         continueAfterFailure = false
         reduceMotion(false)
         let app = XCUIApplication()
@@ -46,7 +46,7 @@ import XCTest
         let frame = title.frame
         let first = ringPixels(app)
         Thread.sleep(forTimeInterval: 0.9)
-        XCTAssertNotEqual(first, ringPixels(app), "Active artwork breathes")
+        XCTAssertEqual(first, ringPixels(app), "Active identity artwork stays static")
         XCTAssertEqual(title.frame, frame, "Title layout stays still")
         XCUIDevice.shared.press(.home)
         XCTAssertTrue(app.wait(for: .runningBackground, timeout: 5))
@@ -54,7 +54,7 @@ import XCTest
         XCTAssertTrue(title.waitForExistence(timeout: 5))
         let resumed = ringPixels(app)
         Thread.sleep(forTimeInterval: 0.9)
-        XCTAssertNotEqual(resumed, ringPixels(app), "Breathing resumes in foreground")
+        XCTAssertEqual(resumed, ringPixels(app), "Identity remains static after foreground return")
         XCTAssertEqual(title.frame, frame)
 
         reduceMotion(true)

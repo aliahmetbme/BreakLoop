@@ -1751,23 +1751,6 @@
         }
       }
     },
-    "KVKK Notice (Turkish)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "KVKK Notice (Turkish)"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "KVKK Aydınlatma Metni"
-          }
-        }
-      }
-    },
     "Legal Information": {
       "extractionState": "manual",
       "localizations": {
@@ -5218,6 +5201,142 @@
           "stringUnit": {
             "state": "translated",
             "value": "Başlat"
+          }
+        }
+      }
+    },
+    "Inactive": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inactive"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etkin değil"
+          }
+        }
+      }
+    },
+    "Needs attention": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needs attention"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontrol gerekiyor"
+          }
+        }
+      }
+    },
+    "Usage Cycle Settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Cycle Settings"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsü Ayarları"
+          }
+        }
+      }
+    },
+    "Available when your focus session ends.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Available when your focus session ends."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odak oturumun bitince kullanılabilir."
+          }
+        }
+      }
+    },
+    "Available after your break.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Available after your break."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Molan bitince kullanılabilir."
+          }
+        }
+      }
+    },
+    "Available after status and selection are verified.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Available after status and selection are verified."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Durum ve seçim doğrulandıktan sonra kullanılabilir."
+          }
+        }
+      }
+    },
+    "dashboard.status.active": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktif"
+          }
+        }
+      }
+    },
+    "Usage Cycle continues in the background.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Cycle continues in the background."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanım Döngüsü arka planda devam ediyor."
           }
         }
       }

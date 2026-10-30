@@ -12,11 +12,12 @@ import Foundation
         let dashboard = DashboardViewModel(storage: store, deviceActivityService: activity, managedSettingsService: settings)
         check(dashboard.experiencePresentation == .needsSelection, "first launch needs selection")
         check(!dashboard.hasSelection && dashboard.selectionIssue == nil, "empty is guidance, not a storage error")
+        store.configuration = CycleConfiguration(usageLimitMinutes: 30, restDurationMinutes: 20)
         let editor = FocusSetupViewModel(storage: store, managedSettingsService: settings, deviceActivityService: activity)
-        check(!editor.saveConfiguration() && store.selected == nil, "empty save rejected")
+        check(!editor.saveSelection() && store.selected == nil, "empty save rejected")
         editor.selection = FamilyActivitySelection(applicationTokens: [1, 2, 3, 4])
-        editor.usageLimitMinutes = 30; editor.restDurationMinutes = 20
-        check(editor.saveConfiguration(), "supported selection and durations saved")
+        editor.usageLimitMinutes = 60; editor.restDurationMinutes = 45
+        check(editor.saveSelection(), "supported selection saved without writing editor durations")
         check(activity.starts == 0 && settings.writes == 0 && store.runtime.snapshot == nil, "saving never starts either experience or writes shields")
         dashboard.refresh() // The existing editor sheet's onDismiss callback does exactly this.
         check(dashboard.experiencePresentation == .ready && dashboard.hasSelection, "same Dashboard instance becomes ready after dismissal refresh")
@@ -51,7 +52,7 @@ import Foundation
         relaunched.refresh()
         check(relaunched.experiencePresentation == .repairSelection && !relaunched.hasSelection, "websites are repair state, not empty or ready")
         let failedEditor = FocusSetupViewModel(storage: store, managedSettingsService: settings, deviceActivityService: activity)
-        check(!failedEditor.saveConfiguration(), "website selection cannot save")
+        check(!failedEditor.saveSelection(), "website selection cannot save")
         store.failRead = true
         relaunched.refresh()
         check(relaunched.experiencePresentation == .selectionUnavailable && relaunched.displayedError != nil, "read failure outranks cached selection")
@@ -63,10 +64,10 @@ import Foundation
         retryEditor.selection = FamilyActivitySelection(applicationTokens: [1, 2])
         store.failSelectionWrite = true
         let previous = store.selected
-        check(!retryEditor.saveConfiguration() && retryEditor.errorMessage != nil, "write failure keeps editor in failed save state")
+        check(!retryEditor.saveSelection() && retryEditor.errorMessage != nil, "write failure keeps editor in failed save state")
         check(store.selected == previous, "failed selection persistence does not fabricate a saved selection")
         store.failSelectionWrite = false
-        check(retryEditor.saveConfiguration(), "failed save can be retried explicitly")
+        check(retryEditor.saveSelection(), "failed save can be retried explicitly")
         relaunched.refresh()
         check(relaunched.experiencePresentation == .ready && relaunched.selectedAppsCount == 2, "retry re-reads actual saved apps")
         let startedBeforeRefresh = activity.starts

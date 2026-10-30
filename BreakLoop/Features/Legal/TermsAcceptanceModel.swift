@@ -37,7 +37,7 @@ final class TermsAcceptanceModel: ObservableObject {
 
     var publicationsReady: Bool {
         ["en", "tr"].allSatisfy { language in
-            LegalDocument.allCases.allSatisfy { configuration.destination(for: $0, language: language) != nil }
+            [LegalDocument.privacy, .terms].allSatisfy { configuration.destination(for: $0, language: language) != nil }
         }
     }
     var isDevelopmentPreview: Bool { !publicationsReady && previewAllowed }

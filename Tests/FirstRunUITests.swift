@@ -21,7 +21,7 @@ import XCTest
         XCTAssertFalse(app.buttons["Start Deep Focus"].exists)
         try audit(app)
         select.tap()
-        XCTAssertTrue(app.navigationBars["Usage Cycle Setup"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Selection"].waitForExistence(timeout: 5))
         app.buttons["Cancel"].tap()
         XCTAssertTrue(app.buttons["Select Apps & Categories"].waitForExistence(timeout: 5))
     }

@@ -9,7 +9,7 @@ import Foundation
         let suite = "BreakLoop.TermsTests." + UUID().uuidString
         let defaults = UserDefaults(suiteName: suite)!
         defer { defaults.removePersistentDomain(forName: suite) }
-        let empty = LegalPublicationConfiguration(privacy: nil, terms: nil, kvkk: nil)
+        let empty = LegalPublicationConfiguration(privacy: nil, terms: nil)
         let date = Date(timeIntervalSince1970: 1_700_000_000)
         let preview = TermsAcceptanceModel(defaults: defaults, configuration: empty, previewAllowed: true, now: { date })
         check(!preview.isChecked && !preview.hasAcceptedCurrentTerms, "checkbox initially unchecked")
@@ -25,11 +25,11 @@ import Foundation
         let blocked = TermsAcceptanceModel(defaults: defaults, configuration: empty, previewAllowed: false)
         blocked.isChecked = true
         check(!blocked.canContinue && !blocked.hasAcceptedCurrentTerms && !blocked.acceptIfNeeded(), "release cannot use preview receipt or missing publications")
-        // A verified Apple URL is only a non-network fixture; production URLs remain nil.
+        // This Apple URL is only a non-network fixture; production reviewed URLs remain unchanged.
         let fixture = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
         func published(_ version: String) -> LegalPublicationConfiguration {
             let doc = ReviewedLegalPublication(englishURL: fixture, turkishURL: fixture, reviewedVersion: version, reviewApproved: true)
-            return LegalPublicationConfiguration(privacy: doc, terms: doc, kvkk: doc)
+            return LegalPublicationConfiguration(privacy: doc, terms: doc)
         }
         let final = TermsAcceptanceModel(defaults: defaults, configuration: published("terms-v1"), previewAllowed: false, now: { date.addingTimeInterval(10) })
         check(final.publicationsReady && !final.isDevelopmentPreview, "published configuration")
@@ -46,7 +46,7 @@ import Foundation
         check(changed.acceptIfNeeded(), "new version can be accepted")
         let languageIndependent = TermsAcceptanceModel(defaults: defaults, configuration: published("terms-v2"), previewAllowed: false)
         check(languageIndependent.hasAcceptedCurrentTerms, "acceptance independent of UI language")
-        let incomplete = LegalPublicationConfiguration(privacy: published("terms-v2").privacy, terms: published("terms-v2").terms, kvkk: nil)
+        let incomplete = LegalPublicationConfiguration(privacy: published("terms-v2").privacy, terms: nil)
         check(!TermsAcceptanceModel(defaults: defaults, configuration: incomplete, previewAllowed: false).canContinue, "missing required publication blocks release")
         defaults.set(Data("bad receipt".utf8), forKey: "breakloop.legal.termsAcceptance.v1")
         let corrupted = TermsAcceptanceModel(defaults: defaults, configuration: published("terms-v2"), previewAllowed: false)
@@ -61,6 +61,11 @@ import Foundation
         check(liveModel.publicationsReady, "current configuration publications are ready")
         check(!liveModel.isDevelopmentPreview, "current configuration is not a development preview")
         check(liveModel.currentVersion == "2026-10-30", "current terms version is 2026-10-30")
+        let existingReceipt = TermsAcceptanceModel.Receipt(version: "2026-10-30", acceptedAt: date, developmentPreview: false)
+        defaults.set(try! JSONEncoder().encode(existingReceipt), forKey: "breakloop.legal.termsAcceptance.v1")
+        let retained = TermsAcceptanceModel(defaults: defaults, previewAllowed: false)
+        check(retained.hasAcceptedCurrentTerms && retained.canContinue, "removing native KVKK does not invalidate existing current-version acceptance")
+        check(retained.acceptIfNeeded() && retained.receipt?.acceptedAt == date, "existing receipt timestamp is not rewritten")
         print("Terms acceptance: \(checks) checks passed")
     }
 }

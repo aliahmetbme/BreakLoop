@@ -109,7 +109,6 @@ private extension LegalDocument {
         switch self {
         case .privacy: return String(localized: "Privacy Policy")
         case .terms: return String(localized: "Terms of Use")
-        case .kvkk: return String(localized: "KVKK Notice (Turkish)")
         }
     }
 }

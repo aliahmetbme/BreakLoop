@@ -3,7 +3,7 @@ set -eu
 cd "$(dirname "$0")/.."
 journey_tests=${1:-Tests/FirstRunJourneyTests.swift}
 journey_build=$(mktemp -d /tmp/breakloop-first-run.XXXXXX)
-for journey_source in BreakLoop/Features/DashBoard/DashboardViewModel.swift BreakLoop/Features/FocusSetup/FocusSetupViewModel.swift BreakLoop/Core/Infrastructure/Lifecycle/MonitoringLifecycleFactory.swift; do
+for journey_source in BreakLoop/Features/Settings/SettingsViewModel.swift BreakLoop/Features/DashBoard/DashboardViewModel.swift BreakLoop/Features/FocusSetup/FocusSetupViewModel.swift BreakLoop/Core/Infrastructure/Lifecycle/MonitoringLifecycleFactory.swift; do
     sed '/^import FamilyControls$/d' "$journey_source" > "$journey_build/$(basename "$journey_source")"
 done
 swiftc -module-cache-path "$journey_build/module-cache" \
@@ -16,5 +16,5 @@ swiftc -module-cache-path "$journey_build/module-cache" \
     BreakLoop/Core/Infrastructure/Logging/AppLogger.swift \
     BreakLoop/Features/DashBoard/DashboardStateSynchronization.swift \
     "$journey_build/DashboardViewModel.swift" "$journey_build/FocusSetupViewModel.swift" "$journey_build/MonitoringLifecycleFactory.swift" \
-    Tests/FirstRunJourneyBoundary.swift "$journey_tests" -o "$journey_build/checks"
+    "$journey_build/SettingsViewModel.swift" Tests/SettingsConfigurationBoundary.swift Tests/FirstRunJourneyBoundary.swift "$journey_tests" -o "$journey_build/checks"
 "$journey_build/checks"

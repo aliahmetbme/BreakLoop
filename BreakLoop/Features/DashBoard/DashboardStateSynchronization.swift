@@ -8,6 +8,12 @@ struct DashboardState: Equatable {
     let errorMessage: String?
     let synchronizationError: String?
     static let loading = DashboardState(runtime: nil, mode: .loading, errorMessage: nil)
+    // Derive the sibling cycle card from the same verified record; never mutate persisted ownership.
+    var usageCycleState: DashboardState {
+        guard var runtime else { return self }
+        runtime.deepFocus = nil
+        return DashboardState(runtime: runtime, synchronizationError: synchronizationError)
+    }
     var canStopBreakLoop: Bool { mode == .monitoring }
     var canOfferInactiveStarts: Bool { mode == .inactive }
     var canConfigureDeepFocus: Bool { mode == .inactive || mode == .monitoring }
